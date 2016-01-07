@@ -1,0 +1,8 @@
+Django==1.9.1
+Fabric==1.10.2
+South==1.0.2
+argparse==1.2.1
+ecdsa==0.13
+paramiko==1.16.0
+pycrypto==2.6.1
+wsgiref==0.1.2
