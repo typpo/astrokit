@@ -17,5 +17,6 @@ from django.conf.urls import url
 from django.contrib import admin
 
 urlpatterns = [
+    url(r'^s3direct/', include('s3direct.urls')),
     url(r'^admin/', admin.site.urls),
 ]

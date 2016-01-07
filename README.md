@@ -1,7 +1,7 @@
 # astrokit
 
 AstroKit (http://www.astrokit.org/) provides web-based tools for asteroid
-characterization.  It's supported by [NASA](http://nspires.nasaprs.com/external/) and [Deep Space Industries](http://deepspaceindustries.com/).
+characterization.  It's supported by [NASA](http://nspires.nasaprs.com/external/).
 
 Users (scientists, amateur astronomers) will upload sky imagery and receive
 astrometry, photometry, and light curve results derived from their images.
