@@ -1,9 +1,10 @@
 # astrokit
 
-AstroKit provides web-based tools for asteroid characterization.  It's
-supported by a NASA research grant and Deep Space Industries.
+AstroKit (http://www.astrokit.org/) provides web-based tools for asteroid
+characterization.  It's supported by [NASA](http://nspires.nasaprs.com/external/) and [Deep Space Industries](http://deepspaceindustries.com/).
 
-Users (scientists, amateur astronomers) will upload sky imagery.
+Users (scientists, amateur astronomers) will upload sky imagery and receive
+astrometry, photometry, and light curve results derived from their images.
 
 ## Installation
 
