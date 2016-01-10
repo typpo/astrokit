@@ -8,14 +8,16 @@ astrometry, photometry, and light curve results derived from their images.
 
 ## Installation
 
-1. Install virtualenv (`sudo apt-get install python-virtualenv` on Debian/Ubuntu).  Also install redis (`sudo apt-get install redis-server`).
+Install virtualenv (`sudo apt-get install python-virtualenv` on Debian/Ubuntu).  Also install redis (`sudo apt-get install redis-server`).
 
-2. Create a virtualenv in the astrokit dierctory: `virtualenv venv`.
+Create a virtualenv in the astrokit dierctory: `virtualenv venv`.
 
-3. Enter the environment (you'll have to do this each time you want to run astrokit in a new terminal): `source venv/bin/activate`
+Enter the environment (you'll have to do this each time you want to run astrokit in a new terminal): `source venv/bin/activate`
 
-4. Run it:  `./manage.py runserver`.
+Setup the astrometry analyzer: `./astrometry/setup/setup.sh`.  This will take some time.
 
-5. Postgres is optional but used in production:
+Run it:  `./manage.py runserver`.
+
+Postgres is optional but used in production:
 
     sudo apt-get install postgresql postgresql-server-dev-9.4
