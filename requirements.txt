@@ -6,4 +6,5 @@ django-s3direct==0.3.12
 ecdsa==0.13
 paramiko==1.16.0
 pycrypto==2.6.1
+redis==2.10.5
 wsgiref==0.1.2

@@ -128,4 +128,3 @@ STATIC_URL = '/static/'
 
 # S3 upload config
 from config.s3upload import *
-print AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID
