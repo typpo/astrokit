@@ -1,7 +1,9 @@
 Django==1.9.1
 Fabric==1.10.2
+Pillow==3.1.0
 South==1.0.2
 argparse==1.2.1
+boto==2.38.0
 django-s3direct==0.3.12
 ecdsa==0.13
 paramiko==1.16.0

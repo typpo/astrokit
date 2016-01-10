@@ -1,7 +1,5 @@
 from django.conf.urls import patterns, url
 
-from .views import ImageUploadView
-
-urlpatterns = patterns('',
-    url(r'^upload', ImageUploadView.as_view(), name='form'),
+urlpatterns = patterns('imageflow.views',
+    url(r'^upload', 'upload_image', name='upload_image'),
 )

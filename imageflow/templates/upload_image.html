@@ -5,8 +5,16 @@
     {{ form.media }}
 </head>
 <body>
+  <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+    <p>
+      <input id="image" type="file" class="" name="image"/>
+    </p>
+    <input type="submit" value="Submit"/>
+  </form>
+<!--
     <form action="" method="post">{% csrf_token %}
         {{ form.as_p }}
     </form>
+-->
 </body>
 </html>
