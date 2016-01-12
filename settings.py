@@ -128,3 +128,6 @@ STATIC_URL = '/static/'
 
 # S3 upload config
 from config.s3upload import *
+
+# Astrometry.net config
+ASTROKIT_ASTROMETRY_KEY = os.environ.get('ASTROKIT_ASTROMETRY_KEY')

@@ -6,10 +6,33 @@ import subprocess
 import tempfile
 import time
 
-def process_astrometry(img_data):
-  """
+from django.conf import settings
+
+from astrometry_client import Client
+
+def process_astrometry_online(url):
+    '''
+    Uses astrometry.net to fetch astrometry info.
+    '''
+
+    client = Client()
+    client.login(settings.ASTROKIT_ASTROMETRY_KEY)
+    result = client.url_upload(url)
+    success = result['status'] == 'success'
+    if success:
+        subid = result['subid']
+        time.sleep(60)
+        # TODO replace with some polling mechanism.
+        substatus = client.sub_status(subid)
+        if 'processing_finished' in substatus:
+            for jobid in substatus['jobs']:
+                jobstatus = c.job_status(jobid)
+                # Read the results...
+
+def process_astrometry_locally(img_data):
+  '''
   Returns astrometry data for a given sky image.
-  """
+  '''
 
   with tempfile.NamedTemporaryFile(prefix='astrometry_', delete=False) as f:
       f.write(img_data)

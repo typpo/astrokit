@@ -31,6 +31,7 @@ rm -rf astrometry.net-0.43.tar.gz/
 # Download all the indexes...
 echo "Downloading indexes.  This will take a while..."
 ../download_indexes.sh
+../download_extra_indexes.sh
 sudo mkdir -p /usr/local/astrometry/data
 sudo mv ../index/index-* /usr/local/astrometry/data
 
