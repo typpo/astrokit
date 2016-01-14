@@ -1,20 +1,35 @@
+<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Upload an image</title>
-    {{ form.media }}
+    {% load staticfiles %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{% static "imageflow/css/main.css" %}" />
+    <link
 </head>
 <body>
-  <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+  <div class="content drop-shadow lifted">
+    <div class="nav-header">
+      <a href="/">AstroKit</a>
+    </div>
+    <div class="heading-container">
+      <h1>Upload an image</h1>
+    </div>
+
     <p>
-      <input id="image" type="file" class="" name="image"/>
+      Provide an image for astrometry, photometry, and light curve analysis:
     </p>
-    <input type="submit" value="Submit"/>
-  </form>
-<!--
-    <form action="" method="post">{% csrf_token %}
-        {{ form.as_p }}
-    </form>
--->
+    <div class="well">
+      <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <p>
+          <input id="image" type="file" class="" name="image"/>
+        </p>
+        <input type="submit" value="Submit"/>
+      </form>
+    </div>
+  </div>
+  <script src="{% static "imageflow/js/upload.js" %}" type="text/javascript"></script>
 </body>
 </html>
