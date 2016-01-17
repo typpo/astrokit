@@ -21,3 +21,10 @@ Run it:  `./manage.py runserver`.
 Postgres is optional but used in production:
 
     sudo apt-get install postgresql postgresql-server-dev-9.4
+
+## Post setup
+
+In your virtual environment...
+
+`python manage.py createsuperuser`
+`python manage.py migrate`
