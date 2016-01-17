@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     's3direct',
 
     # Astrokit
+    'astrometry',
     'imageflow',
 ]
 

@@ -8,6 +8,7 @@ import time
 
 from django.conf import settings
 
+from models import AstrometrySubmission
 from astrometry_client import Client
 
 def process_astrometry_online(url):
@@ -20,14 +21,12 @@ def process_astrometry_online(url):
     result = client.url_upload(url)
     success = result['status'] == 'success'
     if success:
-        subid = result['subid']
-        time.sleep(60)
-        # TODO replace with some polling mechanism.
-        substatus = client.sub_status(subid)
-        if 'processing_finished' in substatus:
-            for jobid in substatus['jobs']:
-                jobstatus = c.job_status(jobid)
-                # Read the results...
+        astrometry_submission = AstrometrySubmission.objects.create(
+                subid=result['subid'])
+    else:
+        astrometry_submission = AstrometrySubmission.objects.create(
+                subid=result['subid'],
+                status=AstrometrySubmission.FAILED_TO_SUBMIT)
 
 def process_astrometry_locally(img_data):
   '''
