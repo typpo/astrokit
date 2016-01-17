@@ -16,7 +16,7 @@ client.login(settings.ASTROKIT_ASTROMETRY_KEY)
 pending_submissions = AstrometrySubmission.objects.all().filter(
         status=AstrometrySubmission.SUBMITTED)
 for submission in pending_submissions:
-    # TODO replace with some polling mechanism.
+    # TODO Run this automatically.
     substatus = client.sub_status(submission.subid, True)
     if substatus and 'processing_finished' in substatus:
         print client.submission_images(submission.subid)
@@ -34,4 +34,4 @@ for submission in pending_submissions:
                     % (jobid))
             print annotations
 
-            # Read the results...
+            # TODO Save these results.
