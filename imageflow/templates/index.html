@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Upload an image</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{% static "imageflow/css/main.css" %}" />
+    <link
+</head>
+<body>
+  <div class="content drop-shadow lifted">
+    <div class="nav-header">
+      <a href="/">AstroKit</a>
+    </div>
+    <div class="heading-container">
+      <h1>AstroKit</h1>
+    </div>
+
+    <p>
+      AstroKit is an open-source project that provides web-based tools for astronomers. It is supported by a NASA research grant.
+    </p>
+    <p>
+      Our goals are the following:
+      <ul>
+        <li><strong>Astrometry</strong>: Solve an image for the positions of the stars and moving objects within it.  Allow the processing of batches of images.</li>
+        <li><strong>Photometry</strong>: Provide relative photometry for the moving objects within an image using reference stars from standard catalogs. Also allow the processing of batches of images.</li>
+        <li><strong>Light</strong> curve analysis: Provide a virtual workbench for the user to create asteroid light curves from the derived photometric values and determine the spin period of the asteroid.  This analysis must take into account the particulars of asteroid light curves, such as, but not limited to, light-time correction and the phase angle effect on brightness. The software must produce, at a minimum, and in addition to data files with the results of the analyzed light curve, an image of the folded light curve that is suitable for publication in a scientific journal.</li>
+      </ul>
+    </p>
+    <p>
+      <a href="https://github.com/typpo/astrokit">View the project on Github.</a>
+    </p>
+  </div>
+  <script src="{% static "imageflow/js/upload.js" %}" type="text/javascript"></script>
+</body>
+</html>

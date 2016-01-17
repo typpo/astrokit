@@ -19,5 +19,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^s3upload/', include('s3direct.urls')),
-    url(r'^imageflow/', include('imageflow.urls')),
+    url(r'^', include('imageflow.urls')),
 ]

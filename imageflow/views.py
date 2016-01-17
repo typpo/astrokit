@@ -9,6 +9,9 @@ from boto.s3.key import Key
 
 from astrometry.util import process_astrometry_online
 
+def index(request):
+    return render_to_response('index.html')
+
 def upload_image(request):
     if request.method == 'POST':
         img = request.FILES['image']
