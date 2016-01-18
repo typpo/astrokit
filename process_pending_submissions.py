@@ -1,11 +1,13 @@
+import datetime
+import json
 import os
 import sys
+
 import django
+from django.conf import settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 sys.path.insert(0, os.getcwd())
 django.setup()
-
-from django.conf import settings
 
 from astrometry.models import AstrometrySubmission
 from astrometry.astrometry_client import Client
@@ -21,17 +23,21 @@ for submission in pending_submissions:
     if substatus and 'processing_finished' in substatus:
         print client.submission_images(submission.subid)
         for jobid in substatus['jobs']:
-            objs_in_field = client.send_request('jobs/%d/objects_in_field' \
-                    % (jobid))
-            print objs_in_field
-            calibration = client.send_request('jobs/%d/calibration' \
-                    % (jobid))
-            print calibration
-            machine_tags = client.send_request('jobs/%d/machine_tags' \
-                    % (jobid))
-            print machine_tags
-            annotations = client.send_request('jobs/%d/annotations' \
-                    % (jobid))
-            print annotations
+            info = json.dumps(client.send_request('jobs/%d/info' % (jobid)))
+            if info['status'] != 'success':
+                print 'Warning: unsuccessful job %d for submission %d' \
+                        % (jobid, submission.subid)
+                continue
+            annotations = json.dumps(client.send_request('jobs/%d/annotations' \
+                    % (jobid)))
 
-            # TODO Save these results.
+            # Save these results.
+            job = AstrometrySubmissionJob.objects.create(
+                    submission=submission,
+                    status=AstrometrySubmissionJob.SUCCESS,
+                    annotations=annotations)
+
+        # Update submission.
+        submission.succeeded_at = datetime.datetime.now()
+        submission.status = AstrometrySubmission.COMPLETE
+        submission.save()
