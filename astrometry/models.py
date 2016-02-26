@@ -1,5 +1,8 @@
 from __future__ import unicode_literals
 
+import datetime
+
+import django
 from django.contrib import admin
 from django.db import models
 from jsonfield import JSONField
@@ -18,7 +21,7 @@ class AstrometrySubmission(models.Model):
     subid = models.IntegerField()
     status = models.CharField(
             max_length=50, choices=SUBMISSION_STATUSES, default=SUBMITTED)
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=django.utils.timezone.now)
     succeeded_at = models.DateTimeField()
 
     def get_astrometry_net_url(self):
@@ -49,4 +52,4 @@ class AstrometrySubmissionJob(models.Model):
     status = models.CharField(
             max_length=50, choices=JOB_STATUSES, default=UNKNOWN)
     succeeded_at = models.DateTimeField()
-    annotations = models.JSONField()
+    annotations = JSONField()
