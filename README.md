@@ -36,3 +36,8 @@ Download IRAF: http://iraf.noao.edu/
 Read the README: ftp://iraf.noao.edu/iraf/v216/README
 
 `sudo apt-get install csh`
+
+Put these statically linked binaries in your path:
+
+ftp://iraf.noao.edu/pub/fitz/xgterm.STATIC
+ftp://iraf.noao.edu/pub/fitz/ximtool.STATIC
