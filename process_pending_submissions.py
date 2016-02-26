@@ -57,9 +57,11 @@ for submission in pending_submissions:
                     annotations=annotations,
                     info=info)
             num_success += 1
+            print '-> Job %d was added' % (job_id)
 
         if num_success > 0 and num_success == len(job_ids):
             # Update submission.
             submission.succeeded_at = timezone.now()
             submission.status = AstrometrySubmission.COMPLETE
             submission.save()
+            print '-> Submission %d is complete' % (job_id)
