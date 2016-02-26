@@ -25,7 +25,7 @@ for submission in pending_submissions:
     substatus = client.sub_status(submission.subid, True)
 
     if substatus and 'processing_finished' in substatus:
-        print '-> Submission is finished'
+        print '-> Submission is submitted'
 
         job_ids = substatus['jobs']
         print 'Processing jobs: %s' % (job_ids)
