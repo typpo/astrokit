@@ -32,6 +32,7 @@ for submission in pending_submissions:
         num_success = 0
         for job_id in job_ids:
             info = client.send_request('jobs/%d/info' % (job_id))
+
             status = info['status']
             if status == 'solving':
                 print '-> Job %d is still solving' % (job_id)
@@ -57,7 +58,7 @@ for submission in pending_submissions:
                     info=info)
             num_success += 1
 
-        if num_success == len(job_ids):
+        if num_success > 0 and num_success == len(job_ids):
             # Update submission.
             submission.succeeded_at = timezone.now()
             submission.status = AstrometrySubmission.COMPLETE
