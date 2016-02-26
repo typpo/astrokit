@@ -28,3 +28,11 @@ In your virtual environment...
 
 `python manage.py createsuperuser`
 `python manage.py migrate`
+
+## IRAF setup
+
+Download IRAF: http://iraf.noao.edu/
+
+Read the README: ftp://iraf.noao.edu/iraf/v216/README
+
+`sudo apt-get install csh`
