@@ -28,16 +28,6 @@ class AstrometrySubmission(models.Model):
     def get_astrometry_net_url(self):
         return 'http://nova.astrometry.net/user_images/%d' % self.subid
 
-    def maybe_update_astrometry_net_status(self):
-        client = Client()
-        client.login(settings.ASTROKIT_ASTROMETRY_KEY)
-
-        substatus = client.sub_status(self.subid)
-        if substatus and substatus['status'] == 'processing_finished':
-            self.status = COMPLETE
-
-        # TODO(ian) Update related AstrometrySubmissionJobs.
-
     def __str__(self):
         return 'Sub #%d - %s' % (self.subid, self.status)
 
