@@ -22,7 +22,7 @@ class AstrometrySubmission(models.Model):
     status = models.CharField(
             max_length=50, choices=SUBMISSION_STATUSES, default=SUBMITTED)
     created_at = models.DateTimeField(default=django.utils.timezone.now)
-    succeeded_at = models.DateTimeField()
+    succeeded_at = models.DateTimeField(blank=True, null=True)
 
     def get_astrometry_net_url(self):
         return 'http://nova.astrometry.net/user_images/%d' % self.subid
@@ -51,5 +51,5 @@ class AstrometrySubmissionJob(models.Model):
             AstrometrySubmission, on_delete=models.CASCADE)
     status = models.CharField(
             max_length=50, choices=JOB_STATUSES, default=UNKNOWN)
-    succeeded_at = models.DateTimeField()
-    annotations = JSONField()
+    succeeded_at = models.DateTimeField(blank=True, null=True)
+    annotations = JSONField(blank=True, null=True)

@@ -20,26 +20,37 @@ client.login(settings.ASTROKIT_ASTROMETRY_KEY)
 pending_submissions = AstrometrySubmission.objects.all().filter(
         status=AstrometrySubmission.SUBMITTED)
 for submission in pending_submissions:
-    # TODO(ian) Run this automatically.
+    print 'Querying for submission %d...' % (submission.subid)
     substatus = client.sub_status(submission.subid, True)
+
     if substatus and 'processing_finished' in substatus:
-        print client.submission_images(submission.subid)
-        for jobid in substatus['jobs']:
-            info = json.dumps(client.send_request('jobs/%d/info' % (jobid)))
-            if info['status'] != 'success':
-                print 'Warning: unsuccessful job %d for submission %d' \
-                        % (jobid, submission.subid)
+        print '-> Submission is finished'
+
+        job_ids = substatus['jobs']
+        print 'Processing jobs: %s' % (job_ids)
+        num_success = 0
+        for job_id in job_ids:
+            info = client.send_request('jobs/%d/info' % (job_id))
+            if info['status'] == 'solving':
+                print '-> Job %d is still solving' % (job_id)
                 continue
+            elif info['status'] != 'success':
+                print '-> Warning: unsuccessful job %d for submission %d' \
+                        % (job_id, submission.subid)
+                continue
+
             annotations = json.dumps(client.send_request('jobs/%d/annotations' \
-                    % (jobid)))
+                    % (job_id)))
 
             # Save these results.
             job = AstrometrySubmissionJob.objects.create(
                     submission=submission,
                     status=AstrometrySubmissionJob.SUCCESS,
                     annotations=annotations)
+            num_success += 1
 
-        # Update submission.
-        submission.succeeded_at = datetime.datetime.now()
-        submission.status = AstrometrySubmission.COMPLETE
-        submission.save()
+        if num_success == len(job_ids):
+            # Update submission.
+            submission.succeeded_at = datetime.datetime.now()
+            submission.status = AstrometrySubmission.COMPLETE
+            submission.save()
