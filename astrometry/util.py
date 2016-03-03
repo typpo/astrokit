@@ -22,10 +22,11 @@ def process_astrometry_online(url):
     success = result['status'] == 'success'
     if success:
         astrometry_submission = AstrometrySubmission.objects.create(
-                subid=result['subid'])
+                subid=result['subid'], upload_url=url)
     else:
         astrometry_submission = AstrometrySubmission.objects.create(
                 subid=result['subid'],
+                upload_url=url,
                 status=AstrometrySubmission.FAILED_TO_SUBMIT)
 
 def process_astrometry_locally(img_data):

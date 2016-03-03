@@ -20,6 +20,7 @@ class AstrometrySubmission(models.Model):
         (FAILED_TO_PROCESS, 'Failed to process'),
     )
     subid = models.IntegerField()
+    upload_url = models.CharField(max_length=512)
     status = models.CharField(
             max_length=50, choices=SUBMISSION_STATUSES, default=SUBMITTED)
     created_at = models.DateTimeField(default=timezone.now)
