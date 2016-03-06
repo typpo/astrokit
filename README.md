@@ -41,3 +41,10 @@ Put these statically linked binaries in your path:
 
 ftp://iraf.noao.edu/pub/fitz/xgterm.STATIC
 ftp://iraf.noao.edu/pub/fitz/ximtool.STATIC
+
+## Other
+
+pip install numpy scipy scikit-image photuils
+sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev gfortran g++
+
+
