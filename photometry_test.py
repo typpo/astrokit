@@ -27,6 +27,8 @@ data = im[0].data[2]
 psf_gaussian = GaussianPSF(1)
 computed_fluxes = psf_photometry(data, coords, psf_gaussian)
 
+print len(catalog_fluxes), 'sources present in metadata'
+
 # Check
 import matplotlib.pyplot as plt
 
