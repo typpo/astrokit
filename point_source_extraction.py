@@ -40,10 +40,6 @@ def plot(sources, data, path):
 def load_image(path):
     im = fits.open(path)
     data = im[0].data[2]
-
-    # hdu = datasets.load_star_image()
-    # data = hdu.data[0:400, 0:400]
-    # data = hdu.data
     return data
 
 def get_args():
