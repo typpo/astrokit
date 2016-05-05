@@ -18,9 +18,6 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from photutils import CircularAperture
 from photutils import datasets, daofind
 
-IMAGE_PATH = sys.argv[1]
-OUTPUT_PATH = sys.argv[2] if len(sys.argv) > 2 else 'point_source_extracted.png'
-
 def compute(data):
     mean, median, std = sigma_clipped_stats(data, sigma=3.0, iters=5)
 
@@ -41,7 +38,7 @@ def plot(sources, data, path):
     plt.savefig(path)
 
 def load_image(path):
-    im = fits.open(IMAGE_PATH)
+    im = fits.open(path)
     data = im[0].data[2]
 
     # hdu = datasets.load_star_image()
@@ -49,8 +46,17 @@ def load_image(path):
     # data = hdu.data
     return data
 
+def get_args():
+    parser = argparse.ArgumentParser('Extract point sources from image.')
+    parser.add_argument('image', help='path to input image')
+    parser.add_argument('--plot', help='path to output overlay plot')
+    parser.add_argument('--fits', help='path to output point source coords to')
+    return parser.parse_args()
+
 if __name__ == '__main__':
-    image_data = load_image(IMAGE_PATH)
+    args = get_args()
+    image_data = load_image(args.image)
     sources = compute(image_data)
-    plot(sources, image_data, OUTPUT_PATH)
+    if args.plot:
+        plot(sources, image_data, args.plot)
     print 'Done.'
