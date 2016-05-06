@@ -6,6 +6,7 @@ Usage: python point_source_extraction.py myimage.fits
 '''
 
 import argparse
+import json
 import sys
 
 import matplotlib.pylab as plt
@@ -47,6 +48,25 @@ def save_fits(sources, path):
     tbhdu = fits.BinTableHDU.from_columns(cols)
     tbhdu.writeto(path)
 
+def save_json(sources, path):
+    field_x = sources['xcentroid']
+    field_y = sources['ycentroid']
+    est_flux = sources['flux']
+    est_mag = sources['mag']
+
+    out = []
+    for i in xrange(len(field_x)):
+        out.append({
+            'field_x': field_x[i],
+            'field_y': field_y[i],
+            'est_flux': est_flux[i],
+            'est_mag': est_mag[i],
+
+        })
+
+    with open(path, 'w') as f:
+        f.write(json.dumps(out, indent=2))
+
 def load_image(path):
     im = fits.open(path)
     data = im[0].data[2]
@@ -57,6 +77,7 @@ def get_args():
     parser.add_argument('image', help='path to input image')
     parser.add_argument('--plot', help='path to output overlay plot')
     parser.add_argument('--fits', help='path to output point source coords to')
+    parser.add_argument('--json', help='path to output point source coords to')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -67,4 +88,6 @@ if __name__ == '__main__':
         plot(sources, image_data, args.plot)
     if args.fits:
         save_fits(sources, args.fits)
+    if args.json:
+        save_json(sources, args.json)
     print 'Done.'
