@@ -9,7 +9,7 @@ import argparse
 import sys
 
 import matplotlib.pylab as plt
-import numpy
+import numpy as np
 
 from astropy.io import fits
 from astropy.stats import sigma_clipped_stats
@@ -25,7 +25,7 @@ def compute(data):
 
     print sources
     print len(sources), 'sources'
-    print numpy.where(sources['mag'] > 0)
+    print np.where(sources['mag'] > 0)
     return sources
 
 def plot(sources, data, path):
@@ -36,6 +36,18 @@ def plot(sources, data, path):
     apertures.plot(color='blue', lw=1.5, alpha=0.5)
 
     plt.savefig(path)
+
+def save_fits(sources, path):
+    #coords = zip(corr[1].data['field_x'], corr[1].data['field_y'])
+
+    col_x = fits.Column(name='field_x', format='E', array=sources['xcentroid'])
+    col_y = fits.Column(name='field_y', format='E', array=sources['ycentroid'])
+    est_flux = fits.Column(name='est_flux', format='E', array=sources['flux'])
+    est_mag = fits.Column(name='est_mag', format='E', array=sources['mag'])
+
+    cols = fits.ColDefs([col_x, col_y, est_flux, est_mag])
+    tbhdu = fits.BinTableHDU.from_columns(cols)
+    tbhdu.writeto(path)
 
 def load_image(path):
     im = fits.open(path)
@@ -55,4 +67,6 @@ if __name__ == '__main__':
     sources = compute(image_data)
     if args.plot:
         plot(sources, image_data, args.plot)
+    if args.fits:
+        save_fits(sources, args.fits)
     print 'Done.'
