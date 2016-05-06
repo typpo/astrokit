@@ -38,8 +38,6 @@ def plot(sources, data, path):
     plt.savefig(path)
 
 def save_fits(sources, path):
-    #coords = zip(corr[1].data['field_x'], corr[1].data['field_y'])
-
     col_x = fits.Column(name='field_x', format='E', array=sources['xcentroid'])
     col_y = fits.Column(name='field_y', format='E', array=sources['ycentroid'])
     est_flux = fits.Column(name='est_flux', format='E', array=sources['flux'])
