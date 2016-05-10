@@ -21,7 +21,6 @@ from photutils import datasets, daofind
 
 def compute(data):
     mean, median, std = sigma_clipped_stats(data, sigma=3.0, iters=5)
-
     sources = daofind(data - median, fwhm=3.0, threshold=5.*std)
 
     print sources
@@ -67,6 +66,24 @@ def save_json(sources, path):
     with open(path, 'w') as f:
         f.write(json.dumps(out, indent=2))
 
+def compute_psf_flux(image_data, sources, psf_output_path):
+    import astropy.units as u
+    from photutils.psf import psf_photometry, GaussianPSF
+
+    coords = zip(sources['xcentroid'], sources['ycentroid'])
+
+    # Convert
+    factor = (u.MJy / u.sr * (0.402 * u.arcsec) ** 2 / u.pixel).to(u.mJy / u.pixel)
+
+    psf_gaussian = GaussianPSF(1)
+    computed_fluxes = psf_photometry(image_data, coords, psf_gaussian)
+
+    # Check
+    plt.scatter(sorted(sources['flux']), sorted(computed_fluxes))
+    plt.xlabel('Fluxes catalog')
+    plt.ylabel('Fluxes photutils')
+    plt.savefig(psf_output_path)
+
 def load_image(path):
     im = fits.open(path)
     data = im[0].data[2]
@@ -78,6 +95,7 @@ def get_args():
     parser.add_argument('--plot', help='path to output overlay plot')
     parser.add_argument('--fits', help='path to output point source coords to')
     parser.add_argument('--json', help='path to output point source coords to')
+    parser.add_argument('--psf', help='path to output PSF results to')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -90,4 +108,6 @@ if __name__ == '__main__':
         save_fits(sources, args.fits)
     if args.json:
         save_json(sources, args.json)
+    if args.psf:
+        compute_psf_flux(image_data, sources, args.psf)
     print 'Done.'
