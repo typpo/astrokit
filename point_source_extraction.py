@@ -8,6 +8,7 @@ Usage: python point_source_extraction.py myimage.fits
 import argparse
 import json
 import sys
+import urllib
 
 import matplotlib.pylab as plt
 import numpy as np
@@ -89,9 +90,15 @@ def load_image(path):
     data = im[0].data[2]
     return data
 
+def load_url(url):
+    page = urllib.urlopen(url)
+    content = page.read()
+
+    return load_image(f)
+
 def get_args():
     parser = argparse.ArgumentParser('Extract point sources from image.')
-    parser.add_argument('image or url', help='filesystem path or url to input image')
+    parser.add_argument('image', help='filesystem path or url to input image')
     parser.add_argument('--plot', help='path to output overlay plot')
     parser.add_argument('--fits', help='path to output point source coords to')
     parser.add_argument('--json', help='path to output point source coords to')
@@ -100,7 +107,10 @@ def get_args():
 
 if __name__ == '__main__':
     args = get_args()
-    image_data = load_image(args.image)
+    if args.image.startswith('http:'):
+        image_data = load_url(args.image)
+    else:
+        image_data = load_image(args.image)
     sources = compute(image_data)
     if args.plot:
         plot(sources, image_data, args.plot)
