@@ -91,7 +91,7 @@ def load_image(path):
 
 def get_args():
     parser = argparse.ArgumentParser('Extract point sources from image.')
-    parser.add_argument('image', help='path to input image')
+    parser.add_argument('image or url', help='filesystem path or url to input image')
     parser.add_argument('--plot', help='path to output overlay plot')
     parser.add_argument('--fits', help='path to output point source coords to')
     parser.add_argument('--json', help='path to output point source coords to')

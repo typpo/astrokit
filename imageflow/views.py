@@ -35,7 +35,13 @@ def _upload_to_s3(name, img_data):
     # TODO(ian): Some way to avoid collisions.
     k.key = 'raw/%d-%s' % (int(time.time()), name)
     # TODO(ian): Support other content types.
-    k.set_metadata('Content-Type', 'image/jpeg')
+    k.set_metadata('Content-Type', _guess_mime_type(name))
     k.set_contents_from_string(img_data)
     k.set_acl('public-read')
     return k.generate_url(expires_in=0, query_auth=False)
+
+def _guess_mime_type(filename):
+    # TODO(ian): More mime types.
+    if filename.endswith('fits'):
+        return 'image/fits'
+    return 'image/jpeg'
