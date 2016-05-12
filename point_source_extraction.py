@@ -63,7 +63,6 @@ def save_json(sources, path):
             'field_y': field_y[i],
             'est_flux': est_flux[i],
             'est_mag': est_mag[i],
-
         })
 
     with open(path, 'w') as f:
@@ -133,13 +132,13 @@ def load_url(url):
 def get_args():
     parser = argparse.ArgumentParser('Extract point sources from image.')
     parser.add_argument('image', help='filesystem path or url to input image')
-    parser.add_argument('--plot', help='path to output overlay plot')
-    parser.add_argument('--fits', help='path to output point source coords to')
-    parser.add_argument('--json', help='path to output point source coords to')
+    parser.add_argument('--coords_plot', help='path to output overlay plot')
+    parser.add_argument('--coords_fits', help='path to output point source coords to')
+    parser.add_argument('--coords_json', help='path to output point source coords to')
     parser.add_argument('--psf', help='whether to compute flux via PSF', action='store_true')
     parser.add_argument('--psf_scatter', help='output path for scatterplot of fluxes')
     parser.add_argument('--psf_bar', help='output path for distribution plot of fluxes')
-    parser.add_argument('--residual', help='output path for residual image with PSF subtracted')
+    parser.add_argument('--psf_residual', help='output path for residual image with PSF subtracted')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -149,13 +148,17 @@ if __name__ == '__main__':
     else:
         image_data = load_image(args.image)
     sources = compute(image_data)
-    if args.plot:
-        plot(sources, image_data, args.plot)
-    if args.fits:
-        save_fits(sources, args.fits)
-    if args.json:
-        save_json(sources, args.json)
-    if args.psf:
+
+    # Coords.
+    if args.coords_plot:
+        plot(sources, image_data, args.coords_plot)
+    if args.coords_fits:
+        save_fits(sources, args.coords_fits)
+    if args.coords_json:
+        save_json(sources, args.coords_json)
+
+    # PSF.
+    if args.psf_scatter or args.psf_bar or args.psf_residual:
         compute_psf_flux(image_data, sources, \
-                args.psf_scatter, args.psf_bar, args.residual)
+                args.psf_scatter, args.psf_bar, args.psf_residual)
     print 'Done.'
