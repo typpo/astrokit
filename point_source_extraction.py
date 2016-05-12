@@ -98,13 +98,13 @@ def compute_psf_flux(image_data, sources, \
         plt.savefig(bar_output_path)
 
     if residual_path:
-        residuals = subtract_psf(image_data.copy(), psf_gaussian, coords, computed_fluxes)
+        residuals = subtract_psf(np.float64(image_data.copy()), psf_gaussian, coords, computed_fluxes)
 
         # Plot it.
         plt.close('all')
         plt.figure(figsize=(16, 12))
         plt.imshow(residuals, cmap='hot', vmin=-1, vmax=10, interpolation='None', origin='lower')
-        plt.plot(coords.T[0], coords.T[1], marker="o", markerfacecolor='None', markeredgecolor='y', linestyle='None')
+        plt.plot(coords[0], coords[1], marker='o', markerfacecolor='None', markeredgecolor='y', linestyle='None')
         plt.xlim(0, 1024)
         plt.ylim(0, 512)
         plt.colorbar(orientation='horizontal')
