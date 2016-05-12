@@ -20,6 +20,7 @@ from astropy.visualization import SqrtStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 from photutils import CircularAperture
 from photutils import datasets, daofind
+from photutils.psf import subtract_psf
 
 def compute(data):
     mean, median, std = sigma_clipped_stats(data, sigma=3.0, iters=5)
@@ -68,7 +69,8 @@ def save_json(sources, path):
     with open(path, 'w') as f:
         f.write(json.dumps(out, indent=2))
 
-def compute_psf_flux(image_data, sources, scatter_output_path, bar_output_path):
+def compute_psf_flux(image_data, sources, \
+        scatter_output_path=None, bar_output_path=None, residual_path=None):
     print 'Computing flux...'
 
     import astropy.units as u
@@ -94,6 +96,19 @@ def compute_psf_flux(image_data, sources, scatter_output_path, bar_output_path):
         plt.xlabel('Count')
         plt.ylabel('Flux')
         plt.savefig(bar_output_path)
+
+    if residual_path:
+        residuals = subtract_psf(image_data.copy(), psf_gaussian, coords, computed_fluxes)
+
+        # Plot it.
+        plt.close('all')
+        plt.figure(figsize=(16, 12))
+        plt.imshow(residuals, cmap='hot', vmin=-1, vmax=10, interpolation='None', origin='lower')
+        plt.plot(coords.T[0], coords.T[1], marker="o", markerfacecolor='None', markeredgecolor='y', linestyle='None')
+        plt.xlim(0, 1024)
+        plt.ylim(0, 512)
+        plt.colorbar(orientation='horizontal')
+        plt.savefig(residual_path)
 
 def load_image(path):
     im = fits.open(path)
@@ -124,6 +139,7 @@ def get_args():
     parser.add_argument('--psf', help='whether to compute flux via PSF', action='store_true')
     parser.add_argument('--psf_scatter', help='output path for scatterplot of fluxes')
     parser.add_argument('--psf_bar', help='output path for distribution plot of fluxes')
+    parser.add_argument('--residual', help='output path for residual image with PSF subtracted')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -140,5 +156,6 @@ if __name__ == '__main__':
     if args.json:
         save_json(sources, args.json)
     if args.psf:
-        compute_psf_flux(image_data, sources, args.psf_scatter, args.psf_bar)
+        compute_psf_flux(image_data, sources, \
+                args.psf_scatter, args.psf_bar, args.residual)
     print 'Done.'
