@@ -8,6 +8,7 @@ Usage: python point_source_extraction.py myimage.fits
 import argparse
 import json
 import sys
+import tempfile
 import urllib
 
 import matplotlib.pylab as plt
@@ -94,7 +95,16 @@ def load_url(url):
     page = urllib.urlopen(url)
     content = page.read()
 
-    return load_image(f)
+    try:
+        temp = tempfile.NamedTemporaryFile(delete=True)
+        temp.write(content)
+
+        im = fits.open(temp.name)
+        data = im[0].data[2]
+    finally:
+        temp.close()
+
+    return data
 
 def get_args():
     parser = argparse.ArgumentParser('Extract point sources from image.')
