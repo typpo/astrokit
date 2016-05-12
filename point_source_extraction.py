@@ -68,23 +68,32 @@ def save_json(sources, path):
     with open(path, 'w') as f:
         f.write(json.dumps(out, indent=2))
 
-def compute_psf_flux(image_data, sources, psf_output_path):
+def compute_psf_flux(image_data, sources, scatter_output_path, bar_output_path):
+    print 'Computing flux...'
+
     import astropy.units as u
     from photutils.psf import psf_photometry, GaussianPSF
 
     coords = zip(sources['xcentroid'], sources['ycentroid'])
 
-    # Convert
-    factor = (u.MJy / u.sr * (0.402 * u.arcsec) ** 2 / u.pixel).to(u.mJy / u.pixel)
-
     psf_gaussian = GaussianPSF(1)
     computed_fluxes = psf_photometry(image_data, coords, psf_gaussian)
 
-    # Check
-    plt.scatter(sorted(sources['flux']), sorted(computed_fluxes))
-    plt.xlabel('Fluxes catalog')
-    plt.ylabel('Fluxes photutils')
-    plt.savefig(psf_output_path)
+    if scatter_output_path:
+        print 'Saving scatter plot...'
+        plt.close('all')
+        plt.scatter(sorted(sources['flux']), sorted(computed_fluxes))
+        plt.xlabel('Fluxes catalog')
+        plt.ylabel('Fluxes photutils')
+        plt.savefig(scatter_output_path)
+
+    if bar_output_path:
+        print 'Saving bar chart...'
+        plt.close('all')
+        plt.bar(xrange(len(computed_fluxes)), computed_fluxes)
+        plt.xlabel('Count')
+        plt.ylabel('Flux')
+        plt.savefig(bar_output_path)
 
 def load_image(path):
     im = fits.open(path)
@@ -112,7 +121,9 @@ def get_args():
     parser.add_argument('--plot', help='path to output overlay plot')
     parser.add_argument('--fits', help='path to output point source coords to')
     parser.add_argument('--json', help='path to output point source coords to')
-    parser.add_argument('--psf', help='path to output PSF results to')
+    parser.add_argument('--psf', help='whether to compute flux via PSF', action='store_true')
+    parser.add_argument('--psf_scatter', help='output path for scatterplot of fluxes')
+    parser.add_argument('--psf_bar', help='output path for distribution plot of fluxes')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -129,5 +140,5 @@ if __name__ == '__main__':
     if args.json:
         save_json(sources, args.json)
     if args.psf:
-        compute_psf_flux(image_data, sources, args.psf)
+        compute_psf_flux(image_data, sources, args.psf_scatter, args.psf_bar)
     print 'Done.'
