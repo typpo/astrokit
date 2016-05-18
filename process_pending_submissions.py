@@ -12,7 +12,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 sys.path.insert(0, os.getcwd())
 django.setup()
 
-import imageflow.s3_util
+import imageflow.s3_util as s3_util
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.astrometry_client import Client
 
@@ -69,11 +69,11 @@ def process_completed_submission(submission, job):
     submission.succeeded_at = timezone.now()
     submission.status = AstrometrySubmission.COMPLETE
     submission.save()
-    print '-> Submission %d, Job %d is complete' % (submission,subid, job.jobid)
+    print '-> Submission %d, Job %d is complete' % (submission.subid, job.jobid)
 
-    save_submission_results(submission)
+    save_submission_results(submission, job)
 
-def save_submission_results(submission):
+def save_submission_results(submission, job):
     annotated_display_url = 'http://nova.astrometry.net/annotated_display/%d' \
             % (job.jobid)
     new_image_fits_url = 'http://nova.astrometry.net/new_fits_file/%d' \

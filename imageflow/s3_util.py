@@ -1,7 +1,9 @@
+import time
 import urllib
 
 import boto
 from boto.s3.key import Key
+from django.conf import settings
 
 def upload_to_s3_via_url(url, key_prefix, name):
     img_data = urllib.urlopen(url).read()

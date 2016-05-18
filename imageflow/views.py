@@ -4,7 +4,7 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-import imageflow.s3_util
+import imageflow.s3_util as s3_util
 from astrometry.util import process_astrometry_online
 
 def index(request):
