@@ -12,6 +12,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 sys.path.insert(0, os.getcwd())
 django.setup()
 
+import imageflow.s3_util
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.astrometry_client import Client
 
@@ -59,16 +60,16 @@ def handle_pending_submission(client, submission):
         print '-> Job %d was added' % (job_id)
 
     if num_success > 0 and num_success == len(job_ids):
-        mark_submission_complete(submission)
+        mark_submission_complete(submission, job)
         return True
     return False
 
-def mark_submission_complete(submission):
+def mark_submission_complete(submission, job):
     # Update submission.
     submission.succeeded_at = timezone.now()
     submission.status = AstrometrySubmission.COMPLETE
     submission.save()
-    print '-> Submission %d is complete' % (job_id)
+    print '-> Submission %d, Job %d is complete' % (submission,subid, job.jobid)
 
     save_submission_results(submission)
 
@@ -80,8 +81,22 @@ def save_submission_results(submission):
     corr_url = 'http://nova.astrometry.net/corr_file/%d' \
             % (submission.subid)
 
+    # Timestamp is added to name automatically.
+    key_prefix = 'processed/%d' % (submission.subid)
 
-    # TODO
+    # Annotated jpg.
+    name = '%d_annotated.jpg' % (submission.subid)
+    s3_util.upload_to_s3_via_url(annotated_display_url, key_prefix, name)
+
+    # FITS.
+    name = '%d_image.fits' % (submission.subid)
+    s3_util.upload_to_s3_via_url(new_image_fits_url, key_prefix, name)
+
+    # CORR.
+    name = '%d_corr.fits' % (submission.subid)
+    s3_util.upload_to_s3_via_url(corr_url, key_prefix, name)
+
+    print '-> Uploaded results for submission %d' % (submission.subid)
 
 
 if __name__ == '__main__':

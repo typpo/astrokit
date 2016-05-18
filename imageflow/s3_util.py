@@ -1,7 +1,13 @@
+import urllib
+
 import boto
 from boto.s3.key import Key
 
-def upload_to_s3(name, key_prefix, img_data):
+def upload_to_s3_via_url(url, key_prefix, name):
+    img_data = urllib.urlopen(url).read()
+    return upload_to_s3(key_prefix, name, img_data)
+
+def upload_to_s3(key_prefix, name, img_data):
     '''
     Upload an image to s3 and return the url to it.
     '''

@@ -15,7 +15,7 @@ def upload_image(request):
         img = request.FILES['image']
         # Data is read just once to avoid rewinding.
         img_data = img.read()
-        url = s3_util.upload_to_s3('raw/', img.name, img_data)
+        url = s3_util.upload_to_s3('raw', img.name, img_data)
         process_astrometry_online(url)
 
     return render_to_response('upload_image.html', {},
