@@ -75,25 +75,25 @@ def process_completed_submission(submission, job):
 
 def save_submission_results(submission):
     annotated_display_url = 'http://nova.astrometry.net/annotated_display/%d' \
-            % (submission.subid)
+            % (job.jobid)
     new_image_fits_url = 'http://nova.astrometry.net/new_fits_file/%d' \
-            % (submission.subid)
+            % (job.jobid)
     corr_url = 'http://nova.astrometry.net/corr_file/%d' \
-            % (submission.subid)
+            % (job.jobid)
 
     # Timestamp is added to name automatically.
     key_prefix = 'processed/%d' % (submission.subid)
 
     # Annotated jpg.
-    name = '%d_annotated.jpg' % (submission.subid)
+    name = '%d_%d_annotated.jpg' % (submission.subid, job.jobid)
     s3_util.upload_to_s3_via_url(annotated_display_url, key_prefix, name)
 
     # FITS.
-    name = '%d_image.fits' % (submission.subid)
+    name = '%d_%d_image.fits' % (submission.subid, job.jobid)
     s3_util.upload_to_s3_via_url(new_image_fits_url, key_prefix, name)
 
     # CORR.
-    name = '%d_corr.fits' % (submission.subid)
+    name = '%d_%d_corr.fits' % (submission.subid, job.jobid)
     s3_util.upload_to_s3_via_url(corr_url, key_prefix, name)
 
     print '-> Uploaded results for submission %d' % (submission.subid)
