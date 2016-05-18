@@ -59,13 +59,30 @@ def handle_pending_submission(client, submission):
         print '-> Job %d was added' % (job_id)
 
     if num_success > 0 and num_success == len(job_ids):
-        # Update submission.
-        submission.succeeded_at = timezone.now()
-        submission.status = AstrometrySubmission.COMPLETE
-        submission.save()
-        print '-> Submission %d is complete' % (job_id)
+        mark_submission_complete(submission)
         return True
     return False
+
+def mark_submission_complete(submission):
+    # Update submission.
+    submission.succeeded_at = timezone.now()
+    submission.status = AstrometrySubmission.COMPLETE
+    submission.save()
+    print '-> Submission %d is complete' % (job_id)
+
+    save_submission_results(submission)
+
+def save_submission_results(submission):
+    annotated_display_url = 'http://nova.astrometry.net/annotated_display/%d' \
+            % (submission.subid)
+    new_image_fits_url = 'http://nova.astrometry.net/new_fits_file/%d' \
+            % (submission.subid)
+    corr_url = 'http://nova.astrometry.net/corr_file/%d' \
+            % (submission.subid)
+
+
+    # TODO
+
 
 if __name__ == '__main__':
     # Set up astrometry.net client.
