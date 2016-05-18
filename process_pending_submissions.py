@@ -60,11 +60,11 @@ def handle_pending_submission(client, submission):
         print '-> Job %d was added' % (job_id)
 
     if num_success > 0 and num_success == len(job_ids):
-        mark_submission_complete(submission, job)
+        process_completed_submission(submission, job)
         return True
     return False
 
-def mark_submission_complete(submission, job):
+def process_completed_submission(submission, job):
     # Update submission.
     submission.succeeded_at = timezone.now()
     submission.status = AstrometrySubmission.COMPLETE
