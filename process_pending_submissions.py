@@ -135,11 +135,12 @@ class SubmissionHandler():
 
         print '-> Processing fits image for submission %d' % (submission.subid)
 
-        sources = point_source_extraction.compute(image_data)
+        data = point_source_extraction.load_data_as_fits(image_data)
+        sources = point_source_extraction.compute(data)
 
         # Coords.
         coords_plot_path = '%d_%d_plot.png' % (submission.subid, job.jobid)
-        point_source_extraction.plot(sources, image_data, coords_plot_path)
+        point_source_extraction.plot(sources, data, coords_plot_path)
 
         coords_fits_path = '%d_%d_coords.fits' % (submission.subid, job.jobid)
         point_source_extraction.save_fits(sources, coords_fits_path)
@@ -151,7 +152,7 @@ class SubmissionHandler():
         psf_scatter_path = '%d_%d_psf_scatter.png' % (submission.subid, job.jobid)
         psf_bar_path = '%d_%d_psf_bar.png' % (submission.subid, job.jobid)
         psf_residual_path = '%d_%d_psf_residual.png' % (submission.subid, job.jobid)
-        point_source_extraction.compute_psf_flux(image_data, sources, \
+        point_source_extraction.compute_psf_flux(data, sources, \
                 psf_scatter_path, psf_bar_path, psf_residual_path)
 
         print '-> Processed fits image for submission %d' % (submission.subid)

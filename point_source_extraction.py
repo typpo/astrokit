@@ -117,7 +117,9 @@ def load_image(path):
 def load_url(url):
     page = urllib.urlopen(url)
     content = page.read()
+    return load_data_as_fits(content)
 
+def load_data_as_fits(content):
     try:
         temp = tempfile.NamedTemporaryFile(delete=True)
         temp.write(content)
