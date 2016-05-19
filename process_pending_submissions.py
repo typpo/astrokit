@@ -80,14 +80,16 @@ class SubmissionHandler():
     def process_completed_submission(self, job):
         submission = self.submission
 
+        print '-> Submission %d, Job %d is complete' % (submission.subid, job.jobid)
+
+        # Save results.
+        self.save_submission_results(job)
+
         # Update submission.
         submission.succeeded_at = timezone.now()
         submission.status = AstrometrySubmission.COMPLETE
         if not args.dry_run:
             submission.save()
-        print '-> Submission %d, Job %d is complete' % (submission.subid, job.jobid)
-
-        self.save_submission_results(job)
 
     def save_submission_results(self, job):
         submission = self.submission
