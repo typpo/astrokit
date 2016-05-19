@@ -9,6 +9,11 @@ def upload_to_s3_via_url(url, key_prefix, name):
     img_data = urllib.urlopen(url).read()
     return upload_to_s3(key_prefix, name, img_data)
 
+def upload_to_s3_via_file(path, key_prefix):
+    with open(path, 'rb') as f:
+        data = f.read()
+        return upload_to_s3(data, key_prefix, path)
+
 def upload_to_s3(img_data, key_prefix, name):
     '''
     Upload an image to s3 and return the url to it.

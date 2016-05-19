@@ -1,11 +1,10 @@
-## The following requirements were added by pip --freeze:
 Django==1.9.1
 Fabric==1.10.2
 Pillow==3.1.0
 South==1.0.2
 argparse==1.2.1
 astropy==1.1.1
-boto==2.38.0
+boto==2.4.0
 cycler==0.10.0
 decorator==4.0.9
 django-s3direct==0.3.12

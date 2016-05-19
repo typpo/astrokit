@@ -102,35 +102,32 @@ class SubmissionHandler():
                 % (job.jobid)
 
         # Timestamp is added to name automatically.
-        key_prefix = 'processed/%d' % (submission.subid)
+        upload_key_prefix = 'processed/%d' % (submission.subid)
 
         # Annotated jpg.
         name = '%d_%d_annotated.jpg' % (submission.subid, job.jobid)
-        if args.dry_run:
-            print '  -> Uploading', name, '...'
-        else:
-            s3_util.upload_to_s3_via_url(annotated_display_url, key_prefix, name)
+        print '  -> Uploading', name, '...'
+        if not args.dry_run:
+            s3_util.upload_to_s3_via_url(annotated_display_url, upload_key_prefix, name)
 
         # CORR.
         name = '%d_%d_corr.fits' % (submission.subid, job.jobid)
-        if args.dry_run:
-            print '  -> Uploading', name, '...'
-        else:
-            s3_util.upload_to_s3_via_url(corr_url, key_prefix, name)
+        print '  -> Uploading', name, '...'
+        if not args.dry_run:
+            s3_util.upload_to_s3_via_url(corr_url, upload_key_prefix, name)
 
         # FITS.
         name = '%d_%d_image.fits' % (submission.subid, job.jobid)
         fits_image_data = urllib.urlopen(new_image_fits_url).read()
-        if args.dry_run:
-            print '  -> Uploading', name, '...'
-        else:
-            s3_util.upload_to_s3(fits_image_data, key_prefix, name)
+        print '  -> Uploading', name, '...'
+        if not args.dry_run:
+            s3_util.upload_to_s3(fits_image_data, upload_key_prefix, name)
 
         print '-> Uploaded results for submission %d' % (submission.subid)
 
-        self.process_fits_image(fits_image_data, job)
+        self.process_fits_image(fits_image_data, job, upload_key_prefix)
 
-    def process_fits_image(self, image_data, job):
+    def process_fits_image(self, image_data, job, upload_key_prefix):
         submission = self.submission
 
         print '-> Processing fits image for submission %d' % (submission.subid)
@@ -141,12 +138,21 @@ class SubmissionHandler():
         # Coords.
         coords_plot_path = '%d_%d_plot.png' % (submission.subid, job.jobid)
         point_source_extraction.plot(sources, data, coords_plot_path)
+        print '  -> Uploading', coords_plot_path, '...'
+        if not args.dry_run:
+            s3_util.upload_to_s3_via_file(coords_plot_path, upload_key_prefix)
 
         coords_fits_path = '%d_%d_coords.fits' % (submission.subid, job.jobid)
         point_source_extraction.save_fits(sources, coords_fits_path)
+        print '  -> Uploading', coords_fits_path, '...'
+        if not args.dry_run:
+            s3_util.upload_to_s3_via_file(coords_fits_path, upload_key_prefix)
 
         coords_json_path = '%d_%d_coords.json' % (submission.subid, job.jobid)
         point_source_extraction.save_json(sources, coords_json_path)
+        print '  -> Uploading', coords_json_path, '...'
+        if not args.dry_run:
+            s3_util.upload_to_s3_via_file(coords_json_path, upload_key_prefix)
 
         # PSF.
         psf_scatter_path = '%d_%d_psf_scatter.png' % (submission.subid, job.jobid)
@@ -154,6 +160,17 @@ class SubmissionHandler():
         psf_residual_path = '%d_%d_psf_residual.png' % (submission.subid, job.jobid)
         point_source_extraction.compute_psf_flux(data, sources, \
                 psf_scatter_path, psf_bar_path, psf_residual_path)
+
+        print '  -> Uploading', psf_scatter_path, '...'
+        print '  -> Uploading', psf_bar_path, '...'
+        print '  -> Uploading', psf_residual_path, '...'
+        if not args.dry_run:
+            s3_util.upload_to_s3_via_file(psf_scatter_path, upload_key_prefix)
+            s3_util.upload_to_s3_via_file(psf_bar_path, upload_key_prefix)
+            s3_util.upload_to_s3_via_file(psf_residual_path, upload_key_prefix)
+
+        # TODO(ian): Should delete the files afterwards, or create them as
+        # temporary files.
 
         print '-> Processed fits image for submission %d' % (submission.subid)
 
