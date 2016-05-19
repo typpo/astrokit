@@ -29,13 +29,13 @@ def process_astrometry_online(url):
                 upload_url=url,
                 status=AstrometrySubmission.FAILED_TO_SUBMIT)
 
-def process_astrometry_locally(img_data):
+def process_astrometry_locally(image_data):
   '''
   Returns astrometry data for a given sky image.
   '''
 
   with tempfile.NamedTemporaryFile(prefix='astrometry_', delete=False) as f:
-      f.write(img_data)
+      f.write(image_data)
       f.flush()
       print f.name
 
