@@ -125,6 +125,7 @@ class SubmissionHandler():
 
         print '-> Uploaded results for submission %d' % (submission.subid)
 
+        # Point source extraction processing.
         self.process_fits_image(fits_image_data, job, upload_key_prefix)
 
     def process_fits_image(self, image_data, job, upload_key_prefix):
