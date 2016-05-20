@@ -160,16 +160,19 @@ class SubmissionHandler():
         # PSF.
         psf_scatter_path = '%d_%d_psf_scatter.png' % (submission.subid, job.jobid)
         psf_bar_path = '%d_%d_psf_bar.png' % (submission.subid, job.jobid)
+        psf_hist_path = '%d_%d_psf_hist.png' % (submission.subid, job.jobid)
         psf_residual_path = '%d_%d_psf_residual.png' % (submission.subid, job.jobid)
         point_source_extraction.compute_psf_flux(data, sources, \
-                psf_scatter_path, psf_bar_path, psf_residual_path)
+                psf_scatter_path, psf_bar_path, psf_hist_path, psf_residual_path)
 
         print '  -> Uploading', psf_scatter_path, '...'
         print '  -> Uploading', psf_bar_path, '...'
+        print '  -> Uploading', psf_hist_path, '...'
         print '  -> Uploading', psf_residual_path, '...'
         if not args.dry_run:
             s3_util.upload_to_s3_via_file(psf_scatter_path, upload_key_prefix)
             s3_util.upload_to_s3_via_file(psf_bar_path, upload_key_prefix)
+            s3_util.upload_to_s3_via_file(psf_hist_path, upload_key_prefix)
             s3_util.upload_to_s3_via_file(psf_residual_path, upload_key_prefix)
 
         # TODO(ian): Should delete the files afterwards, or create them as
