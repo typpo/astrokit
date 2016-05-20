@@ -92,8 +92,8 @@ def compute_psf_flux(image_data, sources, \
         print 'Saving bar chart...'
         plt.close('all')
         plt.bar(xrange(len(computed_fluxes)), computed_fluxes)
-        plt.xlabel('Count')
-        plt.ylabel('Flux')
+        plt.ylabel('Count')
+        plt.xlabel('Flux')
         plt.savefig(bar_output_path)
 
     if residual_path:
