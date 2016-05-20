@@ -7,6 +7,7 @@ Usage: python point_source_extraction.py myimage.fits
 
 import argparse
 import json
+import logging
 import sys
 import tempfile
 import urllib
@@ -20,7 +21,11 @@ from astropy.visualization import SqrtStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 from photutils import CircularAperture
 from photutils import datasets, daofind
+from photutils.psf import psf_photometry, GaussianPSF
 from photutils.psf import subtract_psf
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def compute(data):
     mean, median, std = sigma_clipped_stats(data, sigma=3.0, iters=5)
@@ -67,16 +72,14 @@ def save_json(sources, path):
 def compute_psf_flux(image_data, sources, \
         scatter_output_path=None, bar_output_path=None, hist_output_path=None, \
         residual_path=None):
-    import astropy.units as u
-    from photutils.psf import psf_photometry, GaussianPSF
-
+    logger.info('Computing flux...')
     coords = zip(sources['xcentroid'], sources['ycentroid'])
 
     psf_gaussian = GaussianPSF(1)
     computed_fluxes = psf_photometry(image_data, coords, psf_gaussian)
 
     if scatter_output_path:
-        print 'Saving scatter plot...'
+        logger.info('Saving scatter plot...')
         plt.close('all')
         plt.scatter(sorted(sources['flux']), sorted(computed_fluxes))
         plt.xlabel('Fluxes catalog')
@@ -84,14 +87,14 @@ def compute_psf_flux(image_data, sources, \
         plt.savefig(scatter_output_path)
 
     if bar_output_path:
-        print 'Saving bar chart...'
+        logger.info('Saving bar chart...')
         plt.close('all')
         plt.bar(xrange(len(computed_fluxes)), computed_fluxes)
         plt.ylabel('Flux')
         plt.savefig(bar_output_path)
 
     if hist_output_path:
-        print 'Saving histogram...'
+        logger.info('Saving histogram...')
         plt.close('all')
         plt.hist(computed_fluxes, bins=50)
         plt.xlabel('Flux')
@@ -167,4 +170,5 @@ if __name__ == '__main__':
         compute_psf_flux(image_data, sources, \
                 args.psf_scatter, args.psf_bar, args.psf_hist, \
                 args.psf_residual)
-    print 'Done.'
+
+    logger.info('Done.')
