@@ -25,10 +25,6 @@ from photutils.psf import subtract_psf
 def compute(data):
     mean, median, std = sigma_clipped_stats(data, sigma=3.0, iters=5)
     sources = daofind(data - median, fwhm=3.0, threshold=5.*std)
-
-    print sources
-    print len(sources), 'sources'
-    print np.where(sources['mag'] > 0)
     return sources
 
 def plot(sources, data, path):
@@ -48,7 +44,7 @@ def save_fits(sources, path):
 
     cols = fits.ColDefs([col_x, col_y, est_flux, est_mag])
     tbhdu = fits.BinTableHDU.from_columns(cols)
-    tbhdu.writeto(path)
+    tbhdu.writeto(path, clobber=True)
 
 def save_json(sources, path):
     field_x = sources['xcentroid']
@@ -69,9 +65,8 @@ def save_json(sources, path):
         f.write(json.dumps(out, indent=2))
 
 def compute_psf_flux(image_data, sources, \
-        scatter_output_path=None, bar_output_path=None, residual_path=None):
-    print 'Computing flux...'
-
+        scatter_output_path=None, bar_output_path=None, hist_output_path=None, \
+        residual_path=None):
     import astropy.units as u
     from photutils.psf import psf_photometry, GaussianPSF
 
@@ -95,7 +90,13 @@ def compute_psf_flux(image_data, sources, \
         plt.ylabel('Flux')
         plt.savefig(bar_output_path)
 
-    # TODO(ian): histogram.
+    if hist_output_path:
+        print 'Saving histogram...'
+        plt.close('all')
+        plt.hist(computed_fluxes, bins=50)
+        plt.xlabel('Flux')
+        plt.ylabel('Frequency')
+        plt.savefig(hist_output_path)
 
     if residual_path:
         residuals = subtract_psf(np.float64(image_data.copy()), psf_gaussian, coords, computed_fluxes)
@@ -141,6 +142,7 @@ def get_args():
     parser.add_argument('--psf', help='whether to compute flux via PSF', action='store_true')
     parser.add_argument('--psf_scatter', help='output path for scatterplot of fluxes')
     parser.add_argument('--psf_bar', help='output path for distribution plot of fluxes')
+    parser.add_argument('--psf_hist', help='output path for histogram of fluxes')
     parser.add_argument('--psf_residual', help='output path for residual image with PSF subtracted')
     return parser.parse_args()
 
@@ -161,7 +163,8 @@ if __name__ == '__main__':
         save_json(sources, args.coords_json)
 
     # PSF.
-    if args.psf_scatter or args.psf_bar or args.psf_residual:
+    if args.psf_scatter or args.psf_bar or args.psf_residual or args.psf_hist:
         compute_psf_flux(image_data, sources, \
-                args.psf_scatter, args.psf_bar, args.psf_residual)
+                args.psf_scatter, args.psf_bar, args.psf_hist, \
+                args.psf_residual)
     print 'Done.'

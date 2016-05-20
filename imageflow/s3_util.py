@@ -7,14 +7,14 @@ from django.conf import settings
 
 def upload_to_s3_via_url(url, key_prefix, name):
     image_data = urllib.urlopen(url).read()
-    return upload_to_s3(key_prefix, name, image_data)
+    return upload_to_s3(image_data, key_prefix, name)
 
 def upload_to_s3_via_file(path, key_prefix):
     with open(path, 'rb') as f:
         data = f.read()
         return upload_to_s3(data, key_prefix, path)
 
-def upload_to_s3(image_data, key_prefix, name):
+def upload_to_s3(image_data, key_prefix, name, overwrite=True):
     '''
     Upload an image to s3 and return the url to it.
     '''
@@ -23,7 +23,12 @@ def upload_to_s3(image_data, key_prefix, name):
             settings.AWS_SECRET_ACCESS_KEY)
     bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME, validate=True)
     k = Key(bucket)
-    k.key = '%s/%d-%s' % (key_prefix, int(time.time()), name)
+    keyname = '%s/%d-%s' % (key_prefix, int(time.time()), name)
+    k.key = keyname
+
+    if k.exists() and overwrite:
+        print '[upload_to_s3 overwriting key %s]' % (keyname)
+        k.delete()
 
     k.set_metadata('Content-Type', _guess_mime_type(name))
     k.set_contents_from_string(image_data)
