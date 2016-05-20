@@ -95,6 +95,8 @@ def compute_psf_flux(image_data, sources, \
         plt.ylabel('Flux')
         plt.savefig(bar_output_path)
 
+    # TODO(ian): histogram.
+
     if residual_path:
         residuals = subtract_psf(np.float64(image_data.copy()), psf_gaussian, coords, computed_fluxes)
 
