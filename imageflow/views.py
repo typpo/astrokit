@@ -20,3 +20,6 @@ def upload_image(request):
 
     return render_to_response('upload_image.html', {},
             context_instance=RequestContext(request))
+
+def api_get_submission_results(request):
+    return 'foo'

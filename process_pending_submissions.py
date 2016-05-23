@@ -24,7 +24,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class SubmissionHandler():
-
     def __init__(self, client, submission, args):
         self.client = client
         self.submission = submission
