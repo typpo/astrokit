@@ -27,6 +27,8 @@ def upload_image(request):
 
 def api_get_submission_results(request, subid):
     results = AnalysisResult.objects.filter(astrometry_job__submission__subid=subid)
-    result_urls = [result.astrometry_annotated_display_url for result in results]
 
-    return JsonResponse({'msg': result_urls})
+    return JsonResponse({
+        'success': True,
+        'data': [result.get_summary_obj() for result in results]
+    })
