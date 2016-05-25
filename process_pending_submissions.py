@@ -30,7 +30,8 @@ class SubmissionHandler():
         self.submission = submission
         self.args = args
 
-        self.result = AnalysisResult.objects.create()
+    def run(self):
+        self.handle_pending_submission()
 
     def handle_pending_submission(self):
         client = self.client
@@ -85,11 +86,12 @@ class SubmissionHandler():
 
     def process_completed_submission(self, job):
         submission = self.submission
+        result = AnalysisResult.objects.create(astrometry_job=job)
 
         logger.info('-> Submission %d, Job %d is complete' % (submission.subid, job.jobid))
 
         # Save results.
-        self.save_submission_results(job)
+        self.save_submission_results(job, result)
 
         # Update submission.
         submission.succeeded_at = timezone.now()
@@ -97,7 +99,9 @@ class SubmissionHandler():
         if not args.dry_run:
             submission.save()
 
-    def save_submission_results(self, job):
+        result.save()
+
+    def save_submission_results(self, job, result):
         submission = self.submission
 
         logger.info('-> Uploading results for submission %d' % (submission.subid))
@@ -116,27 +120,33 @@ class SubmissionHandler():
         name = '%d_%d_annotated.jpg' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            s3_util.upload_to_s3_via_url(annotated_display_url, upload_key_prefix, name)
+            result.astrometry_annotated_display_url = \
+                    s3_util.upload_to_s3_via_url(annotated_display_url, \
+                                                 upload_key_prefix, name)
 
         # CORR.
         name = '%d_%d_corr.fits' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            s3_util.upload_to_s3_via_url(corr_url, upload_key_prefix, name)
+            result.astrometry_corr_fits_url = \
+                    s3_util.upload_to_s3_via_url(corr_url, \
+                                                 upload_key_prefix, name)
 
         # FITS.
         name = '%d_%d_image.fits' % (submission.subid, job.jobid)
         fits_image_data = urllib.urlopen(new_image_fits_url).read()
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            s3_util.upload_to_s3(fits_image_data, upload_key_prefix, name)
+            result.astrometry_image_fits_url = \
+                    s3_util.upload_to_s3(fits_image_data, \
+                                         upload_key_prefix, name)
 
         logger.info('-> Uploaded results for submission %d' % (submission.subid))
 
         # Point source extraction processing.
-        self.process_fits_image(fits_image_data, job, upload_key_prefix)
+        self.process_fits_image(fits_image_data, job, result, upload_key_prefix)
 
-    def process_fits_image(self, image_data, job, upload_key_prefix):
+    def process_fits_image(self, image_data, job, result, upload_key_prefix):
         submission = self.submission
 
         logger.info('-> Processing fits image for submission %d' % (submission.subid))
@@ -149,19 +159,25 @@ class SubmissionHandler():
         point_source_extraction.plot(sources, data, coords_plot_path)
         logger.info('  -> Uploading %s...' % coords_plot_path)
         if not args.dry_run:
-            s3_util.upload_to_s3_via_file(coords_plot_path, upload_key_prefix)
+            result.coords_plot_url = \
+                    s3_util.upload_to_s3_via_file(coords_plot_path, \
+                                                  upload_key_prefix)
 
         coords_fits_path = '%d_%d_coords.fits' % (submission.subid, job.jobid)
         point_source_extraction.save_fits(sources, coords_fits_path)
         logger.info('  -> Uploading %s...' % coords_fits_path)
         if not args.dry_run:
-            s3_util.upload_to_s3_via_file(coords_fits_path, upload_key_prefix)
+            result.coords_fits_url = \
+                    s3_util.upload_to_s3_via_file(coords_fits_path, \
+                                                  upload_key_prefix)
 
         coords_json_path = '%d_%d_coords.json' % (submission.subid, job.jobid)
         point_source_extraction.save_json(sources, coords_json_path)
         logger.info('  -> Uploading %s...' % coords_json_path)
         if not args.dry_run:
-            s3_util.upload_to_s3_via_file(coords_json_path, upload_key_prefix)
+            result.coords_json_url = \
+                    s3_util.upload_to_s3_via_file(coords_json_path, \
+                                                  upload_key_prefix)
 
         # PSF.
         psf_scatter_path = '%d_%d_psf_scatter.png' % (submission.subid, job.jobid)
@@ -176,10 +192,18 @@ class SubmissionHandler():
         logger.info('  -> Uploading %s' % psf_hist_path)
         logger.info('  -> Uploading %s' % psf_residual_path)
         if not args.dry_run:
-            s3_util.upload_to_s3_via_file(psf_scatter_path, upload_key_prefix)
-            s3_util.upload_to_s3_via_file(psf_bar_path, upload_key_prefix)
-            s3_util.upload_to_s3_via_file(psf_hist_path, upload_key_prefix)
-            s3_util.upload_to_s3_via_file(psf_residual_path, upload_key_prefix)
+            result.psf_scatter_url = \
+                    s3_util.upload_to_s3_via_file(psf_scatter_path, \
+                                                  upload_key_prefix)
+            result.psf_bar_url = \
+                    s3_util.upload_to_s3_via_file(psf_bar_path, \
+                                                  upload_key_prefix)
+            result.psf_hist_url = \
+                    s3_util.upload_to_s3_via_file(psf_hist_path, \
+                                                  upload_key_prefix)
+            result.psf_residual_image_url = \
+                    s3_util.upload_to_s3_via_file(psf_residual_path, \
+                                                  upload_key_prefix)
 
         # TODO(ian): Should delete the files afterwards, or create them as
         # temporary files.
@@ -202,4 +226,4 @@ if __name__ == '__main__':
             status=AstrometrySubmission.SUBMITTED)
     for submission in pending_submissions:
         handler = SubmissionHandler(client, submission, args)
-        handler.handle_pending_submission()
+        handler.run()
