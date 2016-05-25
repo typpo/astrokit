@@ -19,6 +19,7 @@ import point_source_extraction
 import imageflow.s3_util as s3_util
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.astrometry_client import Client
+from imageflow.models import AnalysisResult
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -28,6 +29,8 @@ class SubmissionHandler():
         self.client = client
         self.submission = submission
         self.args = args
+
+        self.result = AnalysisResult.objects.create()
 
     def handle_pending_submission(self):
         client = self.client
