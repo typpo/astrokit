@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% load staticfiles %}
+
+{% block heading %}View submission{% endblock %}
+
+{% block content %}
+<p>
+This submission isn't ready yet.  The page will refresh periodically and
+results will appear when they're ready.
+
+<script>
+setTimeout(function() {
+  window.location.reload(true);
+}, 5000);
+</script>
+</p>
+{% endblock %}
