@@ -32,7 +32,9 @@ def upload_image(request):
 def view_submission(request, subid):
     # TODO(ian): Look up submission and view status.
     try:
-        result = AnalysisResult.objects.get(astrometry_job__submission__subid=subid)
+        result = AnalysisResult.objects.get( \
+                astrometry_job__submission__subid=subid, \
+                status=AnalysisResult.COMPLETE)
     except ObjectDoesNotExist:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
@@ -45,7 +47,9 @@ def view_submission(request, subid):
 
 def api_get_submission_results(request, subid):
     try:
-        result = AnalysisResult.objects.get(astrometry_job__submission__subid=subid)
+        result = AnalysisResult.objects.get( \
+                astrometry_job__submission__subid=subid, \
+                status=AnalysisResult.COMPLETE)
     except ObjectDoesNotExist:
         return JsonResponse({
             'success': False,
