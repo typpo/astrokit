@@ -28,6 +28,12 @@ body {
   padding-bottom: 10px;
   padding-top: 35px;
 }
+
+.well img {
+  width: 100%;
+  height: auto;
+}
+
 .drop-shadow {
   position:relative;
   /*float:left;*/
