@@ -6,6 +6,17 @@ from django.db import models
 from astrometry.models import AstrometrySubmissionJob
 
 class AnalysisResult(models.Model):
+    PENDING = 'PENDING'
+    COMPLETE = 'COMPLETE'
+    FAILED = 'FAILED'
+    STATUSES = (
+        (PENDING, 'Pending'),
+        (COMPLETE, 'Complete'),
+        (FAILED, 'Failed'),
+    )
+    status = models.CharField(
+            max_length=50, choices=STATUSES, default=PENDING)
+
     astrometry_job = models.ForeignKey(AstrometrySubmissionJob)
 
     # Processed output urls on S3.

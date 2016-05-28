@@ -3,7 +3,7 @@ import time
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
 
 import imageflow.s3_util as s3_util
@@ -21,12 +21,16 @@ def upload_image(request):
         # Data is read just once to avoid rewinding.
         img_data = img.read()
         url = s3_util.upload_to_s3(img_data, 'raw', img.name)
-        process_astrometry_online(url)
+        submission = process_astrometry_online(url)
+
+        # Redirect to submission viewing page.
+        return redirect('view_submission', subid=submission.subid)
 
     return render_to_response('upload_image.html', {},
             context_instance=RequestContext(request))
 
 def view_submission(request, subid):
+    # TODO(ian): Look up submission and view status.
     try:
         result = AnalysisResult.objects.get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:

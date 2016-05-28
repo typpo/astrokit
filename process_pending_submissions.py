@@ -99,6 +99,7 @@ class SubmissionHandler():
         if not args.dry_run:
             submission.save()
 
+        result.status = AnalysisResult.COMPLETE
         result.save()
 
     def save_submission_results(self, job, result):

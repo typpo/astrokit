@@ -28,6 +28,7 @@ def process_astrometry_online(url):
                 subid=result['subid'],
                 upload_url=url,
                 status=AstrometrySubmission.FAILED_TO_SUBMIT)
+    return astrometry_submission
 
 def process_astrometry_locally(image_data):
   '''
