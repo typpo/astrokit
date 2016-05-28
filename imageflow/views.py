@@ -31,6 +31,7 @@ def upload_image(request):
 
 def view_submission(request, subid):
     # TODO(ian): Look up submission and view status.
+    # TODO(ian): Handle failed Analysis Result.
     try:
         result = AnalysisResult.objects.get( \
                 astrometry_job__submission__subid=subid, \
