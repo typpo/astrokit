@@ -14,6 +14,14 @@ Create a virtualenv in the astrokit dierctory: `virtualenv venv`.
 
 Enter the environment (you'll have to do this each time you want to run astrokit in a new terminal): `source venv/bin/activate`
 
+Install matplotlib system dependencies: `sudo apt-get install libfreetype6-dev libxft-dev`
+
+Install scipy system dependencies: `sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev gfortran`
+
+Install numpy and scipy first (scikit bug): `pip install numpy scipy`
+
+Install pip dependencies: `pip install -r requirements.txt`
+
 Setup the astrometry analyzer: `./astrometry/setup/setup.sh`.  This will take some time.
 
 Run it:  `./manage.py runserver`.
