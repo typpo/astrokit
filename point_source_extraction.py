@@ -128,7 +128,12 @@ def load_url(url):
 
 def load_data_as_fits(content):
     im = fits.open(StringIO(content))
-    return im[0].data[2]
+    if len(im[0].data) == 3:
+        # Sometimes the resulting image is 3 dimensional.
+        return im[0].data[2]
+
+    # Sometimes it's just a normal image.
+    return im[0].data
 
 def get_args():
     parser = argparse.ArgumentParser('Extract point sources from image.')
