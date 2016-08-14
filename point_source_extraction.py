@@ -12,6 +12,8 @@ import sys
 import tempfile
 import urllib
 
+from cStringIO import StringIO
+
 import matplotlib.pylab as plt
 import numpy as np
 
@@ -125,16 +127,8 @@ def load_url(url):
     return load_data_as_fits(content)
 
 def load_data_as_fits(content):
-    try:
-        temp = tempfile.NamedTemporaryFile(delete=True)
-        temp.write(content)
-
-        im = fits.open(temp.name)
-        data = im[0].data[2]
-    finally:
-        temp.close()
-
-    return data
+    im = fits.open(StringIO(content))
+    return im[0].data[2]
 
 def get_args():
     parser = argparse.ArgumentParser('Extract point sources from image.')
