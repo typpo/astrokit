@@ -96,7 +96,7 @@ class SubmissionHandler():
         # Update submission.
         submission.succeeded_at = timezone.now()
         submission.status = AstrometrySubmission.COMPLETE
-        if not args['dry_run']:
+        if not args.dry_run:
             submission.save()
 
         result.status = AnalysisResult.COMPLETE
@@ -120,7 +120,7 @@ class SubmissionHandler():
         # Annotated jpg.
         name = '%d_%d_annotated.jpg' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
-        if not args['dry_run']:
+        if not args.dry_run:
             result.astrometry_annotated_display_url = \
                     s3_util.upload_to_s3_via_url(annotated_display_url, \
                                                  upload_key_prefix, name)
@@ -128,7 +128,7 @@ class SubmissionHandler():
         # CORR.
         name = '%d_%d_corr.fits' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
-        if not args['dry_run']:
+        if not args.dry_run:
             result.astrometry_corr_fits_url = \
                     s3_util.upload_to_s3_via_url(corr_url, \
                                                  upload_key_prefix, name)
@@ -137,7 +137,7 @@ class SubmissionHandler():
         name = '%d_%d_image.fits' % (submission.subid, job.jobid)
         fits_image_data = urllib.urlopen(new_image_fits_url).read()
         logger.info('  -> Uploading %s...' % name)
-        if not args['dry_run']:
+        if not args.dry_run:
             result.astrometry_image_fits_url = \
                     s3_util.upload_to_s3(fits_image_data, \
                                          upload_key_prefix, name)
@@ -159,7 +159,7 @@ class SubmissionHandler():
         coords_plot_path = '%d_%d_plot.png' % (submission.subid, job.jobid)
         point_source_extraction.plot(sources, data, coords_plot_path)
         logger.info('  -> Uploading %s...' % coords_plot_path)
-        if not args['dry_run']:
+        if not args.dry_run:
             result.coords_plot_url = \
                     s3_util.upload_to_s3_via_file(coords_plot_path, \
                                                   upload_key_prefix)
@@ -167,7 +167,7 @@ class SubmissionHandler():
         coords_fits_path = '%d_%d_coords.fits' % (submission.subid, job.jobid)
         point_source_extraction.save_fits(sources, coords_fits_path)
         logger.info('  -> Uploading %s...' % coords_fits_path)
-        if not args['dry_run']:
+        if not args.dry_run:
             result.coords_fits_url = \
                     s3_util.upload_to_s3_via_file(coords_fits_path, \
                                                   upload_key_prefix)
@@ -175,7 +175,7 @@ class SubmissionHandler():
         coords_json_path = '%d_%d_coords.json' % (submission.subid, job.jobid)
         point_source_extraction.save_json(sources, coords_json_path)
         logger.info('  -> Uploading %s...' % coords_json_path)
-        if not args['dry_run']:
+        if not args.dry_run:
             result.coords_json_url = \
                     s3_util.upload_to_s3_via_file(coords_json_path, \
                                                   upload_key_prefix)
@@ -192,7 +192,7 @@ class SubmissionHandler():
         logger.info('  -> Uploading %s' % psf_bar_path)
         logger.info('  -> Uploading %s' % psf_hist_path)
         logger.info('  -> Uploading %s' % psf_residual_path)
-        if not args['dry_run']:
+        if not args.dry_run:
             result.psf_scatter_url = \
                     s3_util.upload_to_s3_via_file(psf_scatter_path, \
                                                   upload_key_prefix)
@@ -229,4 +229,4 @@ def get_args():
 
 if __name__ == '__main__':
     args = get_args()
-    process_pending_submissions(vars(args))
+    process_pending_submissions(args)
