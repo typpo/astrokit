@@ -45,6 +45,9 @@ class SubmissionHandler():
             return False
 
         job_ids = substatus['jobs']
+        if not job_ids:
+            logger.info('Submission is not done submitting yet (job not created).')
+            return False
         logger.info('Submission has processing jobs: %s' % (job_ids))
         num_success = 0
         for job_id in job_ids:
