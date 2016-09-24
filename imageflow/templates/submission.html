@@ -5,9 +5,9 @@
 
 {% block content %}
 <h3>Annotated plot</h3>
-<a href="{{result.urls.astrometry_image_fits_url}}">Image FITS</a>
+<a href="{{result.urls.astrometry_image_fits_url}}" download>Image FITS</a>
 &middot;
-<a href="{{result.urls.astrometry_corr_fits_url}}">Matched stars FITS</a>
+<a href="{{result.urls.astrometry_corr_fits_url}}" download>Matched stars FITS</a>
 <div class="well">
   <img src="{{result.urls.astrometry_annotated_display_url}}" />
   <a href="{{result.urls.astrometry_annotated_display_url}}" download>Download</a>
