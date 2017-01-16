@@ -5,12 +5,39 @@
 
 {% block content %}
     <p>
-      Provide an image for astrometry, photometry, and light curve analysis:
+      Provide up to 10 images for astrometry, photometry, and light curve analysis:
     </p>
     <div class="well">
       <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
         <p>
-          <input id="image" type="file" class="" name="image"/>
+          <input id="image1" type="file" class="" name="image1"/>
+        </p>
+        <p>
+          <input id="image2" type="file" class="" name="image2"/>
+        </p>
+        <p>
+          <input id="image3" type="file" class="" name="image3"/>
+        </p>
+        <p>
+          <input id="image4" type="file" class="" name="image4"/>
+        </p>
+        <p>
+          <input id="image5" type="file" class="" name="image5"/>
+        </p>
+        <p>
+          <input id="image6" type="file" class="" name="image6"/>
+        </p>
+        <p>
+          <input id="image7" type="file" class="" name="image7"/>
+        </p>
+        <p>
+          <input id="image8" type="file" class="" name="image8"/>
+        </p>
+        <p>
+          <input id="image9" type="file" class="" name="image9"/>
+        </p>
+        <p>
+          <input id="image10" type="file" class="" name="image10"/>
         </p>
         <input type="submit" value="Submit"/>
       </form>

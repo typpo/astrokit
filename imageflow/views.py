@@ -17,14 +17,20 @@ def index(request):
 
 def upload_image(request):
     if request.method == 'POST':
-        img = request.FILES['image']
-        # Data is read just once to avoid rewinding.
-        img_data = img.read()
-        url = s3_util.upload_to_s3(img_data, 'raw', img.name)
-        submission = process_astrometry_online(url)
+        submissions = []
+        for i in range(1, 11):
+            key = 'image%d' % i
+            if key not in request.FILES:
+               break
+
+            img = request.FILES[key]
+            # Data is read just once to avoid rewinding.
+            img_data = img.read()
+            url = s3_util.upload_to_s3(img_data, 'raw', img.name)
+            submissions.append(process_astrometry_online(url))
 
         # Redirect to submission viewing page.
-        return redirect('view_submission', subid=submission.subid)
+        return redirect('view_submission', subid=submissions[0].subid)
 
     return render_to_response('upload_image.html', {},
             context_instance=RequestContext(request))
