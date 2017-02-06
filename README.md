@@ -22,9 +22,9 @@ Install numpy and scipy first (scikit bug): `pip install numpy scipy`
 
 Install pip dependencies: `pip install -r requirements.txt`
 
-Setup the astrometry analyzer: `./astrometry/setup/setup.sh`.  This will take some time.
+[NOT NEEDED ANYMORE]  ~~Setup the astrometry analyzer: `./astrometry/setup/setup.sh`.  This will take some time.~~
 
-Run it:  `./manage.py runserver`.
+Run the server:  `./manage.py runserver`.
 
 Postgres is optional but used in production:
 
