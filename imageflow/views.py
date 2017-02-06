@@ -18,11 +18,7 @@ def index(request):
 def upload_image(request):
     if request.method == 'POST':
         submissions = []
-        for i in range(1, 11):
-            key = 'image%d' % i
-            if key not in request.FILES:
-               break
-
+        for key in request.FILES:            
             img = request.FILES[key]
             # Data is read just once to avoid rewinding.
             img_data = img.read()
