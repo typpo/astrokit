@@ -14,6 +14,14 @@
   <div class="content drop-shadow lifted">
     <div class="nav-header">
       <a href="/">AstroKit</a>
+      <div class="pull-right">
+      {% if request.user.is_authenticated %}
+        Welcome {{ request.user.username }}, <a href="{% url "logout" %}">Logout</a>
+      {% else %}
+        <a href="{% url "login" %}">Login</a> / 
+        <a href="{% url "register" %}">Register</a>
+      {% endif %}
+      </div>
     </div>
     <div class="heading-container">
       <h1>{% block heading %}{% endblock %}</h1>

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     # Astrokit
     'astrometry',
     'imageflow',
+    'accounts',
 ]
 
 MIDDLEWARE_CLASSES = [

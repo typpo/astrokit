@@ -13,7 +13,7 @@ from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from imageflow.models import AnalysisResult
 
 def index(request):
-    return render_to_response('index.html')
+    return render_to_response('index.html', context_instance=RequestContext(request))
 
 def upload_image(request):
     if request.method == 'POST':
