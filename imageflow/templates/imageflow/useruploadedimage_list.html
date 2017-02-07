@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block content %}
+	{% for object in object_list %}
+		<div class="panel panel-default">
+		  <div class="panel-heading">Uploaded by: {{ object.user.username }}</div>
+		  <div class="panel-body">
+			<img src="{{ object.image_url }}">
+		  </div>
+		</div>
+
+		{% if is_paginated %}
+			<nav aria-label="pagination">
+			  <ul class="pager">
+			    <li class="previous {% if not page_obj.has_previous %}disabled{% endif %}"><a href="{% if page_obj.has_previous %}{{ request.path }}?page={{ page_obj.previous_page_number }}{% endif %}"><span aria-hidden="true">&larr;</span> Older</a></li>
+			    <li>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</li>
+			    <li class="next {% if not page_obj.has_next %}disabled{% endif %}"><a href="{% if page_obj.has_next %}{{ request.path }}?page={{ page_obj.next_page_number }}{% endif %}"><span aria-hidden="true">&rarr;</span> Newer</a></li>
+			  </ul>
+			</nav>
+	    {% endif %}
+	{% empty %}
+		There are no images
+	{% endfor %}
+{% endblock content %}

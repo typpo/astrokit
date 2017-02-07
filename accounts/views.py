@@ -1,5 +1,5 @@
 from django.utils.http import is_safe_url
-from .forms import AuthenticationForm
+from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME, login, logout
 from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
@@ -7,9 +7,13 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, RedirectView
+from django.views.generic.list import ListView
 from django.core.urlresolvers import reverse_lazy
+from django.utils.translation import ugettext as _
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .forms import RegistrationForm
+from .forms import RegistrationForm, AuthenticationForm
+from imageflow.models import UserUploadedImage
 
 
 
@@ -46,7 +50,7 @@ class LogoutView(RedirectView):
     url = '/'
 
     def get(self, request, *args, **kwargs):
-        auth_logout(request)
+        logout(request)
         return super(LogoutView, self).get(request, *args, **kwargs)
 
 
@@ -67,4 +71,31 @@ class RegistrationView(FormView):
         user = User(username=username, email=email)
         user.set_password(password)
         user.save()
+        messages.success(self.request, _('Account created successfully, you can login now'))
         return super(RegistrationView, self).form_valid(form)
+
+
+
+class MyImageList(LoginRequiredMixin, ListView):
+    """Image list of authenticated user's uploaded images
+    Author: Amr Draz
+    """
+    redirect_field_name = 'next'
+    login_url = '/accounts/login/'
+    model = UserUploadedImage
+    paginate_by = 10
+
+    def get_queryset(self):
+        """
+        Return the list of images for the current logged in user
+        """
+        return self.model.objects.filter(user=self.request.user).order_by('-created_at')
+
+
+class BrowseImageList(ListView):
+    """Image list of all uploaded images
+    Author: Amr Draz
+    """
+    model = UserUploadedImage
+    ordering = '-created_at'
+    paginate_by = 1
