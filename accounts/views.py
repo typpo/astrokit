@@ -1,7 +1,8 @@
-from django.utils.http import is_safe_url
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME, login, logout
 from django.contrib.auth.models import User
+from django.utils.http import is_safe_url
+from django.http.response import HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
@@ -12,7 +13,15 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext as _
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .forms import RegistrationForm, AuthenticationForm
+import datetime
+import pytz
+
+from .forms import (
+    RegistrationForm,
+    AuthenticationForm,
+    ForgotPasswordForm,
+    ResetPasswordForm)
+from .models import URLCode
 from imageflow.models import UserUploadedImage
 
 
@@ -74,6 +83,41 @@ class RegistrationView(FormView):
         messages.success(self.request, _('Account created successfully, you can login now'))
         return super(RegistrationView, self).form_valid(form)
 
+
+class ForgotPasswordView(FormView):
+    """View for requesting a password reset
+    Author: Amr Draz
+    """
+    template_name = 'accounts/forgot-password.html'
+    form_class = ForgotPasswordForm
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        form.send_email(self.request)
+        messages.success(self.request, _('Please check your email for a password reset link'))
+        return HttpResponseRedirect(self.get_success_url())
+
+
+class ResetPasswordView(FormView):
+    """View for reseting password through a forgot password link
+    Author: Amr Draz
+    """
+    template_name = 'accounts/reset-password.html'
+    form_class = ResetPasswordForm
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        code = self.request.GET.get('code')
+        url_code = URLCode.objects.get(code=code)
+        if url_code.created_at + datetime.timedelta(minutes=5) < datetime.datetime.now(pytz.utc):
+            url_code.delete()
+            messages.error(self.request, _('The link expired, please send a new request'))
+            return HttpResponseRedirect(reverse_lazy('forgot-password'))
+        else:
+            url_code.delete()
+            form.reset_password(url_code.user)
+            messages.success(self.request, _('Password reset successfully, you can log in now with the new password'))
+            return HttpResponseRedirect(self.get_success_url())
 
 
 class MyImageList(LoginRequiredMixin, ListView):

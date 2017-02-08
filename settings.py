@@ -133,3 +133,10 @@ from config.s3upload import *
 
 # Astrometry.net config
 ASTROKIT_ASTROMETRY_KEY = os.environ.get('ASTROKIT_ASTROMETRY_KEY')
+
+# Email config
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+SERVER_EMAIL = EMAIL_HOST_USER = os.environ.get('ASTROKIT_SERVER_EMAIL') or 'juniorgeorgy@gmail.com'
+EMAIL_HOST_PASSWORD = os.environ.get('ASTROKIT_SERVER_PASSWORD') or 'Google1Day'
