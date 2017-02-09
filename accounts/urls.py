@@ -1,13 +1,13 @@
 from django.conf.urls import url
 from .views import (
-	LoginView,
-	LogoutView,
-	RegistrationView,
-	MyImageList,
-	BrowseImageList,
-	ForgotPasswordView,
-	ResetPasswordView,
-	)
+    LoginView,
+    LogoutView,
+    RegistrationView,
+    MyImageList,
+    BrowseImageList,
+    ForgotPasswordView,
+    ResetPasswordView,
+    )
 
 urlpatterns = (
     url(r'^login/', LoginView.as_view(), name='login'),
