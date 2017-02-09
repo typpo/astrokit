@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^s3upload/', include('s3direct.urls')),
     url(r'^', include('imageflow.urls')),
+    url(r'^accounts/', include('accounts.urls')),
 ]

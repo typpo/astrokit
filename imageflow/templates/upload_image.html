@@ -7,9 +7,13 @@
     <p>
       Provide up to 20 images for astrometry, photometry, and light curve analysis:
     </p>
-    <div class="well">
-      <form action="/upload" class="dropzone" id="dropzone-upload">{% csrf_token %}</form>
-    </div>
+    {% if request.user.is_authenticated %}
+      <div class="well">
+        <form action="/upload" class="dropzone" id="dropzone-upload">{% csrf_token %}</form>
+      </div>
+    {% else %}
+        You need to <a href="{% url "login" %}">login</a> before uploading photos.
+    {% endif %}
   </div>
       
 {% endblock %}

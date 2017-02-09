@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block content %}
+		<div class="row">
+			<div class="col-xs-10 col-xs-offset-1 col-md-8 col-md-offset-2">
+				<h2 class="text-center">Login</h2>
+				{% include "components/messages.html" %}
+				{% if form.errors %}
+					<div class="alert alert-danger">{{ form.errors }}</div>
+				{% endif %}
+				<form action="{% url "login" %}" method="post">{% csrf_token %}
+					{% for field in form %}
+						{% if field.error %}
+							<div class="alert alert-danger">{{ field.error }}</div>
+						{% endif %}
+						<div class="form-group">
+							<label>{{ field.label }}</label><br>
+							{{ field }}
+						</div>
+						
+					{% endfor %}
+					<a href="{% url "forgot-password" %}">Forgot password?</a><br><br>
+					<input type="submit" name="" class="btn btn-primary" value="Login">
+				</form>
+			</div>		
+		</div>
+{% endblock content %}

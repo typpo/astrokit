@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.db import models
+from django.contrib.auth.models import User
 
 from astrometry.models import AstrometrySubmissionJob
 
@@ -51,5 +52,15 @@ class AnalysisResult(models.Model):
                 'psf_residual_image_url': self.psf_residual_image_url,
             },
         }
+
+
+class UserUploadedImage(models.Model):
+    """Model for user uploaded images
+    Author: Amr Draz
+    """
+    user = models.ForeignKey(User)
+    image_url = models.URLField(max_length=512)
+    created_at = models.DateTimeField(auto_now=True)
+
 
 admin.site.register(AnalysisResult)

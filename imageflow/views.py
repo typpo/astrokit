@@ -10,10 +10,10 @@ import imageflow.s3_util as s3_util
 from astrometry.util import process_astrometry_online
 
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
-from imageflow.models import AnalysisResult
+from imageflow.models import AnalysisResult, UserUploadedImage
 
 def index(request):
-    return render_to_response('index.html')
+    return render_to_response('index.html', context_instance=RequestContext(request))
 
 def upload_image(request):
     if request.method == 'POST':
@@ -23,6 +23,7 @@ def upload_image(request):
             # Data is read just once to avoid rewinding.
             img_data = img.read()
             url = s3_util.upload_to_s3(img_data, 'raw', img.name)
+            UserUploadedImage(user=request.user, image_url=url).save()
             submissions.append(process_astrometry_online(url))
 
         # Redirect to submission viewing page.
