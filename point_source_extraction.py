@@ -117,21 +117,17 @@ def compute_psf_flux(image_data, sources, \
         plt.savefig(residual_path)
 
 def load_image(path):
-    im = fits.open(path)
-    data = im[0].data[2]
-    return data
+    return get_data_from_(fits.open(path))
 
 def load_url(url):
     page = urllib.urlopen(url)
     content = page.read()
-    return load_data_as_fits(content)
+    return get_data_from_fits(fits.open(StringIO(content)))
 
-def load_data_as_fits(content):
-    im = fits.open(StringIO(content))
+def load_data_as_fits(im):
     if len(im[0].data) == 3:
         # Sometimes the resulting image is 3 dimensional.
         return im[0].data[2]
-
     # Sometimes it's just a normal image.
     return im[0].data
 
