@@ -18,7 +18,7 @@ cache = shelve.open(cache_path)
 
 vizier = Vizier(columns=['_RAJ2000', '_DEJ2000','B-V', 'R2mag', 'B2mag', 'USNO-B1.0'])
 
-def vizier_lookup(ra, dec):
+def usno_lookup(ra, dec):
     searchstr = '%f %f' % (ra, dec)
     results = cache.get(searchstr)
     if not results:
@@ -59,6 +59,8 @@ def choose_reference_stars(corr_fits_path, point_source_json_path):
     for point in pse_points:
         pse_x = point['field_x']
         pse_y = point['field_y']
+
+        # est_mag = -2.5 * log10(est_flux)
         mag_instrumental = point['est_mag']
 
         nearest = list(tree.nearest((pse_x, pse_y), num_results=1, objects=True))[0].object
@@ -91,7 +93,7 @@ def compute_apparent_magnitudes(reference_objects):
         mag_i = comparison_star['mag_i']
 
         # Query USNO catalog.
-        results = vizier_lookup(ra, dec)
+        results = usno_lookup(ra, dec)
         if len(results) < 1:
             continue
         r2mag = float(results[0]['R2mag'].data[0])
