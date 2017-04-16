@@ -43,20 +43,32 @@ for ra, dec, flux in radec_pairs[:10]:
 
 print comparison_objs
 
-target = comparison_objs[0]
-comparisons = comparison_objs[1:]
+for i in range(len(comparison_objs)):
+    print '*' * 80
+    comparisons = comparison_objs[:]
+    target = comparisons[i]
+    del comparisons[i]
 
-diff_sum = 0
-for comparison in comparisons:
-    instrumental_mag_target = -2.5 * math.log10(target['observed_flux'])
-    instrumental_mag_comparison = -2.5 * math.log10(comparison['observed_flux'])
+    diff_sum = 0
+    mag_targets = []
+    for comparison in comparisons:
+        # Really should be ADU/Exposure
+        instrumental_mag_target = -2.5 * math.log10(target['observed_flux'])
+        instrumental_mag_comparison = -2.5 * math.log10(comparison['observed_flux'])
 
-    # Very basic standard magnitude formula from Brian Warner.
-    mag_target = (instrumental_mag_target - instrumental_mag_comparison) + comparison['reference_Rmag']
-    print 'computed', mag_target, 'vs actual', target['reference_Rmag']
+        # Very basic standard magnitude formula from Brian Warner.
+        mag_target = (instrumental_mag_target - instrumental_mag_comparison) + comparison['reference_Rmag']
+        mag_targets.append(mag_target)
+        print 'computed', mag_target, 'vs actual', target['reference_Rmag']
 
-    diff_sum += instrumental_mag_target - instrumental_mag_comparison
+        diff_sum += instrumental_mag_target - instrumental_mag_comparison
 
-# Compute differential magnitude.
-target_diff_magnitude = diff_sum / len(comparisons)
-print 'target diff magnitude:', target_diff_magnitude
+    # Compute differential magnitude.
+    target_diff_magnitude = diff_sum / len(comparisons)
+    print 'target diff magnitude:', target_diff_magnitude
+
+    target_mag_avg = sum(mag_targets) / len(comparisons)
+    print 'mag target average:', target_mag_avg, 'vs actual', target['reference_Rmag']
+    percent_error = (target['reference_Rmag'] - target_mag_avg) / target['reference_Rmag'] * 100.0
+    print '  --> difference:', (target_mag_avg - target['reference_Rmag'])
+    print '  --> % error:', percent_error
