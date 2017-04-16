@@ -78,16 +78,18 @@ for i in range(len(comparison_objs)):
         instrumental_target_mag = -2.5 * math.log10(target['observed_flux'])
         instrumental_mag_comparison = -2.5 * math.log10(comparison['observed_flux'])
 
-        # Very basic standard magnitude formula from Brian Warner.
+        # Compute basic standard magnitude formula from Brian Warner.
         target_mag = (instrumental_target_mag - instrumental_mag_comparison) + comparison['reference_Rmag']
         target_mags.append(target_mag)
-        print 'computed', target_mag, 'vs actual', target['reference_Rmag']
+        # print 'computed', target_mag, 'vs actual', target['reference_Rmag']
 
         comparison_diffs += instrumental_target_mag - instrumental_mag_comparison
 
     # Compute differential magnitude.
-    target_diff_magnitude = np.mean(comparison_diffs)
-    print 'target diff magnitude:', target_diff_magnitude
+    comparison_mean = np.mean(comparison_diffs)
+    comparison_std = np.std(comparison_diffs)
+    print 'comparison magnitude diff average:', comparison_mean
+    print 'comparison magnitude diff std:', comparison_std
 
     target_mag_avg = np.mean(target_mags)
     target_mag_std = np.std(target_mags)
@@ -99,5 +101,7 @@ for i in range(len(comparison_objs)):
     print '  --> difference:', (target_mag_avg - target['reference_Rmag'])
     print '  --> % error:', percent_error
 
-print '*' * 80
-print 'avg percent error:', np.mean(percent_errors)
+print '=' * 80
+print 'percent error avg (MAPE):', np.mean(percent_errors)
+print 'percent error max:', max(percent_errors)
+print 'percent error min:', min(percent_errors)
