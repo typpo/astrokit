@@ -33,6 +33,7 @@ def compute(data):
     mean, median, std = sigma_clipped_stats(data, sigma=3.0, iters=5)
     # See https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L79
     sources = daofind(data - median, fwhm=3.0, threshold=5.*std)
+    print sources
     return sources
 
 def plot(sources, data, path):
@@ -118,14 +119,14 @@ def compute_psf_flux(image_data, sources, \
         plt.savefig(residual_path)
 
 def load_image(path):
-    return get_data_from_(fits.open(path))
+    return get_data_from_fits(fits.open(path))
 
 def load_url(url):
     page = urllib.urlopen(url)
     content = page.read()
     return get_data_from_fits(fits.open(StringIO(content)))
 
-def load_data_as_fits(im):
+def get_data_from_fits(im):
     if len(im[0].data) == 3:
         # Sometimes the resulting image is 3 dimensional.
         return im[0].data[2]
@@ -138,7 +139,6 @@ def get_args():
     parser.add_argument('--coords_plot', help='path to output overlay plot')
     parser.add_argument('--coords_fits', help='path to output point source coords to')
     parser.add_argument('--coords_json', help='path to output point source coords to')
-    parser.add_argument('--psf', help='whether to compute flux via PSF', action='store_true')
     parser.add_argument('--psf_scatter', help='output path for scatterplot of fluxes')
     parser.add_argument('--psf_bar', help='output path for distribution plot of fluxes')
     parser.add_argument('--psf_hist', help='output path for histogram of fluxes')
