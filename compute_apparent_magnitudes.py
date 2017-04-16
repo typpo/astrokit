@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import argparse
+import json
 import math
 import os
 import shelve
@@ -9,6 +11,7 @@ import numpy as np
 from astropy.io import fits
 from astroquery.simbad import Simbad
 from astroquery.vizier import Vizier
+from rtree import index as rTreeIndex
 
 cache_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cache/catalog.db')
 cache = shelve.open(cache_path)
@@ -23,6 +26,34 @@ def vizier_lookup(ra, dec):
         if len(results) > 0:
             cache[searchstr] = results
     return results
+
+def choose_reference_stars(corr_fits_path, point_source_json_path):
+    '''
+    Joins stars found in point source extraction/flux computation step with
+    stars from the astrometry step with known J2000 ra, dec.
+    '''
+
+    # First, extracted point sources.
+    pse_points = json.load(open(point_source_json_path, 'r'))
+
+    # Then corr file.
+    # corr.fits from astrometry.net.  See https://groups.google.com/forum/#!topic/astrometry/Lk1LuhwBBNU
+    im = fits.open(corr_fits_path)
+    data = im[1].data
+
+    # And build a lookup tree out of it.
+    tree = rTreeIndex.Index()
+    for count, row in np.ndenumerate(data):
+        rowdata = dict(zip(data.names, row))
+        coords = (rowdata['field_x'], rowdata['field_y'])
+        tree.insert(count, coords, obj=rowdata)
+
+    # Now, for each extracted point source, try to find its (ra, dec). If so,
+    # include it as a possible reference star.
+    for point in pse_points:
+        coord_x = point['field_x']
+        coord_y = point['field_y']
+        mag_instrumental = point['est_mag']
 
 def main():
     # https://groups.google.com/forum/#!topic/astrometry/Lk1LuhwBBNU
@@ -107,5 +138,17 @@ def main():
     print 'percent error max:', max(percent_errors)
     print 'percent error min:', min(percent_errors)
 
+def get_args():
+    parser = argparse.ArgumentParser('Extract point sources from image.')
+    parser.add_argument('--corr_fits',
+                        help='fits astrometry output with J2000 ra and dec.',
+                        required=True)
+    parser.add_argument('--point_source_json',
+                        help='point source json output, annotated with flux and instrumental magnitude',
+                        required=True)
+    return parser.parse_args()
+
 if __name__ == '__main__':
-    main()
+    args = get_args()
+    choose_reference_stars(args.corr_fits, args.point_source_json)
+    #main()
