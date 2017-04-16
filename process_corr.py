@@ -38,6 +38,8 @@ for ra, dec, flux in radec_pairs[:10]:
     comparison_objs.append({
         'designation': desig,
         'reference_Rmag': r2mag,
+
+        # TODO(ian): Use astrokit psf flux.
         'observed_flux': flux,
     })
 
@@ -52,7 +54,7 @@ for i in range(len(comparison_objs)):
     diff_sum = 0
     mag_targets = []
     for comparison in comparisons:
-        # Really should be ADU/Exposure
+        # TODO(ian): Really should be ADU/Exposure
         instrumental_mag_target = -2.5 * math.log10(target['observed_flux'])
         instrumental_mag_comparison = -2.5 * math.log10(comparison['observed_flux'])
 
