@@ -33,6 +33,8 @@ def choose_reference_stars(corr_fits_path, point_source_json_path):
     stars from the astrometry step with known J2000 ra, dec.
     '''
 
+    print 'Matching reference stars with StarFind output...'
+
     # First, extracted point sources.
     pse_points = json.load(open(point_source_json_path, 'r'))
 
@@ -62,7 +64,7 @@ def choose_reference_stars(corr_fits_path, point_source_json_path):
         nearest = list(tree.nearest((pse_x, pse_y), num_results=1, objects=True))[0].object
 
         dist = math.sqrt((pse_x - nearest['field_x'])**2 + (pse_y - nearest['field_y'])**2)
-        if dist > 5:
+        if dist > 1:
             continue
         distances.append(dist)
         reference_objects.append({
@@ -82,11 +84,11 @@ def choose_reference_stars(corr_fits_path, point_source_json_path):
 
 def compute_apparent_magnitudes(reference_objects):
     comparison_objs = []
+    print 'Running catalog lookups...'
     for comparison_star in reference_objects:
         ra = comparison_star['index_ra']
         dec = comparison_star['index_dec']
         mag_i = comparison_star['mag_i']
-        print 'ra, dec, mag_i:', ra, dec, mag_i
 
         # Query USNO catalog.
         results = vizier_lookup(ra, dec)
@@ -94,7 +96,7 @@ def compute_apparent_magnitudes(reference_objects):
             continue
         r2mag = float(results[0]['R2mag'].data[0])
         if math.isnan(r2mag):
-            print '  --> skipping due to no r2mag'
+            # print '  --> skipping due to no r2mag'
             continue
         desig = results[0]['USNO-B1.0'].data[0]
 
@@ -106,9 +108,9 @@ def compute_apparent_magnitudes(reference_objects):
             'instrumental_mag': mag_i,
         })
 
+    print 'Running comparisons...'
     percent_errors = []
     for i in range(len(comparison_objs)):
-        print '*' * 80
         comparisons = comparison_objs[:]
         target = comparisons[i]
         del comparisons[i]
@@ -131,18 +133,18 @@ def compute_apparent_magnitudes(reference_objects):
         # Compute differential magnitude.
         comparison_mean = np.mean(comparison_diffs)
         comparison_std = np.std(comparison_diffs)
-        print 'comparison magnitude diff average:', comparison_mean
-        print 'comparison magnitude diff std:', comparison_std
+        # print 'comparison magnitude diff average:', comparison_mean
+        # print 'comparison magnitude diff std:', comparison_std
 
         target_mag_avg = np.mean(target_mags)
         target_mag_std = np.std(target_mags)
-        print 'mag target average:', target_mag_avg, 'vs actual', target['reference_Rmag']
-        print 'mag target std:', target_mag_std
+        # print 'mag target average:', target_mag_avg, 'vs actual', target['reference_Rmag']
+        # print 'mag target std:', target_mag_std
 
         percent_error = abs(target['reference_Rmag'] - target_mag_avg) / target['reference_Rmag'] * 100.0
         percent_errors.append(percent_error)
-        print '  --> difference:', (target_mag_avg - target['reference_Rmag'])
-        print '  --> % error:', percent_error
+        # print '  --> difference:', (target_mag_avg - target['reference_Rmag'])
+        # print '  --> % error:', percent_error
 
     print '=' * 80
     print 'num comparison objs submitted:', len(reference_objects)
