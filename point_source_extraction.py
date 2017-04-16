@@ -22,7 +22,7 @@ from astropy.stats import sigma_clipped_stats
 from astropy.visualization import SqrtStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 from photutils import CircularAperture
-from photutils import datasets, daofind
+from photutils import datasets, daofind, irafstarfind
 from photutils.psf import psf_photometry, GaussianPSF
 from photutils.psf import subtract_psf
 
@@ -30,9 +30,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def compute(data):
+    # TODO(ian): Compare vs iraf starfind - can use an elliptical guassian
+    # kernel and use image moments.
     mean, median, std = sigma_clipped_stats(data, sigma=3.0, iters=5)
     # See https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L79
     sources = daofind(data - median, fwhm=3.0, threshold=5.*std)
+    sources = irafstarfind(data - median, fwhm=3.0, threshold=5.*std)
     return sources
 
 def plot(sources, data, path):
