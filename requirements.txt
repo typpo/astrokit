@@ -1,6 +1,7 @@
 Django==1.9.1
 Fabric==1.10.2
 Pillow==3.1.0
+Rtree==0.8.3
 SecretStorage==2.3.1
 South==1.0.2
 argparse==1.2.1
