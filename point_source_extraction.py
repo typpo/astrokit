@@ -32,7 +32,10 @@ logger = logging.getLogger(__name__)
 def compute(data):
     # TODO(ian): Compare vs iraf starfind - can use an elliptical guassian
     # kernel and use image moments.
+
+    # Estimate background and background noise.
     mean, median, std = sigma_clipped_stats(data, sigma=3.0, iters=5)
+
     # For parameters to irafstarfind and daofind, see https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L272
     # For output, see https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L79
     # sources = daofind(data - median, fwhm=3.0, threshold=5.*std)
