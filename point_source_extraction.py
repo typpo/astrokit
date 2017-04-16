@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 def compute(data):
     mean, median, std = sigma_clipped_stats(data, sigma=3.0, iters=5)
+    # See https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L79
     sources = daofind(data - median, fwhm=3.0, threshold=5.*std)
     return sources
 
