@@ -45,7 +45,10 @@ for ra, dec, flux in radec_pairs:
     results = vizier_lookup(ra, dec)
     if len(results) < 1:
         continue
-    r2mag = results[0]['R2mag'].data[0]
+    r2mag = float(results[0]['R2mag'].data[0])
+    if math.isnan(r2mag):
+        print '  --> skipping due to no r2mag'
+        continue
     desig = results[0]['USNO-B1.0'].data[0]
     # print desig, r2mag
 
