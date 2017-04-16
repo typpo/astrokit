@@ -18,7 +18,7 @@ simbad = Simbad()
 # http://simbad.u-strasbg.fr/simbad/sim-id?protocol=html&Ident=Wolf%201061&output.format=VOTable
 simbad.add_votable_fields('fluxdata(V)', 'flux_unit(mag)', 'flux_system(mag)')
 comparison_objs = []
-for ra, dec, flux in radec_pairs[:10]:
+for ra, dec, flux in radec_pairs:
     print 'ra, dec, flux:', ra, dec, flux
     '''
     result = simbad.query_region('%f %f' % (ra, dec))
@@ -45,6 +45,7 @@ for ra, dec, flux in radec_pairs[:10]:
 
 print comparison_objs
 
+percent_errors = []
 for i in range(len(comparison_objs)):
     print '*' * 80
     comparisons = comparison_objs[:]
@@ -71,6 +72,10 @@ for i in range(len(comparison_objs)):
 
     target_mag_avg = sum(mag_targets) / len(comparisons)
     print 'mag target average:', target_mag_avg, 'vs actual', target['reference_Rmag']
-    percent_error = (target['reference_Rmag'] - target_mag_avg) / target['reference_Rmag'] * 100.0
+    percent_error = abs(target['reference_Rmag'] - target_mag_avg) / target['reference_Rmag'] * 100.0
+    percent_errors.append(percent_error)
     print '  --> difference:', (target_mag_avg - target['reference_Rmag'])
     print '  --> % error:', percent_error
+
+print '*' * 80
+print 'avg percent error:', (sum(percent_errors) / len(percent_errors))
