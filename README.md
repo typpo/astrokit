@@ -16,7 +16,7 @@ Enter the environment (you'll have to do this each time you want to run astrokit
 
 Install matplotlib system dependencies: `sudo apt-get install libfreetype6-dev libxft-dev`
 
-Install scipy system dependencies: `sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev gfortran`
+Install scipy system dependencies: `sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev gfortran libspatialindex-dev`
 
 Install numpy and scipy first (scikit bug): `pip install numpy scipy`
 
