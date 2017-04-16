@@ -46,34 +46,47 @@ def choose_reference_stars(corr_fits_path, point_source_json_path):
     for count, row in np.ndenumerate(data):
         rowdata = dict(zip(data.names, row))
         coords = (rowdata['field_x'], rowdata['field_y'])
-        tree.insert(count, coords, obj=rowdata)
+        tree.insert(count[0], coords, obj=rowdata)
 
     # Now, for each extracted point source, try to find its (ra, dec). If so,
     # include it as a possible reference star.
+
+    # Keep track of distance between nearest match.
+    distances = []
+    reference_objects = []
     for point in pse_points:
-        coord_x = point['field_x']
-        coord_y = point['field_y']
+        pse_x = point['field_x']
+        pse_y = point['field_y']
         mag_instrumental = point['est_mag']
 
-def main():
-    # https://groups.google.com/forum/#!topic/astrometry/Lk1LuhwBBNU
-    im = fits.open('/home/ian/Downloads/corrtest.fits')
-    data = im[1].data
-    radec_pairs = zip(data['index_ra'], data['index_dec'], data['FLUX'])
+        nearest = list(tree.nearest((pse_x, pse_y), num_results=1, objects=True))[0].object
 
-    simbad = Simbad()
-    # http://astroquery.readthedocs.io/en/latest/simbad/simbad.html
-    # http://simbad.u-strasbg.fr/simbad/sim-help?Page=sim-fscript#VotableFields
-    # http://simbad.u-strasbg.fr/simbad/sim-id?protocol=html&Ident=Wolf%201061&output.format=VOTable
-    simbad.add_votable_fields('fluxdata(V)', 'flux_unit(mag)', 'flux_system(mag)')
+        dist = math.sqrt((pse_x - nearest['field_x'])**2 + (pse_y - nearest['field_y'])**2)
+        if dist > 5:
+            continue
+        distances.append(dist)
+        reference_objects.append({
+            'field_x': pse_x,
+            'field_y': pse_y,
+            'index_ra': nearest['index_ra'],
+            'index_dec': nearest['index_dec'],
+            'mag_i': point['est_mag'],   # Instrumental magnitude
+        })
+
+    print 'distance count:', len(distances)
+    print 'distance avg (px):', np.mean(distances)
+    print 'distance std:', np.std(distances)
+    print 'distance min:', min(distances)
+    print 'distance max:', max(distances)
+    return reference_objects
+
+def compute_apparent_magnitudes(reference_objects):
     comparison_objs = []
-    for ra, dec, flux in radec_pairs:
-        print 'ra, dec, flux:', ra, dec, flux
-        '''
-        result = simbad.query_region('%f %f' % (ra, dec))
-        if result:
-            print result['MAIN_ID'].data, result['FLUX_V'].data
-        '''
+    for comparison_star in reference_objects:
+        ra = comparison_star['index_ra']
+        dec = comparison_star['index_dec']
+        mag_i = comparison_star['mag_i']
+        print 'ra, dec, mag_i:', ra, dec, mag_i
 
         # Query USNO catalog.
         results = vizier_lookup(ra, dec)
@@ -84,17 +97,14 @@ def main():
             print '  --> skipping due to no r2mag'
             continue
         desig = results[0]['USNO-B1.0'].data[0]
-        # print desig, r2mag
 
         comparison_objs.append({
             'designation': desig,
             'reference_Rmag': r2mag,
 
-            # TODO(ian): Use astrokit psf flux.
-            'observed_flux': flux,
+            # 'observed_flux': flux,
+            'instrumental_mag': mag_i,
         })
-
-    print comparison_objs
 
     percent_errors = []
     for i in range(len(comparison_objs)):
@@ -106,9 +116,10 @@ def main():
         comparison_diffs = 0
         target_mags = []
         for comparison in comparisons:
-            # TODO(ian): Really should be ADU/Exposure
-            instrumental_target_mag = -2.5 * math.log10(target['observed_flux'])
-            instrumental_mag_comparison = -2.5 * math.log10(comparison['observed_flux'])
+            #instrumental_target_mag = -2.5 * math.log10(target['observed_flux'])
+            #instrumental_mag_comparison = -2.5 * math.log10(comparison['observed_flux'])
+            instrumental_target_mag = target['instrumental_mag']
+            instrumental_mag_comparison = comparison['instrumental_mag']
 
             # Compute basic standard magnitude formula from Brian Warner.
             target_mag = (instrumental_target_mag - instrumental_mag_comparison) + comparison['reference_Rmag']
@@ -134,6 +145,8 @@ def main():
         print '  --> % error:', percent_error
 
     print '=' * 80
+    print 'num comparison objs submitted:', len(reference_objects)
+    print 'num comparison objs used:', len(comparison_objs)
     print 'percent error avg (MAPE):', np.mean(percent_errors)
     print 'percent error max:', max(percent_errors)
     print 'percent error min:', min(percent_errors)
@@ -150,5 +163,6 @@ def get_args():
 
 if __name__ == '__main__':
     args = get_args()
-    choose_reference_stars(args.corr_fits, args.point_source_json)
+    reference_objects = choose_reference_stars(args.corr_fits, args.point_source_json)
+    compute_apparent_magnitudes(reference_objects)
     #main()
