@@ -1,5 +1,7 @@
 venv
 
+cache/catalog.db
+
 ### Vim ###
 [._]*.s[a-w][a-z]
 [._]s[a-w][a-z]

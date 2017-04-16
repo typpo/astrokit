@@ -1,11 +1,26 @@
 #!/usr/bin/env python
 
 import math
+import os
+import shelve
 
 from astropy.io import fits
 from astroquery.simbad import Simbad
 from astroquery.vizier import Vizier
-# from astropy.coordinates import Angle
+
+cache_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cache/catalog.db')
+cache = shelve.open(cache_path)
+
+vizier = Vizier(columns=['_RAJ2000', '_DEJ2000','B-V', 'R2mag', 'B2mag', 'USNO-B1.0'])
+
+def vizier_lookup(ra, dec):
+    searchstr = '%f %f' % (ra, dec)
+    results = cache.get(searchstr)
+    if not results:
+        results = vizier.query_region(searchstr, radius='1s', catalog='I/284/out')
+        if len(results) > 0:
+            cache[searchstr] = results
+    return results
 
 # https://groups.google.com/forum/#!topic/astrometry/Lk1LuhwBBNU
 im = fits.open('/home/ian/Downloads/corrtest.fits')
@@ -27,8 +42,7 @@ for ra, dec, flux in radec_pairs:
     '''
 
     # Query USNO catalog.
-    v = Vizier(columns=['_RAJ2000', '_DEJ2000','B-V', 'R2mag', 'B2mag', 'USNO-B1.0'])
-    results = v.query_region('%f %f' % (ra, dec), radius='1s', catalog='I/284/out')
+    results = vizier_lookup(ra, dec)
     if len(results) < 1:
         continue
     r2mag = results[0]['R2mag'].data[0]
