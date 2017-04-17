@@ -1,0 +1,5 @@
+http://www.phys.vt.edu/~jhs/SIP/photometry.html
+
+Images http://www.phys.vt.edu/~jhs/SIP/images/blcam/blcam_01.fit through blcam_21.fit are images of the field around the "ultra-fast" cepheid variable star BL Cam.
+
+Each exposure is 30 seconds long. The date and time of the observation (in the FITS header) are the beginning of the exposure in Universal Time (UT).
