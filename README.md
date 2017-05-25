@@ -10,7 +10,7 @@ astrometry, photometry, and light curve results derived from their images.
 
 Install virtualenv (`sudo apt-get install python-virtualenv` on Debian/Ubuntu).  Also install redis (`sudo apt-get install redis-server`).
 
-Create a virtualenv in the astrokit dierctory: `virtualenv venv`.
+Create a virtualenv in the astrokit directory: `virtualenv venv`.
 
 Enter the environment (you'll have to do this each time you want to run astrokit in a new terminal): `source venv/bin/activate`
 
