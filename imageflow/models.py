@@ -67,3 +67,4 @@ class UserUploadedImage(models.Model):
 
 
 admin.site.register(AnalysisResult)
+admin.site.register(UserUploadedImage)
