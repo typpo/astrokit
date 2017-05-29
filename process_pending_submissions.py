@@ -15,11 +15,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 sys.path.insert(0, os.getcwd())
 django.setup()
 
-import point_source_extraction
 import imageflow.s3_util as s3_util
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.astrometry_client import Client
 from imageflow.models import AnalysisResult
+
+import .point_source_extraction
+import .compute_apparent_magnitudes
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -93,7 +95,7 @@ class SubmissionHandler():
 
         logger.info('-> Submission %d, Job %d is complete' % (submission.subid, job.jobid))
 
-        # Save results.
+        # Save results to S3.
         self.save_submission_results(job, result)
 
         # Update submission.
@@ -148,9 +150,12 @@ class SubmissionHandler():
         logger.info('-> Uploaded results for submission %d' % (submission.subid))
 
         # Point source extraction processing.
-        self.process_fits_image(fits_image_data, job, result, upload_key_prefix)
+        self.process_point_sources(fits_image_data, job, result, upload_key_prefix)
 
-    def process_fits_image(self, image_data, job, result, upload_key_prefix):
+        # Apparent magnitude processing.
+        self.process_magnitudes(fits_image_data, upload_key_prefix)
+
+    def process_point_sources(self, image_data, job, result, upload_key_prefix):
         submission = self.submission
 
         logger.info('-> Processing fits image for submission %d' % (submission.subid))
@@ -213,6 +218,9 @@ class SubmissionHandler():
         # temporary files.
 
         logger.info('-> Processed fits image for submission %d' % (submission.subid))
+
+    def process_magnitudes(self, image_data, upload_key_prefix):
+        pass
 
 def process_pending_submissions(args):
     # Set up astrometry.net client.
