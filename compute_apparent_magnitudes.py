@@ -169,4 +169,3 @@ if __name__ == '__main__':
     args = get_args()
     reference_objects = choose_reference_stars(args.corr_fits, args.point_source_json)
     compute_apparent_magnitudes(reference_objects)
-    #main()

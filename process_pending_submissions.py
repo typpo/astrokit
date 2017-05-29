@@ -154,7 +154,7 @@ class SubmissionHandler():
         self.process_point_sources(fits_image_data, job, result, upload_key_prefix)
 
         # Apparent magnitude processing.
-        self.process_magnitudes(fits_image_data, upload_key_prefix)
+        self.process_magnitudes(fits_image_data, job, result, upload_key_prefix)
 
     def process_point_sources(self, image_data, job, result, upload_key_prefix):
         submission = self.submission
@@ -221,7 +221,8 @@ class SubmissionHandler():
         logger.info('-> Processed fits image for submission %d' % (submission.subid))
 
     def process_magnitudes(self, image_data, upload_key_prefix):
-        pass
+        coords = urllib.urlopen(result.coords_json_url).read()
+        correlations = urllib.urlopen(result.astrometry_corr_fits_url).read()
 
 def process_pending_submissions(args):
     # Set up astrometry.net client.
