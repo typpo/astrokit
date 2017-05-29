@@ -233,6 +233,8 @@ class SubmissionHandler():
         coords = urllib.urlopen(result.coords_json_url).read()
         correlations = urllib.urlopen(result.astrometry_corr_fits_url).read()
 
+        # Compute reference stars and their apparent magnitudes.
+        # TODO(ian): Produce a graphic that marks the reference stars.
         ref_stars = \
                 compute_apparent_magnitudes.choose_reference_stars(correlations, coords)
 
@@ -243,7 +245,20 @@ class SubmissionHandler():
                     s3_util.upload_to_s3(json.dumps(ref_stars, indent=2), \
                                          upload_key_prefix, name)
 
-        logger.info('-> Uploaded reference star/magnitude results for submission %d' % \
+        logger.info('-> Uploaded reference stars for submission %d' % \
+                (submission.subid))
+
+        # Get reference star standard magnitudes.
+        # TODO(ian): Produce a graphic that marks the reference stars.
+        standard_mags = compute_apparent_magnitudes.get_standard_magnitudes(ref_stars)
+        name = '%d_%d_catalog_reference_stars.json' % (submission.subid, job.jobid)
+        logger.info('  -> Uploading %s...' % name)
+        if not args.dry_run:
+            result.catalog_reference_stars_json_url = \
+                    s3_util.upload_to_s3(json.dumps(standard_mags, indent=2), \
+                                         upload_key_prefix, name)
+
+        logger.info('-> Uploaded catalog magnitudes for submission %d' % \
                 (submission.subid))
 
 def process_pending_submissions(args):

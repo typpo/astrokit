@@ -111,13 +111,21 @@ def choose_reference_stars(corr_fits_data, point_source_json):
     logger.info('distance max: %f' % max(distances))
     return reference_objects
 
-def compute_apparent_magnitudes(reference_objects):
-    comparison_objs = []
+def get_standard_magnitudes(reference_objects):
+    '''
+    Given a list of reference star objects {index_ra, index_dec}, look them up
+    in USNO catalog.
+
+    Returns: a list of {designation, reference_Rmag, and optionally
+    instrumental_mag} objects.
+    '''
     logger.info('Running catalog lookups...')
+    ret = []
     for comparison_star in reference_objects:
         ra = comparison_star['index_ra']
         dec = comparison_star['index_dec']
-        mag_i = comparison_star['mag_i']
+
+        mag_i = comparison_star.get('mag_i')
 
         # Query USNO catalog.
         results = usno_lookup(ra, dec)
@@ -129,13 +137,21 @@ def compute_apparent_magnitudes(reference_objects):
             continue
         desig = results[0]['USNO-B1.0'].data[0]
 
-        comparison_objs.append({
+        obj = {
             'designation': desig,
             'reference_Rmag': r2mag,
 
             # 'observed_flux': flux,
-            'instrumental_mag': mag_i,
-        })
+        }
+        if mag_i:
+            obj['instrumental_mag'] = mag_i
+        ret.append(obj)
+
+    return ret
+
+def compute_apparent_magnitudes(reference_objects):
+    logger.info('Running catalog lookups...')
+    comparison_objs = get_standard_magnitudes(reference_objects)
 
     logger.info('Running comparisons...')
     percent_errors = []

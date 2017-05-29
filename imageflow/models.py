@@ -39,6 +39,7 @@ class AnalysisResult(models.Model):
 
     # Reference stars and magnitudes.
     reference_stars_json_url = models.CharField(max_length=1024)
+    catalog_reference_stars_json_url = models.CharField(max_length=1024)
 
     def get_summary_obj(self):
         return {
