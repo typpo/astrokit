@@ -18,12 +18,14 @@ def index(request):
 def upload_image(request):
     if request.method == 'POST':
         submissions = []
-        for key in request.FILES:            
+        for key in request.FILES:
             img = request.FILES[key]
             # Data is read just once to avoid rewinding.
             img_data = img.read()
             url = s3_util.upload_to_s3(img_data, 'raw', img.name)
-            UserUploadedImage(user=request.user, image_url=url).save()
+            UserUploadedImage(user=request.user,
+                              image_url=url,
+                              astrometry_submission_id=submissions[0].subid).save()
             submissions.append(process_astrometry_online(url))
 
         # Redirect to submission viewing page.

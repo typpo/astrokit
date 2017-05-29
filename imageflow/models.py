@@ -18,6 +18,8 @@ class AnalysisResult(models.Model):
     status = models.CharField(
             max_length=50, choices=STATUSES, default=PENDING)
 
+    user = models.ForeignKey(User)
+
     astrometry_job = models.ForeignKey(AstrometrySubmissionJob)
 
     # Processed output urls on S3.
@@ -60,6 +62,7 @@ class UserUploadedImage(models.Model):
     """
     user = models.ForeignKey(User)
     image_url = models.URLField(max_length=512)
+    astrometry_submission_id = models.CharField(max_length=512)
     created_at = models.DateTimeField(auto_now=True)
 
 
