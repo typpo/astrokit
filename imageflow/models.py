@@ -31,10 +31,14 @@ class AnalysisResult(models.Model):
     coords_fits_url = models.CharField(max_length=1024)
     coords_json_url = models.CharField(max_length=1024)
 
+    # Point source extraction.
     psf_scatter_url = models.CharField(max_length=1024)
     psf_bar_url = models.CharField(max_length=1024)
     psf_hist_url = models.CharField(max_length=1024)
     psf_residual_image_url = models.CharField(max_length=1024)
+
+    # Reference stars and magnitudes.
+    reference_stars_json_url = models.CharField(max_length=1024)
 
     def get_summary_obj(self):
         return {

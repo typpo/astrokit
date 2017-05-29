@@ -2,9 +2,12 @@
 
 import argparse
 import json
+import logging
 import math
 import os
 import shelve
+
+from cStringIO import StringIO
 
 import numpy as np
 
@@ -13,9 +16,17 @@ from astroquery.simbad import Simbad
 from astroquery.vizier import Vizier
 from rtree import index as rTreeIndex
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 cache_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'cache/catalog.db')
 cache = shelve.open(cache_path)
 
+# Maximum distance, in pixels, to accept a match for an object between our
+# point source extraction and astrometry.net's.
+MAX_RTREE_DISTANCE = 2.0
+
+# Vizier database lookup object.
 vizier = Vizier(columns=['_RAJ2000', '_DEJ2000','B-V', 'R2mag', 'B2mag', 'USNO-B1.0'])
 
 def usno_lookup(ra, dec):
@@ -27,28 +38,41 @@ def usno_lookup(ra, dec):
             cache[searchstr] = results
     return results
 
-def choose_reference_stars(corr_fits_path, point_source_json_path):
+def choose_reference_stars_from_file(corr_fits_path, point_source_json_path):
+    point_source_json = open(point_source_json_path, 'r').read()
+    corr_fits_data = open(corr_fits_path, 'rb').read()
+    choose_reference_stars(point_source_json, corr_fits_data)
+
+def choose_reference_stars(corr_fits_data, point_source_json):
     '''
     Joins stars found in point source extraction/flux computation step with
     stars from the astrometry step with known J2000 ra, dec.
+
+    Returns: a list of possible reference star objects.
     '''
 
-    print 'Matching reference stars with StarFind output...'
+    logger.info('Matching reference stars with StarFind output...')
 
-    # First, extracted point sources.
-    pse_points = json.load(open(point_source_json_path, 'r'))
+    # TODO(ian): Is this whole step even necessary? Why not just use our PSE
+    # coords rather than relying on astrometry's?
+
+    # First, load extracted point sources.
+    pse_points = json.loads(point_source_json)
 
     # Then corr file.
-    # corr.fits from astrometry.net.  See https://groups.google.com/forum/#!topic/astrometry/Lk1LuhwBBNU
-    im = fits.open(corr_fits_path)
+    # corr.fits from astrometry.net. See https://groups.google.com/forum/#!topic/astrometry/Lk1LuhwBBNU
+    im = fits.open(StringIO(corr_fits_data))
     data = im[1].data
 
-    # And build a lookup tree out of it.
+    # And build a lookup tree out of the astrometry corr data.
     tree = rTreeIndex.Index()
+    num_rows = 0
     for count, row in np.ndenumerate(data):
         rowdata = dict(zip(data.names, row))
         coords = (rowdata['field_x'], rowdata['field_y'])
         tree.insert(count[0], coords, obj=rowdata)
+        num_rows += 1
+    logger.info('Coords rtree loaded %d objects' % num_rows)
 
     # Now, for each extracted point source, try to find its (ra, dec). If so,
     # include it as a possible reference star.
@@ -66,9 +90,12 @@ def choose_reference_stars(corr_fits_path, point_source_json_path):
         nearest = list(tree.nearest((pse_x, pse_y), num_results=1, objects=True))[0].object
 
         dist = math.sqrt((pse_x - nearest['field_x'])**2 + (pse_y - nearest['field_y'])**2)
-        if dist > 1:
+        if dist > MAX_RTREE_DISTANCE:
+            #logger.error('Rejecting a point source because its distance to nearest corr object is %f, greater than %f' % \
+            #             (dist, MAX_RTREE_DISTANCE))
             continue
         distances.append(dist)
+
         reference_objects.append({
             'field_x': pse_x,
             'field_y': pse_y,
@@ -77,16 +104,16 @@ def choose_reference_stars(corr_fits_path, point_source_json_path):
             'mag_i': point['est_mag'],   # Instrumental magnitude
         })
 
-    print 'distance count:', len(distances)
-    print 'distance avg (px):', np.mean(distances)
-    print 'distance std:', np.std(distances)
-    print 'distance min:', min(distances)
-    print 'distance max:', max(distances)
+    logger.info('distance count: %d' % len(distances))
+    logger.info('distance avg (px): %f' % np.mean(distances))
+    logger.info('distance std: %f' % np.std(distances))
+    logger.info('distance min: %f' % min(distances))
+    logger.info('distance max: %f' % max(distances))
     return reference_objects
 
 def compute_apparent_magnitudes(reference_objects):
     comparison_objs = []
-    print 'Running catalog lookups...'
+    logger.info('Running catalog lookups...')
     for comparison_star in reference_objects:
         ra = comparison_star['index_ra']
         dec = comparison_star['index_dec']
@@ -98,7 +125,7 @@ def compute_apparent_magnitudes(reference_objects):
             continue
         r2mag = float(results[0]['R2mag'].data[0])
         if math.isnan(r2mag):
-            # print '  --> skipping due to no r2mag'
+            # logger.info('  --> skipping due to no r2mag')
             continue
         desig = results[0]['USNO-B1.0'].data[0]
 
@@ -110,7 +137,7 @@ def compute_apparent_magnitudes(reference_objects):
             'instrumental_mag': mag_i,
         })
 
-    print 'Running comparisons...'
+    logger.info('Running comparisons...')
     percent_errors = []
     for i in range(len(comparison_objs)):
         comparisons = comparison_objs[:]
@@ -128,32 +155,32 @@ def compute_apparent_magnitudes(reference_objects):
             # Compute basic standard magnitude formula from Brian Warner.
             target_mag = (instrumental_target_mag - instrumental_mag_comparison) + comparison['reference_Rmag']
             target_mags.append(target_mag)
-            # print 'computed', target_mag, 'vs actual', target['reference_Rmag']
+            # logger.info('computed', target_mag, 'vs actual', target['reference_Rmag'])
 
             comparison_diffs += instrumental_target_mag - instrumental_mag_comparison
 
         # Compute differential magnitude.
         comparison_mean = np.mean(comparison_diffs)
         comparison_std = np.std(comparison_diffs)
-        # print 'comparison magnitude diff average:', comparison_mean
-        # print 'comparison magnitude diff std:', comparison_std
+        # logger.info('comparison magnitude diff average:', comparison_mean)
+        # logger.info('comparison magnitude diff std:', comparison_std)
 
         target_mag_avg = np.mean(target_mags)
         target_mag_std = np.std(target_mags)
-        # print 'mag target average:', target_mag_avg, 'vs actual', target['reference_Rmag']
-        # print 'mag target std:', target_mag_std
+        # logger.info('mag target average:', target_mag_avg, 'vs actual', target['reference_Rmag'])
+        # logger.info('mag target std:', target_mag_std)
 
         percent_error = abs(target['reference_Rmag'] - target_mag_avg) / target['reference_Rmag'] * 100.0
         percent_errors.append(percent_error)
-        # print '  --> difference:', (target_mag_avg - target['reference_Rmag'])
-        # print '  --> % error:', percent_error
+        # logger.info('  --> difference:', (target_mag_avg - target['reference_Rmag']))
+        # logger.info('  --> % error:', percent_error)
 
-    print '=' * 80
-    print 'num comparison objs submitted:', len(reference_objects)
-    print 'num comparison objs used:', len(comparison_objs)
-    print 'percent error avg (MAPE):', np.mean(percent_errors)
-    print 'percent error max:', max(percent_errors)
-    print 'percent error min:', min(percent_errors)
+    logger.info('=' * 80)
+    logger.info('num comparison objs submitted:', len(reference_objects))
+    logger.info('num comparison objs used:', len(comparison_objs))
+    logger.info('percent error avg (MAPE):', np.mean(percent_errors))
+    logger.info('percent error max:', max(percent_errors))
+    logger.info('percent error min:', min(percent_errors))
 
 def get_args():
     parser = argparse.ArgumentParser('Extract point sources from image.')
@@ -167,5 +194,5 @@ def get_args():
 
 if __name__ == '__main__':
     args = get_args()
-    reference_objects = choose_reference_stars(args.corr_fits, args.point_source_json)
+    reference_objects = choose_reference_stars_from_file(args.corr_fits, args.point_source_json)
     compute_apparent_magnitudes(reference_objects)

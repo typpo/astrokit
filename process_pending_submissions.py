@@ -20,8 +20,8 @@ from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.astrometry_client import Client
 from imageflow.models import AnalysisResult, UserUploadedImage
 
-import .point_source_extraction
-import .compute_apparent_magnitudes
+import point_source_extraction
+import compute_apparent_magnitudes
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -154,6 +154,9 @@ class SubmissionHandler():
         self.process_point_sources(fits_image_data, job, result, upload_key_prefix)
 
         # Apparent magnitude processing.
+        # TODO(ian): These inputs could be made more efficient by just passing
+        # in the data from this function, rather than loading them again from
+        # urls.
         self.process_magnitudes(fits_image_data, job, result, upload_key_prefix)
 
     def process_point_sources(self, image_data, job, result, upload_key_prefix):
@@ -161,7 +164,8 @@ class SubmissionHandler():
 
         logger.info('-> Processing fits image for submission %d' % (submission.subid))
 
-        data = point_source_extraction.load_data_as_fits(image_data)
+        fitsobj = point_source_extraction.get_fits_from_raw(image_data)
+        data = point_source_extraction.extract_image_data_from_fits(fitsobj)
         sources = point_source_extraction.compute(data)
 
         # Coords.
@@ -220,9 +224,27 @@ class SubmissionHandler():
 
         logger.info('-> Processed fits image for submission %d' % (submission.subid))
 
-    def process_magnitudes(self, image_data, upload_key_prefix):
+    def process_magnitudes(self, fits_image_data, job, result, upload_key_prefix):
+        submission = self.submission
+
+        logger.info('-> Processing reference stars/magnitudes for submission %d' % \
+                (submission.subid))
+
         coords = urllib.urlopen(result.coords_json_url).read()
         correlations = urllib.urlopen(result.astrometry_corr_fits_url).read()
+
+        ref_stars = \
+                compute_apparent_magnitudes.choose_reference_stars(correlations, coords)
+
+        name = '%d_%d_reference_stars.json' % (submission.subid, job.jobid)
+        logger.info('  -> Uploading %s...' % name)
+        if not args.dry_run:
+            result.reference_stars_json_url = \
+                    s3_util.upload_to_s3(json.dumps(ref_stars, indent=2), \
+                                         upload_key_prefix, name)
+
+        logger.info('-> Uploaded reference star/magnitude results for submission %d' % \
+                (submission.subid))
 
 def process_pending_submissions(args):
     # Set up astrometry.net client.
