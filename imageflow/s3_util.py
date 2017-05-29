@@ -36,7 +36,6 @@ def upload_to_s3(image_data, key_prefix, name, overwrite=True):
     return k.generate_url(expires_in=0, query_auth=False)
 
 def _guess_mime_type(filename):
-    # TODO(ian): More mime types.
     if filename.endswith('fits'):
         return 'image/fits'
     if filename.endswith('jpg') or filename.endswith('jpeg'):
