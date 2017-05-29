@@ -39,4 +39,12 @@ def _guess_mime_type(filename):
     # TODO(ian): More mime types.
     if filename.endswith('fits'):
         return 'image/fits'
-    return 'image/jpeg'
+    if filename.endswith('jpg') or filename.endswith('jpeg'):
+        return 'image/jpeg'
+    if filename.endswith('png'):
+        return 'image/png'
+    if filename.endswith('json'):
+        return 'application/json'
+    if filename.endswith('txt'):
+        return 'text/plain'
+    return ''
