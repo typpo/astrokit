@@ -23,10 +23,11 @@ def upload_image(request):
             # Data is read just once to avoid rewinding.
             img_data = img.read()
             url = s3_util.upload_to_s3(img_data, 'raw', img.name)
+            submission = process_astrometry_online(url)
             UserUploadedImage(user=request.user,
                               image_url=url,
-                              astrometry_submission_id=submissions[0].subid).save()
-            submissions.append(process_astrometry_online(url))
+                              astrometry_submission_id=submission.subid).save()
+            submissions.append(submission)
 
         # Redirect to submission viewing page.
         return redirect('view_submission', subid=submissions[0].subid)
