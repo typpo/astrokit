@@ -66,6 +66,11 @@ class AnalysisResult(models.Model):
                 'psf_hist_url': self.psf_hist_url,
                 'psf_residual_image_url': self.psf_residual_image_url,
             },
+            'data': {
+                'coords': self.coords,
+                'reference_stars': self.reference_stars,
+                'catalog_reference_stars': self.catalog_reference_stars,
+            },
         }
 
 

@@ -22,6 +22,25 @@
   <a href="{{result.urls.coords_plot_url}}" download>Download</a>
 </div>
 
+<div class="well">
+  <table class="table table-striped">
+    <tr>
+      <th>Field X</th>
+      <th>Field Y</th>
+      <th>Estimated flux</th>
+      <th>Estimated magnitude</th>
+    </tr>
+    {% for point_source in result.data.coords %}
+      <tr>
+        <td>{{point_source.field_x}}</td>
+        <td>{{point_source.field_y}}</td>
+        <td>{{point_source.est_flux}}</td>
+        <td>{{point_source.est_mag}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+
 <h3>Point-spread function analysis</h3>
 
 <h4>Bar graph showing flux for each point source in the image.</h4>
@@ -46,6 +65,26 @@
 <div class="well">
   <img src="{{result.urls.psf_residual_image_url}}" />
   <a href="{{result.urls.psf_residual_image_url}}" download>Download</a>
+</div>
+
+<h4>Reference Stars</h4>
+<div class="well">
+  <table class="table table-striped">
+    <tr>
+      <th>Designation</th>
+      <th>Standard magnitude (RMag)</th>
+      <th>Instrumental magnitude</th>
+    </tr>
+    {% for star in result.data.catalog_reference_stars %}
+      <tr>
+        <td>
+          <a href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/284/out&USNO-B1.0==={{star.designation}}">{{star.designation}}</a>
+        </td>
+        <td>{{star.reference_Rmag}}</td>
+        <td>{{star.instrumental_mag}}</td>
+      </tr>
+    {% endfor %}
+  </table>
 </div>
 {% endblock %}
 {% block scripts %}
