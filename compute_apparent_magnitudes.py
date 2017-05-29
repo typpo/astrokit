@@ -117,7 +117,7 @@ def get_standard_magnitudes(reference_objects):
     in USNO catalog.
 
     Returns: a list of {designation, reference_Rmag, and optionally
-    instrumental_mag} objects.
+    instrumental_mag, field_x, field_y} objects.
     '''
     logger.info('Running catalog lookups...')
     ret = []
@@ -145,6 +145,8 @@ def get_standard_magnitudes(reference_objects):
         }
         if mag_i:
             obj['instrumental_mag'] = mag_i
+            obj['field_x'] = comparison_star['field_x'],
+            obj['field_y'] = comparison_star['field_y'],
         ret.append(obj)
 
     return ret
