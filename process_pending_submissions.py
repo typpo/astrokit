@@ -18,7 +18,7 @@ django.setup()
 import imageflow.s3_util as s3_util
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.astrometry_client import Client
-from imageflow.models import AnalysisResult
+from imageflow.models import AnalysisResult, UserUploadedImage
 
 import .point_source_extraction
 import .compute_apparent_magnitudes
@@ -91,7 +91,8 @@ class SubmissionHandler():
 
     def process_completed_submission(self, job):
         submission = self.submission
-        result = AnalysisResult.objects.create(astrometry_job=job)
+        user = UserUploadedImage.objects.get(astrometry_submission_id=submission.subid).user
+        result = AnalysisResult.objects.create(astrometry_job=job, user=user)
 
         logger.info('-> Submission %d, Job %d is complete' % (submission.subid, job.jobid))
 
