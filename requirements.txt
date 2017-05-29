@@ -21,6 +21,7 @@ html5lib==0.999999999
 idna==2.5
 ipaddress==1.0.18
 jsonfield==1.0.3
+jsonfield==1.0.3
 keyring==10.3.2
 matplotlib==1.5.1
 networkx==1.11

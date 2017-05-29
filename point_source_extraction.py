@@ -61,7 +61,7 @@ def save_fits(sources, path):
     tbhdu = fits.BinTableHDU.from_columns(cols)
     tbhdu.writeto(path, clobber=True)
 
-def save_json(sources, path):
+def format_for_json_export(sources):
     field_x = sources['xcentroid']
     field_y = sources['ycentroid']
     est_flux = sources['flux']
@@ -75,7 +75,10 @@ def save_json(sources, path):
             'est_flux': est_flux[i],
             'est_mag': est_mag[i],
         })
+    return out
 
+def save_json(sources, path):
+    out = format_for_json_export(sources)
     with open(path, 'w') as f:
         f.write(json.dumps(out, indent=2))
 

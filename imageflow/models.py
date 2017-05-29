@@ -4,6 +4,10 @@ from django.contrib import admin
 from django.db import models
 from django.contrib.auth.models import User
 
+# Django's JSONField requires postgres, but this 3rd-party library provides a
+# shim for databases without native json support.
+from jsonfield import JSONField
+
 from astrometry.models import AstrometrySubmissionJob
 
 class AnalysisResult(models.Model):
@@ -29,6 +33,8 @@ class AnalysisResult(models.Model):
 
     coords_plot_url = models.CharField(max_length=1024)
     coords_fits_url = models.CharField(max_length=1024)
+
+    coords = JSONField()
     coords_json_url = models.CharField(max_length=1024)
 
     # Point source extraction.
@@ -38,7 +44,9 @@ class AnalysisResult(models.Model):
     psf_residual_image_url = models.CharField(max_length=1024)
 
     # Reference stars and magnitudes.
+    reference_stars = JSONField()
     reference_stars_json_url = models.CharField(max_length=1024)
+    catalog_reference_stars = JSONField()
     catalog_reference_stars_json_url = models.CharField(max_length=1024)
 
     def get_summary_obj(self):

@@ -189,6 +189,7 @@ class SubmissionHandler():
         point_source_extraction.save_json(sources, coords_json_path)
         logger.info('  -> Uploading %s...' % coords_json_path)
         if not args.dry_run:
+            result.coords = point_source_extraction.format_for_json_export(sources)
             result.coords_json_url = \
                     s3_util.upload_to_s3_via_file(coords_json_path, \
                                                   upload_key_prefix)
@@ -241,6 +242,7 @@ class SubmissionHandler():
         name = '%d_%d_reference_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
+            result.reference_stars = ref_stars
             result.reference_stars_json_url = \
                     s3_util.upload_to_s3(json.dumps(ref_stars, indent=2), \
                                          upload_key_prefix, name)
@@ -254,6 +256,7 @@ class SubmissionHandler():
         name = '%d_%d_catalog_reference_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
+            result.catalog_reference_stars = standard_mags
             result.catalog_reference_stars_json_url = \
                     s3_util.upload_to_s3(json.dumps(standard_mags, indent=2), \
                                          upload_key_prefix, name)
