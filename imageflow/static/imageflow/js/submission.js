@@ -22,7 +22,7 @@ function plotCatalogStars(canvas, referenceStars) {
     var ctx = canvas.getContext('2d');
     ctx.beginPath();
     // Circle - defined by x, y, radius, ...
-    ctx.arc(star.field_x, star.field_y, 5, 0, Math.PI * 2, true);
+    ctx.arc(star.field_x, star.field_y, 5, 0, Math.PI * 2);
     ctx.strokeStyle = 'yellow';
     ctx.lineWidth = 3;
     ctx.stroke();
