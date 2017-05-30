@@ -21,6 +21,8 @@
       <th>Designation</th>
       <th>Standard magnitude (RMag)</th>
       <th>Instrumental magnitude</th>
+      <th>Field X</th>
+      <th>Field Y</th>
     </tr>
     {% for star in result.data.catalog_reference_stars %}
       <tr>
@@ -29,6 +31,8 @@
         </td>
         <td>{{star.reference_Rmag}}</td>
         <td>{{star.instrumental_mag}}</td>
+        <td>{{star.field_x}}</td>
+        <td>{{star.field_y}}</td>
       </tr>
     {% endfor %}
   </table>
