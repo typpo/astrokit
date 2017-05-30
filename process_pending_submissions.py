@@ -113,6 +113,7 @@ class SubmissionHandler():
 
         logger.info('-> Uploading results for submission %d' % (submission.subid))
 
+        # FIXME(ian): This is not correct.
         original_display_url = 'http://nova.astrometry.net/image/%d' \
                 % (job.jobid)
         annotated_display_url = 'http://nova.astrometry.net/annotated_display/%d' \
