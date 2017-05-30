@@ -53,6 +53,7 @@ class AnalysisResult(models.Model):
     def get_summary_obj(self):
         return {
             'jobid': self.astrometry_job.jobid,
+            'subid': self.astrometry_job.submission.subid,
             'urls': {
                 'astrometry_original_display_url': self.astrometry_original_display_url,
                 'astrometry_annotated_display_url': self.astrometry_annotated_display_url,

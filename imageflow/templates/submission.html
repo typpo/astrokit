@@ -2,9 +2,16 @@
 {% load staticfiles %}
 {% load jsonify %}
 
-{% block heading %}View submission{% endblock %}
+{% block heading %}Submission{% endblock %}
 
 {% block content %}
+<ol class="breadcrumb">
+  <li class="active">Astrometry</li>
+  <li><a href="#">Point Sources</a></li>
+  <li><a href="#">Reference Stars</a></li>
+  <li><a href="#">Light Curve</a></li>
+</ol>
+
 <h3>Original</h3>
 <div class="well">
   <img src="{{result.urls.astrometry_original_display_url}}" />
@@ -48,68 +55,11 @@
   </table>
 </div>
 
-<h3>Point-spread function analysis</h3>
-
-<h4>Bar graph showing flux for each point source in the image.</h4>
-<div class="well">
-  <img src="{{result.urls.psf_bar_url}}" />
-  <a href="{{result.urls.psf_bar_url}}" download>Download</a>
-</div>
-
-<h4>Histogram of flux distribution</h4>
-<div class="well">
-  <img src="{{result.urls.psf_hist_url}}" />
-  <a href="{{result.urls.psf_hist_url}}" download>Download</a>
-</div>
-
-<h4>Scatter plot showing computed flux vs naive flux estimation.</h4>
-<div class="well">
-  <img src="{{result.urls.psf_scatter_url}}" />
-  <a href="{{result.urls.psf_scatter_url}}" download>Download</a>
-</div>
-
-<h4>Residual image</h4>
-<div class="well">
-  <img src="{{result.urls.psf_residual_image_url}}" />
-  <a href="{{result.urls.psf_residual_image_url}}" download>Download</a>
-</div>
-
-<h4>Reference Stars</h4>
-<div class="well">
-  <table class="table table-striped">
-    <tr>
-      <th>Designation</th>
-      <th>Standard magnitude (RMag)</th>
-      <th>Instrumental magnitude</th>
-    </tr>
-    {% for star in result.data.catalog_reference_stars %}
-      <tr>
-        <td>
-          <a href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/284/out&USNO-B1.0==={{star.designation}}">{{star.designation}}</a>
-        </td>
-        <td>{{star.reference_Rmag}}</td>
-        <td>{{star.instrumental_mag}}</td>
-      </tr>
-    {% endfor %}
-  </table>
-</div>
-
-<h3>Reference Stars - plot</h3>
-<div class="well">
-  <center>
-    <canvas id="reference-star-plot" />
-  </center>
-</div>
-
 <div style="text-align: right">
-  <a class="btn btn-lg btn-default">View Light Curve</a>
-  <a class="btn btn-lg btn-success">Add to Light Curve</a>
+  <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
+  <a href="/submission/point_sources/{{result.subid}}"
+     class="btn btn-lg btn-success">View point source analysis</a>
 </div>
 {% endblock %}
 {% block scripts %}
-  <script>
-    window.originalImageUrl = {{ result.urls.astrometry_original_display_url | jsonify}};
-    window.catalogReferenceStars = {{ result.data.catalog_reference_stars | jsonify }};
-  </script>
-  <script src="{% static "imageflow/js/submission.js" %}" type="text/javascript"></script>
 {% endblock %}

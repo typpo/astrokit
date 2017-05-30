@@ -30,12 +30,12 @@ def upload_image(request):
             submissions.append(submission)
 
         # Redirect to submission viewing page.
-        return redirect('view_submission', subid=submissions[0].subid)
+        return redirect('astrometry', subid=submissions[0].subid)
 
     return render_to_response('upload_image.html', {},
             context_instance=RequestContext(request))
 
-def view_submission(request, subid):
+def astrometry(request, subid):
     # TODO(ian): Look up submission and view status.
     # TODO(ian): Handle failed Analysis Result.
     try:
@@ -50,6 +50,38 @@ def view_submission(request, subid):
         'result': result.get_summary_obj(),
     }
     return render_to_response('submission.html', template_args,
+            context_instance=RequestContext(request))
+
+def point_sources(request, subid):
+    # TODO(ian): Dedup this with above code.
+    try:
+        result = AnalysisResult.objects.get( \
+                astrometry_job__submission__subid=subid, \
+                status=AnalysisResult.COMPLETE)
+    except ObjectDoesNotExist:
+        return render_to_response('submission_pending.html', {},
+                context_instance=RequestContext(request))
+
+    template_args = {
+        'result': result.get_summary_obj(),
+    }
+    return render_to_response('point_sources.html', template_args,
+            context_instance=RequestContext(request))
+
+def reference_stars(request, subid):
+    # TODO(ian): Dedup this with above code.
+    try:
+        result = AnalysisResult.objects.get( \
+                astrometry_job__submission__subid=subid, \
+                status=AnalysisResult.COMPLETE)
+    except ObjectDoesNotExist:
+        return render_to_response('submission_pending.html', {},
+                context_instance=RequestContext(request))
+
+    template_args = {
+        'result': result.get_summary_obj(),
+    }
+    return render_to_response('reference_stars.html', template_args,
             context_instance=RequestContext(request))
 
 def api_get_submission_results(request, subid):
