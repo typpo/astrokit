@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # 3rd  party
     's3direct',
+    'jsonify',
 
     # Astrokit
     'astrometry',
