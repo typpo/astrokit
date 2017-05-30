@@ -38,5 +38,20 @@ function plotCatalogStars(canvas, referenceStars) {
   }
 }
 
-plotImage(document.getElementById('reference-star-plot'),
-                  window.originalImageUrl);
+function setupCanvasListeners(canvas) {
+  var xPosElt = document.getElementById('canvas-x-pos');
+  var yPosElt = document.getElementById('canvas-y-pos');
+  canvas.onmousemove = function onMouseover(e) {
+    var rect = canvas.getBoundingClientRect();
+    var mx = e.clientX - rect.left;
+    var my = e.clientY - rect.top;
+    xPosElt.innerHTML = mx;
+    yPosElt.innerHTML = my;
+  }
+}
+
+(function() {
+  var canvas = document.getElementById('reference-star-plot');
+  setupCanvasListeners(canvas);
+  plotImage(canvas, window.originalImageUrl);
+})();
