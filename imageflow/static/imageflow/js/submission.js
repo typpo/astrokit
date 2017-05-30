@@ -23,17 +23,17 @@ function plotCatalogStars(canvas, referenceStars) {
     ctx.beginPath();
     // Circle - defined by x, y, radius, ...
     ctx.arc(star.field_x, star.field_y, 5, 0, Math.PI * 2, true);
-    ctx.strokeStyle = 'orange';
+    ctx.strokeStyle = 'yellow';
     ctx.lineWidth = 3;
     ctx.stroke();
 
     // Label
-    ctx.font = '13px Arial';
-    ctx.strokeStyle= 'orange';
-    ctx.lineWidth = 1;
+    ctx.font = '16px Arial';
+    ctx.strokeStyle= 'black';
+    ctx.lineWidth = 2;
     var labelWidth = ctx.measureText(star.designation).width;
     ctx.strokeText(star.designation, star.field_x - (labelWidth / 2), star.field_y - 8);
-    ctx.fillStyle = 'white';
+    ctx.fillStyle = 'yellow';
     ctx.fillText(star.designation, star.field_x - (labelWidth / 2), star.field_y - 8);
   }
 }
