@@ -4,6 +4,12 @@
 {% block heading %}View submission{% endblock %}
 
 {% block content %}
+<h3>Original</h3>
+<div class="well">
+  <img src="{{result.urls.astrometry_original_display_url}}" />
+  <a href="{{result.urls.astrometry_original_display_url}}" download>Download</a>
+</div>
+
 <h3>Annotated plot</h3>
 <a href="{{result.urls.astrometry_image_fits_url}}" download>Image FITS</a>
 &middot;

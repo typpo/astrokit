@@ -27,6 +27,7 @@ class AnalysisResult(models.Model):
     astrometry_job = models.ForeignKey(AstrometrySubmissionJob)
 
     # Processed output urls on S3.
+    astrometry_original_display_url = models.CharField(max_length=1024)
     astrometry_annotated_display_url = models.CharField(max_length=1024)
     astrometry_image_fits_url = models.CharField(max_length=1024)
     astrometry_corr_fits_url = models.CharField(max_length=1024)
@@ -53,6 +54,7 @@ class AnalysisResult(models.Model):
         return {
             'jobid': self.astrometry_job.jobid,
             'urls': {
+                'astrometry_original_display_url': self.astrometry_original_display_url,
                 'astrometry_annotated_display_url': self.astrometry_annotated_display_url,
                 'astrometry_image_fits_url': self.astrometry_image_fits_url,
                 'astrometry_corr_fits_url': self.astrometry_corr_fits_url,

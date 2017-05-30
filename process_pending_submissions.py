@@ -113,6 +113,8 @@ class SubmissionHandler():
 
         logger.info('-> Uploading results for submission %d' % (submission.subid))
 
+        original_display_url = 'http://nova.astrometry.net/image/%d' \
+                % (job.jobid)
         annotated_display_url = 'http://nova.astrometry.net/annotated_display/%d' \
                 % (job.jobid)
         new_image_fits_url = 'http://nova.astrometry.net/new_fits_file/%d' \
@@ -122,6 +124,14 @@ class SubmissionHandler():
 
         # Timestamp is added to name automatically.
         upload_key_prefix = 'processed/%d' % (submission.subid)
+
+        # Original
+        name = '%d_%d_original.jpg' % (submission.subid, job.jobid)
+        logger.info('  -> Uploading %s...' % name)
+        if not args.dry_run:
+            result.astrometry_original_display_url = \
+                    s3_util.upload_to_s3_via_url(original_display_url, \
+                                                 upload_key_prefix, name)
 
         # Annotated jpg.
         name = '%d_%d_annotated.jpg' % (submission.subid, job.jobid)
