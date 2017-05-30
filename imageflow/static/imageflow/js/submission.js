@@ -42,6 +42,7 @@ function setupCanvasListeners(canvas) {
   var xPosElt = document.getElementById('canvas-x-pos');
   var yPosElt = document.getElementById('canvas-y-pos');
   canvas.onmousemove = function onMouseover(e) {
+    // https://stackoverflow.com/questions/17130395/real-mouse-position-in-canvas
     var rect = canvas.getBoundingClientRect();
     var mx = e.clientX - rect.left;
     var my = e.clientY - rect.top;
