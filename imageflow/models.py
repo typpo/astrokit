@@ -86,6 +86,8 @@ class UserUploadedImage(models.Model):
     astrometry_submission_id = models.CharField(max_length=512)
     created_at = models.DateTimeField(auto_now=True)
 
+    # Analysis result isn't filled until the job is actually processed.
+    # analysis_result = models.ForeignKey(AnalysisResult, null=True)
 
 admin.site.register(AnalysisResult)
 admin.site.register(UserUploadedImage)
