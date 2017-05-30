@@ -84,6 +84,22 @@ def reference_stars(request, subid):
     return render_to_response('reference_stars.html', template_args,
             context_instance=RequestContext(request))
 
+def light_curve(request, subid):
+    # TODO(ian): Dedup this with above code.
+    try:
+        result = AnalysisResult.objects.get( \
+                astrometry_job__submission__subid=subid, \
+                status=AnalysisResult.COMPLETE)
+    except ObjectDoesNotExist:
+        return render_to_response('submission_pending.html', {},
+                context_instance=RequestContext(request))
+
+    template_args = {
+        'result': result.get_summary_obj(),
+    }
+    return render_to_response('light_curve.html', template_args,
+            context_instance=RequestContext(request))
+
 def api_get_submission_results(request, subid):
     try:
         result = AnalysisResult.objects.get( \

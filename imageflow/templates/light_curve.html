@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% load staticfiles %}
+{% load jsonify %}
+
+{% block heading %}Submission - Reference Stars{% endblock %}
+
+{% block content %}
+<ol class="breadcrumb">
+  <li><a href="#">Astrometry</a></li>
+  <li><a href="#">Point Sources</a></li>
+  <li><a href="#">Reference Stars</a></li>
+  <li class="active">Light Curve</li>
+</ol>
+
+<h3>Light Curve</h3>
+
+<div class="well">
+  <img src="https://i.imgur.com/XqrF0ju.png" />
+</div>
+
+<div style="text-align: right">
+  <a href="#" class="btn btn-lg btn-success">Export</a>
+</div>
+{% endblock %}
+{% block scripts %}
+{% endblock %}
