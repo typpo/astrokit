@@ -39,6 +39,11 @@ def urat1_lookup(ra, dec):
             cache[cachekey] = results
     return results
 
+def urat1_postprocess(obj):
+    obj['delta_BV'] = obj['Bmag'] - obj['Vmag']
+    obj['delta_gr'] = obj['gmag'] - obj['rmag']
+    return obj
+
 def choose_reference_stars_from_file(corr_fits_path, point_source_json_path):
     point_source_json = open(point_source_json_path, 'r').read()
     corr_fits_data = open(corr_fits_path, 'rb').read()
@@ -118,9 +123,10 @@ def get_standard_magnitudes_urat1(reference_objects):
     return get_standard_magnitudes(reference_objects,
             'URAT1',
             ['Jmag', 'Hmag', 'Kmag', 'Bmag', 'Vmag', 'gmag', 'rmag', 'imag'],
-            urat1_lookup)
+            urat1_lookup,
+            urat1_postprocess)
 
-def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn):
+def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, postprocess_fn):
     '''
     Given a list of reference star objects {index_ra, index_dec}, look them up
     using provided function.
@@ -150,11 +156,14 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn):
             'index_dec': dec,
         }
         for field in fields:
-            obj[field] = result[field].data[0]
+            obj[field] = Decimal(str(result[field].data[0]))
         if mag_i:
             obj['instrumental_mag'] = mag_i
             obj['field_x'] = comparison_star['field_x'],
             obj['field_y'] = comparison_star['field_y'],
+            # TODO(ian): compute standard mag - instrumental mag (for the right band)
+        if postprocess_fn:
+            obj = postprocess_fn(obj)
         ret.append(obj)
 
     return ret
