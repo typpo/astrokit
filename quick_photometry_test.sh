@@ -5,13 +5,13 @@ mkdir -p test_output
 pushd test_output
 
 if [[ ! -f ./coords.json ]]; then
-  wget -O coords.json 'https://s3.amazonaws.com/astrokit-uploads/processed/1078914/1464154928-1078914_1558980_coords.json'
+  wget -O coords.json 'https://s3.amazonaws.com/astrokit-uploads/processed/1595354/1498414164-1595354_2088601_coords.json'
 fi
 if [[ ! -f ./corr.fits ]]; then
-wget -O corr.fits 'https://s3.amazonaws.com/astrokit-uploads/processed/1078914/1464154875-1078914_1558980_corr.fits'
+wget -O corr.fits 'https://s3.amazonaws.com/astrokit-uploads/processed/1595354/1498414156-1595354_2088601_corr.fits'
 fi
 if [[ ! -f ./image.fits ]]; then
-  wget -O image.fits 'https://s3.amazonaws.com/astrokit-uploads/processed/1078914/1464154893-1078914_1558980_image.fits'
+  wget -O image.fits 'https://s3.amazonaws.com/astrokit-uploads/processed/1595354/1498414158-1595354_2088601_image.fits'
 fi
 
 ../point_source_extraction.py \
