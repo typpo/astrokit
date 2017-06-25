@@ -15,24 +15,38 @@
 <h3>Reference Stars</h3>
 
 <h4>Matched catalog stars</h4>
-<div class="well">
+<div class="well" style="overflow-x: scroll">
   <table class="table table-striped">
     <tr>
       <th>Designation</th>
-      <th>Standard magnitude (RMag)</th>
-      <th>Instrumental magnitude</th>
       <th>Field X</th>
       <th>Field Y</th>
+      <th>Instrumental magnitude</th>
+      <th>Jmag</th>
+      <th>Hmag</th>
+      <th>Kmag</th>
+      <th>Bmag</th>
+      <th>Vmag</th>
+      <th>gmag</th>
+      <th>rmag</th>
+      <th>imag</th>
     </tr>
     {% for star in result.data.catalog_reference_stars %}
       <tr>
         <td>
-          <a href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/284/out&USNO-B1.0==={{star.designation}}">{{star.designation}}</a>
+          <a href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&URAT1==={{star.designation}}">{{star.designation}}</a>
         </td>
-        <td>{{star.reference_Rmag}}</td>
-        <td>{{star.instrumental_mag}}</td>
         <td>{{star.field_x}}</td>
         <td>{{star.field_y}}</td>
+        <td>{{star.instrumental_mag}}</td>
+        <td>{{star.Jmag}}</td>
+        <td>{{star.Hmag}}</td>
+        <td>{{star.Kmag}}</td>
+        <td>{{star.Bmag}}</td>
+        <td>{{star.Vmag}}</td>
+        <td>{{star.gmag}}</td>
+        <td>{{star.rmag}}</td>
+        <td>{{star.imag}}</td>
       </tr>
     {% endfor %}
   </table>

@@ -11,7 +11,10 @@ from cStringIO import StringIO
 
 import numpy as np
 
+from astropy import coordinates as coords
+from astropy import units
 from astropy.io import fits
+from astroquery.sdss import SDSS
 from astroquery.simbad import Simbad
 from astroquery.vizier import Vizier
 from rtree import index as rTreeIndex
@@ -26,16 +29,29 @@ cache = shelve.open(cache_path)
 # point source extraction and astrometry.net's.
 MAX_RTREE_DISTANCE = 2.0
 
-# Vizier database lookup object.
-vizier = Vizier(columns=['_RAJ2000', '_DEJ2000','B-V', 'R2mag', 'B2mag', 'USNO-B1.0'])
-
 def usno_lookup(ra, dec):
+    vizier = Vizier(columns=['USNO-B1.0', '_RAJ2000', '_DEJ2000','B-V', 'R2mag', 'B2mag'])
+    catalog = 'I/284/out'
     searchstr = '%f %f' % (ra, dec)
-    results = cache.get(searchstr)
+    cachekey = '%s__%s' % (catalog, searchstr)
+    results = cache.get(cachekey)
     if not results:
-        results = vizier.query_region(searchstr, radius='1s', catalog='I/284/out')
+        results = vizier.query_region(searchstr, radius='1s', catalog=catalog)
         if len(results) > 0:
-            cache[searchstr] = results
+            cache[cachekey] = results
+    return results
+
+def urat1_lookup(ra, dec):
+    # TODO(ian): Clean all this up and remove duplicate code and field names.
+    vizier = Vizier(columns=['URAT1', '_RAJ2000', '_DEJ2000', 'Jmag', 'Hmag', 'Kmag', 'Bmag', 'Vmag', 'gmag', 'rmag', 'imag'])
+    catalog = 'I/329'
+    searchstr = '%f %f' % (ra, dec)
+    cachekey = '%s__%s' % (catalog, searchstr)
+    results = cache.get(cachekey)
+    if not results:
+        results = vizier.query_region(searchstr, radius='1s', catalog=catalog)
+        if len(results) > 0:
+            cache[cachekey] = results
     return results
 
 def choose_reference_stars_from_file(corr_fits_path, point_source_json_path):
@@ -112,15 +128,15 @@ def choose_reference_stars(corr_fits_data, point_source_json):
     logger.info('distance max: %f' % max(distances))
     return reference_objects
 
-def get_standard_magnitudes(reference_objects):
+def get_standard_magnitudes_SDSS(reference_objects):
     '''
     Given a list of reference star objects {index_ra, index_dec}, look them up
-    in USNO catalog.
+    in SDSS catalog.
 
     Returns: a list of {designation, reference_Rmag, and optionally
     instrumental_mag, field_x, field_y} objects.
     '''
-    logger.info('Running catalog lookups...')
+    logger.info('Running SDSS catalog lookups...')
     ret = []
     for comparison_star in reference_objects:
         ra = comparison_star['index_ra']
@@ -128,21 +144,25 @@ def get_standard_magnitudes(reference_objects):
 
         mag_i = comparison_star.get('mag_i')
 
-        # Query USNO catalog.
-        results = usno_lookup(ra, dec)
-        if len(results) < 1:
+        # http://www.astropy.org/astropy-tutorials/Coordinates.html
+        # http://astroquery.readthedocs.io/en/latest/api/astroquery.sdss.SDSSClass.html#astroquery.sdss.SDSSClass.query_region
+        print ra, dec
+        coord = coords.SkyCoord(ra * units.deg, dec * units.deg, frame='icrs')
+        print coord
+        results = SDSS.query_region(coord, photoobj_fields=['ra','dec','u','g','r','i','z'], radius=8*units.arcsec)
+        print results
+        if not results or len(results) < 1:
             continue
-        r2mag = float(results[0]['R2mag'].data[0])
-        if math.isnan(r2mag):
-            # logger.info('  --> skipping due to no r2mag')
-            continue
-        desig = results[0]['USNO-B1.0'].data[0]
+        if len(results) > 1:
+            # This could be a problem...
+            print 'Warning: multiple results for coordinate'
+
+        result = sdss[0]
+        print result
+        desig = 'me nono'
 
         obj = {
             'designation': desig,
-            'reference_Rmag': r2mag,
-
-            # 'observed_flux': flux,
         }
         if mag_i:
             obj['instrumental_mag'] = mag_i
@@ -150,11 +170,62 @@ def get_standard_magnitudes(reference_objects):
             obj['field_y'] = comparison_star['field_y'],
         ret.append(obj)
 
+    print 'ret'
+    print ret
+    return ret
+
+def get_standard_magnitudes_USNO(reference_objects):
+    return get_standard_magnitudes(reference_objects,
+            'USNO-B1.0',
+            ['R2mag', 'B2mag'],
+            usno_lookup)
+
+def get_standard_magnitudes_urat1(reference_objects):
+    return get_standard_magnitudes(reference_objects,
+            'URAT1',
+            ['Jmag', 'Hmag', 'Kmag', 'Bmag', 'Vmag', 'gmag', 'rmag', 'imag'],
+            urat1_lookup)
+
+def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn):
+    '''
+    Given a list of reference star objects {index_ra, index_dec}, look them up
+    using provided function.
+
+    Returns: a list of {designation, reference_Rmag, and optionally
+    instrumental_mag, field_x, field_y} objects.
+    '''
+    logger.info('Running catalog lookups %s...' % desig_field)
+    ret = []
+    for comparison_star in reference_objects:
+        ra = comparison_star['index_ra']
+        dec = comparison_star['index_dec']
+
+        mag_i = comparison_star.get('mag_i')
+
+        results = lookup_fn(ra, dec)
+        if len(results) < 1:
+            continue
+        if len(results) > 1:
+            print 'Warning: multiple matches for a single point coordinate.'
+
+        result = results[0]
+        desig = result[desig_field].data[0]
+        obj = {
+            'designation': desig,
+        }
+        for field in fields:
+            obj[field] = float(result[field].data[0])
+        if mag_i:
+            obj['instrumental_mag'] = mag_i
+            obj['field_x'] = float(comparison_star['field_x']),
+            obj['field_y'] = float(comparison_star['field_y']),
+        ret.append(obj)
+
     return ret
 
 def compute_apparent_magnitudes(reference_objects):
     logger.info('Running catalog lookups...')
-    comparison_objs = get_standard_magnitudes(reference_objects)
+    comparison_objs = get_standard_magnitudes_urat1(reference_objects)
 
     logger.info('Running comparisons...')
     percent_errors = []

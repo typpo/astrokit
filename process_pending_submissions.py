@@ -272,7 +272,7 @@ class SubmissionHandler():
 
         # Get reference star standard magnitudes.
         # TODO(ian): Produce a graphic that marks the reference stars.
-        standard_mags = compute_apparent_magnitudes.get_standard_magnitudes(ref_stars)
+        standard_mags = compute_apparent_magnitudes.get_standard_magnitudes_urat1(ref_stars)
         name = '%d_%d_catalog_reference_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
