@@ -30,8 +30,7 @@ body {
 }
 
 .well img {
-  width: 100%;
-  height: auto;
+  display: block;
 }
 
 .drop-shadow {
