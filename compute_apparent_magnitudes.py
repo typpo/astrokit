@@ -41,7 +41,7 @@ def urat1_lookup(ra, dec):
 def choose_reference_stars_from_file(corr_fits_path, point_source_json_path):
     point_source_json = open(point_source_json_path, 'r').read()
     corr_fits_data = open(corr_fits_path, 'rb').read()
-    choose_reference_stars(point_source_json, corr_fits_data)
+    choose_reference_stars(corr_fits_data, point_source_json)
 
 def choose_reference_stars(corr_fits_data, point_source_json):
     '''
