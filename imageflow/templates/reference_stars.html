@@ -14,22 +14,16 @@
 
 <h3>Reference Stars</h3>
 
-<h4>Matched catalog stars</h4>
-<div class="well" style="overflow-x: scroll">
+<h4>Catalog stars (URAT1)</h4>
+<div class="well" style="overflow-x: auto">
   <table class="table table-striped">
     <tr>
       <th>Designation</th>
       <th>Field X</th>
       <th>Field Y</th>
+      <th>RA (J2000)</th>
+      <th>Dec (J2000)</th>
       <th>Instrumental magnitude</th>
-      <th>Jmag</th>
-      <th>Hmag</th>
-      <th>Kmag</th>
-      <th>Bmag</th>
-      <th>Vmag</th>
-      <th>gmag</th>
-      <th>rmag</th>
-      <th>imag</th>
     </tr>
     {% for star in result.data.catalog_reference_stars %}
       <tr>
@@ -38,7 +32,34 @@
         </td>
         <td>{{star.field_x}}</td>
         <td>{{star.field_y}}</td>
+        <td>{{star.index_ra}}</td>
+        <td>{{star.index_dec}}</td>
         <td>{{star.instrumental_mag}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<h4>Catalog photometry</h4>
+<div class="well" style="overflow-x: auto">
+  <table class="table table-striped">
+    <tr>
+      <th>Designation</th>
+      <th>Instrumental magnitude</th>
+      <th>Jmag (2MASS)</th>
+      <th>Hmag (2MASS)</th>
+      <th>Kmag (2MASS)</th>
+      <th>Bmag (APASS)</th>
+      <th>Vmag (APASS)</th>
+      <th>gmag (APASS)</th>
+      <th>rmag (APASS)</th>
+      <th>imag (APASS)</th>
+    </tr>
+    {% for star in result.data.catalog_reference_stars %}
+      <tr>
+        <td>
+          <a href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
+        </td>
         <td>{{star.Jmag}}</td>
         <td>{{star.Hmag}}</td>
         <td>{{star.Kmag}}</td>
