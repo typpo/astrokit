@@ -26,6 +26,9 @@ class AnalysisResult(models.Model):
 
     astrometry_job = models.ForeignKey(AstrometrySubmissionJob)
 
+    # Meta data.
+    image_datetime = models.DateTimeField()
+
     # Processed output urls on S3.
     astrometry_original_display_url = models.CharField(max_length=1024)
     astrometry_annotated_display_url = models.CharField(max_length=1024)
@@ -55,6 +58,9 @@ class AnalysisResult(models.Model):
         return {
             'jobid': self.astrometry_job.jobid,
             'subid': self.astrometry_job.submission.subid,
+            'meta': {
+                'image_datetime': self.image_datetime,
+            },
             'urls': {
                 'astrometry_original_display_url': self.astrometry_original_display_url,
                 'astrometry_annotated_display_url': self.astrometry_annotated_display_url,
