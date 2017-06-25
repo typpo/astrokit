@@ -16,7 +16,7 @@
 
 <h4>Catalog stars (URAT1)</h4>
 <div class="well" style="overflow-x: auto">
-  <table class="table table-striped">
+  <table class="table table-striped table-hover">
     <tr>
       <th>Designation</th>
       <th>Field X</th>
@@ -42,18 +42,18 @@
 
 <h4>Catalog photometry</h4>
 <div class="well" style="overflow-x: auto">
-  <table class="table table-striped">
+  <table class="table table-striped table-hover">
     <tr>
       <th>Designation</th>
       <th>Instrumental magnitude</th>
-      <th>Jmag (2MASS)</th>
-      <th>Hmag (2MASS)</th>
-      <th>Kmag (2MASS)</th>
-      <th>Bmag (APASS)</th>
-      <th>Vmag (APASS)</th>
-      <th>gmag (APASS)</th>
-      <th>rmag (APASS)</th>
-      <th>imag (APASS)</th>
+      <th>Jmag<br>(2MASS)</th>
+      <th>Hmag<br>(2MASS)</th>
+      <th>Kmag<br>(2MASS)</th>
+      <th>Bmag<br>(APASS)</th>
+      <th>Vmag<br>(APASS)</th>
+      <th>gmag<br>(APASS)</th>
+      <th>rmag<br>(APASS)</th>
+      <th>imag<br>(APASS)</th>
     </tr>
     {% for star in result.data.catalog_reference_stars %}
       <tr>
