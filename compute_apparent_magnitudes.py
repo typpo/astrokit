@@ -212,6 +212,8 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn):
         desig = result[desig_field].data[0]
         obj = {
             'designation': desig,
+            'index_ra': ra,
+            'index_dec': dec,
         }
         for field in fields:
             obj[field] = float(result[field].data[0])
