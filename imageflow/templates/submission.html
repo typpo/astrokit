@@ -23,7 +23,26 @@
 Parsed from fits <code>DATE-OBS</code> field; edits not yet supported. ISO 8601 format.
 </p>
 <div class="well">
-  <input class="input-lg" style="width: 30em" type="text" value="{{result.meta.image_datetime | date:'c'}}">
+  <input class="form-control" style="width: 30em" type="text" value="{{result.meta.image_datetime | date:'c'}}">
+</div>
+
+<h3>Filter</h3>
+<p>
+Select the standard filter that most closely matches the filter used for this image.
+</p>
+<div class="well">
+  <label>
+    <select class="form-control">
+      <option value="B" selected>B (Johnson)</option>
+      <option value="V">V (Johnson)</option>
+      <option value="g'">g' (Sloan)</option>
+      <option value="r'">r' (Sloan)</option>
+      <option value="i'">i' (Sloan)</option>
+      <option value="J">J (2MASS)</option>
+      <option value="H">H (2MASS)</option>
+      <option value="K">K (2MASS)</option>
+    </select>
+  </label>
 </div>
 
 <h3>Point source coordinates</h3>
