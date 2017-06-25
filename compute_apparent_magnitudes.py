@@ -8,6 +8,7 @@ import shelve
 import simplejson as json
 
 from cStringIO import StringIO
+from decimal import Decimal
 
 import numpy as np
 
@@ -41,7 +42,7 @@ def urat1_lookup(ra, dec):
 def choose_reference_stars_from_file(corr_fits_path, point_source_json_path):
     point_source_json = open(point_source_json_path, 'r').read()
     corr_fits_data = open(corr_fits_path, 'rb').read()
-    choose_reference_stars(corr_fits_data, point_source_json)
+    return choose_reference_stars(corr_fits_data, point_source_json)
 
 def choose_reference_stars(corr_fits_data, point_source_json):
     '''
@@ -82,6 +83,7 @@ def choose_reference_stars(corr_fits_data, point_source_json):
     distances = []
     reference_objects = []
     for point in pse_points:
+        # These are Decimal typed.
         pse_x = point['field_x']
         pse_y = point['field_y']
 
@@ -90,7 +92,7 @@ def choose_reference_stars(corr_fits_data, point_source_json):
 
         nearest = list(tree.nearest((pse_x, pse_y), num_results=1, objects=True))[0].object
 
-        dist = math.sqrt((pse_x - nearest['field_x'])**2 + (pse_y - nearest['field_y'])**2)
+        dist = math.sqrt((pse_x - Decimal(nearest['field_x']))**2 + (pse_y - Decimal(nearest['field_y']))**2)
         if dist > MAX_RTREE_DISTANCE:
             #logger.error('Rejecting a point source because its distance to nearest corr object is %f, greater than %f' % \
             #             (dist, MAX_RTREE_DISTANCE))
@@ -158,7 +160,6 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn):
     return ret
 
 def compute_apparent_magnitudes(reference_objects):
-    logger.info('Running catalog lookups...')
     comparison_objs = get_standard_magnitudes_urat1(reference_objects)
 
     logger.info('Running comparisons...')
