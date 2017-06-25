@@ -55,4 +55,7 @@ function setupCanvasListeners(canvas) {
   var canvas = document.getElementById('reference-star-plot');
   setupCanvasListeners(canvas);
   plotImage(canvas, window.originalImageUrl);
+
+  // Initialize tooltips.
+  $('[data-toggle="tooltip"]').tooltip()
 })();
