@@ -187,6 +187,7 @@ class SubmissionHandler():
         for fmt in ('%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%d', '%d.%m.%Y', '%d/%m/%y'):
             try:
                 result.image_datetime = datetime.strptime(dateobs, fmt)
+                break
             except ValueError:
                 pass
 

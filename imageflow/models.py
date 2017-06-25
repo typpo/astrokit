@@ -28,6 +28,8 @@ class AnalysisResult(models.Model):
 
     # Meta data.
     image_datetime = models.DateTimeField(auto_now=True)
+    # https://stackoverflow.com/questions/6386172/datetimefield-doesnt-show-in-admin-system
+    image_datetime.editable = True
 
     # Processed output urls on S3.
     astrometry_original_display_url = models.CharField(max_length=1024)
