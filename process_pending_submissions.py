@@ -7,6 +7,8 @@ import simplejson as json
 import sys
 import urllib
 
+from datetime import datetime
+
 import django
 from django.conf import settings
 from django.utils import timezone
@@ -152,30 +154,48 @@ class SubmissionHandler():
 
         # FITS.
         name = '%d_%d_image.fits' % (submission.subid, job.jobid)
-        fits_image_data = urllib.urlopen(new_image_fits_url).read()
+        # TODO(ian): Process this raw fits data here using some util fn, rather
+        # than processing it in point_source_extraction.
+        raw_fits_data = urllib.urlopen(new_image_fits_url).read()
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
             result.astrometry_image_fits_url = \
-                    s3_util.upload_to_s3(fits_image_data, \
+                    s3_util.upload_to_s3(raw_fits_data, \
                                          upload_key_prefix, name)
 
         logger.info('-> Uploaded results for submission %d' % (submission.subid))
 
+        # Metadata processing.
+        self.process_metadata(raw_fits_data, result)
+
         # Point source extraction processing.
-        self.process_point_sources(fits_image_data, job, result, upload_key_prefix)
+        self.process_point_sources(raw_fits_data, job, result, upload_key_prefix)
 
         # Apparent magnitude processing.
         # TODO(ian): These inputs could be made more efficient by just passing
         # in the data from this function, rather than loading them again from
         # urls.
-        self.process_magnitudes(fits_image_data, job, result, upload_key_prefix)
+        self.process_magnitudes(raw_fits_data, job, result, upload_key_prefix)
 
-    def process_point_sources(self, raw_image_data, job, result, upload_key_prefix):
+    def process_metadata(self, raw_fits_data, result):
+        fitsobj = point_source_extraction.get_fits_from_raw(raw_fits_data)
+        dateobs = fitsobj[0].header.get('DATE-OBS')
+        if not dateobs:
+            return None
+
+        # TODO(ian): make this a util
+        for fmt in ('%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%d', '%d.%m.%Y', '%d/%m/%y'):
+            try:
+                result.image_datetime = datetime.strptime(dateobs, fmt)
+            except ValueError:
+                pass
+
+    def process_point_sources(self, raw_fits_data, job, result, upload_key_prefix):
         submission = self.submission
 
         logger.info('-> Processing fits image for submission %d' % (submission.subid))
 
-        fitsobj = point_source_extraction.get_fits_from_raw(raw_image_data)
+        fitsobj = point_source_extraction.get_fits_from_raw(raw_fits_data)
         data = point_source_extraction.extract_image_data_from_fits(fitsobj)
         sources = point_source_extraction.compute(data)
 
@@ -245,7 +265,7 @@ class SubmissionHandler():
 
         logger.info('-> Processed fits image for submission %d' % (submission.subid))
 
-    def process_magnitudes(self, fits_image_data, job, result, upload_key_prefix):
+    def process_magnitudes(self, raw_fits_data, job, result, upload_key_prefix):
         submission = self.submission
 
         logger.info('-> Processing reference stars/magnitudes for submission %d' % \

@@ -14,6 +14,8 @@ if [[ ! -f ./image.fits ]]; then
   wget -O image.fits 'https://s3.amazonaws.com/astrokit-uploads/processed/1595354/1498414158-1595354_2088601_image.fits'
 fi
 
+# TODO(ian): This doesn't include the process_metadata step, which extracts datetime.
+
 ../point_source_extraction.py \
     --coords_json ./coords.json \
     ./image.fits
