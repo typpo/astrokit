@@ -19,8 +19,11 @@
 </div>
 
 <h3>Date &amp; time</h3>
+<p>
+ISO 8601 Format
+</p>
 <div class="well">
-  <input class="input-lg" type="text" value="{{result.meta.image_datetime}}" disabled>
+  <input class="input-lg" style="width: 30em" type="text" value="{{result.meta.image_datetime | date:'c'}}">
 </div>
 
 <h3>Point source coordinates</h3>
