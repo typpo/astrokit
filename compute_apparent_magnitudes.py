@@ -11,11 +11,7 @@ from cStringIO import StringIO
 
 import numpy as np
 
-from astropy import coordinates as coords
-from astropy import units
 from astropy.io import fits
-from astroquery.sdss import SDSS
-from astroquery.simbad import Simbad
 from astroquery.vizier import Vizier
 from rtree import index as rTreeIndex
 
@@ -28,18 +24,6 @@ cache = shelve.open(cache_path)
 # Maximum distance, in pixels, to accept a match for an object between our
 # point source extraction and astrometry.net's.
 MAX_RTREE_DISTANCE = 2.0
-
-def usno_lookup(ra, dec):
-    vizier = Vizier(columns=['USNO-B1.0', '_RAJ2000', '_DEJ2000','B-V', 'R2mag', 'B2mag'])
-    catalog = 'I/284/out'
-    searchstr = '%f %f' % (ra, dec)
-    cachekey = '%s__%s' % (catalog, searchstr)
-    results = cache.get(cachekey)
-    if not results:
-        results = vizier.query_region(searchstr, radius='1s', catalog=catalog)
-        if len(results) > 0:
-            cache[cachekey] = results
-    return results
 
 def urat1_lookup(ra, dec):
     # TODO(ian): Clean all this up and remove duplicate code and field names.
@@ -127,58 +111,6 @@ def choose_reference_stars(corr_fits_data, point_source_json):
     logger.info('distance min: %f' % min(distances))
     logger.info('distance max: %f' % max(distances))
     return reference_objects
-
-def get_standard_magnitudes_SDSS(reference_objects):
-    '''
-    Given a list of reference star objects {index_ra, index_dec}, look them up
-    in SDSS catalog.
-
-    Returns: a list of {designation, reference_Rmag, and optionally
-    instrumental_mag, field_x, field_y} objects.
-    '''
-    logger.info('Running SDSS catalog lookups...')
-    ret = []
-    for comparison_star in reference_objects:
-        ra = comparison_star['index_ra']
-        dec = comparison_star['index_dec']
-
-        mag_i = comparison_star.get('mag_i')
-
-        # http://www.astropy.org/astropy-tutorials/Coordinates.html
-        # http://astroquery.readthedocs.io/en/latest/api/astroquery.sdss.SDSSClass.html#astroquery.sdss.SDSSClass.query_region
-        print ra, dec
-        coord = coords.SkyCoord(ra * units.deg, dec * units.deg, frame='icrs')
-        print coord
-        results = SDSS.query_region(coord, photoobj_fields=['ra','dec','u','g','r','i','z'], radius=8*units.arcsec)
-        print results
-        if not results or len(results) < 1:
-            continue
-        if len(results) > 1:
-            # This could be a problem...
-            print 'Warning: multiple results for coordinate'
-
-        result = sdss[0]
-        print result
-        desig = 'me nono'
-
-        obj = {
-            'designation': desig,
-        }
-        if mag_i:
-            obj['instrumental_mag'] = mag_i
-            obj['field_x'] = comparison_star['field_x'],
-            obj['field_y'] = comparison_star['field_y'],
-        ret.append(obj)
-
-    print 'ret'
-    print ret
-    return ret
-
-def get_standard_magnitudes_USNO(reference_objects):
-    return get_standard_magnitudes(reference_objects,
-            'USNO-B1.0',
-            ['R2mag', 'B2mag'],
-            usno_lookup)
 
 def get_standard_magnitudes_urat1(reference_objects):
     return get_standard_magnitudes(reference_objects,
