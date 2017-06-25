@@ -34,6 +34,7 @@ class AnalysisResult(models.Model):
 
     coords_plot_url = models.CharField(max_length=1024)
     coords_fits_url = models.CharField(max_length=1024)
+    original_display_url = models.CharField(max_length=1024)
 
     coords = JSONField()
     coords_json_url = models.CharField(max_length=1024)
@@ -60,6 +61,7 @@ class AnalysisResult(models.Model):
                 'astrometry_image_fits_url': self.astrometry_image_fits_url,
                 'astrometry_corr_fits_url': self.astrometry_corr_fits_url,
 
+                'original_display_url': self.original_display_url,
                 'coords_plot_url': self.coords_plot_url,
                 'coords_fits_url': self.coords_fits_url,
                 'coords_json_url': self.coords_json_url,

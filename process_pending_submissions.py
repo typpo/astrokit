@@ -170,14 +170,23 @@ class SubmissionHandler():
         # urls.
         self.process_magnitudes(fits_image_data, job, result, upload_key_prefix)
 
-    def process_point_sources(self, image_data, job, result, upload_key_prefix):
+    def process_point_sources(self, raw_image_data, job, result, upload_key_prefix):
         submission = self.submission
 
         logger.info('-> Processing fits image for submission %d' % (submission.subid))
 
-        fitsobj = point_source_extraction.get_fits_from_raw(image_data)
+        fitsobj = point_source_extraction.get_fits_from_raw(raw_image_data)
         data = point_source_extraction.extract_image_data_from_fits(fitsobj)
         sources = point_source_extraction.compute(data)
+
+        # Unaltered image.
+        image_path = '%d_%d_display_image.png' % (submission.subid, job.jobid)
+        point_source_extraction.save_image(data, image_path);
+        logger.info('  -> Uploading %s...' % image_path)
+        if not args.dry_run:
+            result.original_display_url = \
+                    s3_util.upload_to_s3_via_file(image_path, \
+                                                  upload_key_prefix)
 
         # Coords.
         coords_plot_path = '%d_%d_plot.png' % (submission.subid, job.jobid)

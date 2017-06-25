@@ -21,6 +21,8 @@ from astropy.io import fits
 from astropy.stats import sigma_clipped_stats
 from astropy.visualization import SqrtStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
+from matplotlib.colors import LogNorm
+from PIL import Image
 from photutils import CircularAperture
 from photutils import datasets, daofind, irafstarfind
 from photutils.psf import psf_photometry, GaussianPSF
@@ -42,11 +44,20 @@ def compute(data):
     sources = irafstarfind(data - median, fwhm=2.0, threshold=5.*std)
     return sources
 
+def save_image(data, path):
+    width_height = (len(data[0]), len(data))
+    img = Image.new('L', width_height)
+    flatdata = np.asarray(data.flatten())
+    img.putdata(flatdata)
+    img.save(path)
+
 def plot(sources, data, path):
     positions = (sources['xcentroid'], sources['ycentroid'])
+    # TODO(ian): Show fwhm as aperture size.
     apertures = CircularAperture(positions, r=4.)
-    norm = ImageNormalize(stretch=SqrtStretch())
-    plt.imshow(data, cmap='Greys', origin='lower', norm=norm)
+    #norm = ImageNormalize(stretch=SqrtStretch())
+    plt.clf()
+    plt.imshow(data, cmap='Greys', origin='lower') #, norm=norm)
     apertures.plot(color='blue', lw=1.5, alpha=0.5)
 
     plt.savefig(path)
@@ -129,11 +140,13 @@ def compute_psf_flux(image_data, sources, \
 
 def load_image(path):
     return extract_image_data_from_fits(fits.open(path))
+    #return fits.getdata(path)
 
 def load_url(url):
     page = urllib.urlopen(url)
     content = page.read()
     return extract_image_data_from_fits(fits.open(StringIO(content)))
+    #return fits.getdata(StringIO(content))
 
 def get_fits_from_raw(data):
     return fits.open(StringIO(data))

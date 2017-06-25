@@ -61,6 +61,7 @@ def choose_reference_stars(corr_fits_data, point_source_json):
 
     # Then corr file.
     # corr.fits from astrometry.net. See https://groups.google.com/forum/#!topic/astrometry/Lk1LuhwBBNU
+    # See also: https://groups.google.com/forum/#!topic/astrometry/UtpBHvjBXbM
     im = fits.open(StringIO(corr_fits_data))
     data = im[1].data
 
