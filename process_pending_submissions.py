@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 import argparse
-import json
 import logging
 import os
+import simplejson as json
 import sys
 import urllib
 
@@ -264,7 +264,7 @@ class SubmissionHandler():
         if not args.dry_run:
             result.reference_stars = ref_stars
             result.reference_stars_json_url = \
-                    s3_util.upload_to_s3(json.dumps(ref_stars, indent=2), \
+                    s3_util.upload_to_s3(json.dumps(ref_stars, indent=2, use_decimal=True), \
                                          upload_key_prefix, name)
 
         logger.info('-> Uploaded reference stars for submission %d' % \
@@ -278,7 +278,7 @@ class SubmissionHandler():
         if not args.dry_run:
             result.catalog_reference_stars = standard_mags
             result.catalog_reference_stars_json_url = \
-                    s3_util.upload_to_s3(json.dumps(standard_mags, indent=2), \
+                    s3_util.upload_to_s3(json.dumps(standard_mags, indent=2, use_decimal=True), \
                                          upload_key_prefix, name)
 
         logger.info('-> Uploaded catalog magnitudes for submission %d' % \

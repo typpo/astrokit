@@ -6,8 +6,8 @@ Usage: python point_source_extraction.py myimage.fits
 '''
 
 import argparse
-import json
 import logging
+import simplejson as json
 import sys
 import tempfile
 import urllib
@@ -91,7 +91,7 @@ def format_for_json_export(sources):
 def save_json(sources, path):
     out = format_for_json_export(sources)
     with open(path, 'w') as f:
-        f.write(json.dumps(out, indent=2))
+        f.write(json.dumps(out, indent=2, use_decimal=True))
 
 def compute_psf_flux(image_data, sources, \
         scatter_output_path=None, bar_output_path=None, hist_output_path=None, \

@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
 import argparse
-import json
 import logging
 import math
 import os
 import shelve
+import simplejson as json
 
 from cStringIO import StringIO
 
@@ -73,7 +73,7 @@ def choose_reference_stars(corr_fits_data, point_source_json):
     # coords rather than relying on astrometry's?
 
     # First, load extracted point sources.
-    pse_points = json.loads(point_source_json)
+    pse_points = json.loads(point_source_json, use_decimal=True)
 
     # Then corr file.
     # corr.fits from astrometry.net. See https://groups.google.com/forum/#!topic/astrometry/Lk1LuhwBBNU
@@ -216,11 +216,11 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn):
             'index_dec': dec,
         }
         for field in fields:
-            obj[field] = float(result[field].data[0])
+            obj[field] = result[field].data[0]
         if mag_i:
             obj['instrumental_mag'] = mag_i
-            obj['field_x'] = float(comparison_star['field_x']),
-            obj['field_y'] = float(comparison_star['field_y']),
+            obj['field_x'] = comparison_star['field_x'],
+            obj['field_y'] = comparison_star['field_y'],
         ret.append(obj)
 
     return ret
