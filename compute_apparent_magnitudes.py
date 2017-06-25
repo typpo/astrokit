@@ -125,7 +125,7 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn):
     Given a list of reference star objects {index_ra, index_dec}, look them up
     using provided function.
 
-    Returns: a list of {designation, reference_Rmag, and optionally
+    Returns: a list of {designation, rmag, and optionally
     instrumental_mag, field_x, field_y} objects.
     '''
     logger.info('Running catalog lookups %s...' % desig_field)
@@ -173,16 +173,16 @@ def compute_apparent_magnitudes(reference_objects):
         target_mags = []
         for comparison in comparisons:
             #instrumental_target_mag = -2.5 * math.log10(target['observed_flux'])
-            #instrumental_mag_comparison = -2.5 * math.log10(comparison['observed_flux'])
-            instrumental_target_mag = target['instrumental_mag']
-            instrumental_mag_comparison = comparison['instrumental_mag']
+            #instrumental_comparison_mag = -2.5 * math.log10(comparison['observed_flux'])
+            instrumental_target_mag = float(target['instrumental_mag'])
+            instrumental_comparison_mag = float(comparison['instrumental_mag'])
 
             # Compute basic standard magnitude formula from Brian Warner.
-            target_mag = (instrumental_target_mag - instrumental_mag_comparison) + comparison['reference_Rmag']
+            target_mag = (instrumental_target_mag - instrumental_comparison_mag) + comparison['rmag']
             target_mags.append(target_mag)
-            # logger.info('computed', target_mag, 'vs actual', target['reference_Rmag'])
+            # logger.info('computed', target_mag, 'vs actual', target['rmag'])
 
-            comparison_diffs += instrumental_target_mag - instrumental_mag_comparison
+            comparison_diffs += instrumental_target_mag - instrumental_comparison_mag
 
         # Compute differential magnitude.
         comparison_mean = np.mean(comparison_diffs)
@@ -192,20 +192,20 @@ def compute_apparent_magnitudes(reference_objects):
 
         target_mag_avg = np.mean(target_mags)
         target_mag_std = np.std(target_mags)
-        # logger.info('mag target average:', target_mag_avg, 'vs actual', target['reference_Rmag'])
+        # logger.info('mag target average:', target_mag_avg, 'vs actual', target['rmag'])
         # logger.info('mag target std:', target_mag_std)
 
-        percent_error = abs(target['reference_Rmag'] - target_mag_avg) / target['reference_Rmag'] * 100.0
+        percent_error = abs(target['rmag'] - target_mag_avg) / target['rmag'] * 100.0
         percent_errors.append(percent_error)
-        # logger.info('  --> difference:', (target_mag_avg - target['reference_Rmag']))
+        # logger.info('  --> difference:', (target_mag_avg - target['rmag']))
         # logger.info('  --> % error:', percent_error)
 
     logger.info('=' * 80)
-    logger.info('num comparison objs submitted:', len(reference_objects))
-    logger.info('num comparison objs used:', len(comparison_objs))
-    logger.info('percent error avg (MAPE):', np.mean(percent_errors))
-    logger.info('percent error max:', max(percent_errors))
-    logger.info('percent error min:', min(percent_errors))
+    logger.info('num comparison objs submitted: %d' % len(reference_objects))
+    logger.info('num comparison objs used: %d' % len(comparison_objs))
+    logger.info('percent error avg (MAPE): %f' % np.mean(percent_errors))
+    logger.info('percent error max: %f' % max(percent_errors))
+    logger.info('percent error min: %f' % min(percent_errors))
 
 def get_args():
     parser = argparse.ArgumentParser('Extract point sources from image.')
