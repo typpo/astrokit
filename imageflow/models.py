@@ -28,7 +28,9 @@ class AnalysisResult(models.Model):
 
     # Meta data.
     image_datetime = models.DateTimeField(blank=True)
-    filter_name = models.CharField(max_length=1024)
+
+    # TODO(ian); Have this be some sort of enum.
+    filter_name = models.CharField(max_length=1024, default='B')
 
     # Processed output urls on S3.
     astrometry_original_display_url = models.CharField(max_length=1024)
@@ -88,7 +90,8 @@ class AnalysisResult(models.Model):
 
 
 class UserUploadedImage(models.Model):
-    """Model for user uploaded images
+    """
+    Model for user uploaded images
     Author: Amr Draz
     """
     user = models.ForeignKey(User)
@@ -99,5 +102,14 @@ class UserUploadedImage(models.Model):
     # Analysis result isn't filled until the job is actually processed.
     # analysis_result = models.ForeignKey(AnalysisResult, null=True)
 
+class ImageFilter(models.Model):
+    """
+    Model for image filter
+    """
+    name = models.CharField(max_length=512)
+    survey = models.CharField(max_length=512)
+    range_min_nm = models.IntegerField()
+
 admin.site.register(AnalysisResult)
 admin.site.register(UserUploadedImage)
+admin.site.register(ImageFilter)
