@@ -88,6 +88,13 @@ class AnalysisResult(models.Model):
             },
         }
 
+    def __str__(self):
+        return 'Sub %d Job %d, Band %s @ %s' % \
+                (self.astrometry_job.submission.subid, \
+                 self.astrometry_job.jobid, \
+                 self.filter_name, \
+                 str(self.image_datetime))
+
 
 class UserUploadedImage(models.Model):
     """
@@ -106,9 +113,12 @@ class ImageFilter(models.Model):
     """
     Model for image filter
     """
-    name = models.CharField(max_length=512)
-    survey = models.CharField(max_length=512)
+    band = models.CharField(max_length=512)
+    system = models.CharField(max_length=512)
     range_min_nm = models.IntegerField()
+
+    def __str__(self):
+        return '%s (%s)' % (self.band, self.system)
 
 admin.site.register(AnalysisResult)
 admin.site.register(UserUploadedImage)
