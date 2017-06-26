@@ -56,8 +56,6 @@ $(function() {
   setupCanvasListeners(canvas);
   plotImage(canvas, window.originalImageUrl);
 
-  setupUserInputs();
-
   // Initialize tooltips.
   $('[data-toggle="tooltip"]').tooltip()
 });
