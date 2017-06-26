@@ -28,6 +28,7 @@ class AnalysisResult(models.Model):
 
     # Meta data.
     image_datetime = models.DateTimeField(blank=True)
+    filter_name = models.CharField(max_length=1024)
 
     # Processed output urls on S3.
     astrometry_original_display_url = models.CharField(max_length=1024)
@@ -60,6 +61,7 @@ class AnalysisResult(models.Model):
             'subid': self.astrometry_job.submission.subid,
             'meta': {
                 'image_datetime': self.image_datetime,
+                'filter_name': self.filter_name,
             },
             'urls': {
                 'astrometry_original_display_url': self.astrometry_original_display_url,
