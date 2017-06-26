@@ -73,8 +73,8 @@ class AnalysisResult(models.Model):
             'subid': self.astrometry_job.submission.subid,
             'meta': {
                 'image_datetime': self.image_datetime,
-                'image_band': self.image_filter.band,
-                'photometric_system': self.image_filter.system,
+                'image_band': self.image_filter.band if self.image_filter else '',
+                'photometric_system': self.image_filter.system if self.image_filter else '',
             },
             'urls': {
                 'astrometry_original_display_url': self.astrometry_original_display_url,
