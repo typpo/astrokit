@@ -10,6 +10,17 @@ from jsonfield import JSONField
 
 from astrometry.models import AstrometrySubmissionJob
 
+class ImageFilter(models.Model):
+    """
+    Model for image filter
+    """
+    band = models.CharField(max_length=512)
+    system = models.CharField(max_length=512)
+    range_min_nm = models.IntegerField()
+
+    def __str__(self):
+        return '%s (%s)' % (self.band, self.system)
+
 class AnalysisResult(models.Model):
     PENDING = 'PENDING'
     COMPLETE = 'COMPLETE'
@@ -28,9 +39,8 @@ class AnalysisResult(models.Model):
 
     # Meta data.
     image_datetime = models.DateTimeField(blank=True)
+    image_filter = models.ForeignKey(ImageFilter, null=True)
 
-    # TODO(ian); Have this be some sort of enum.
-    filter_name = models.CharField(max_length=1024, default='B')
 
     # Processed output urls on S3.
     astrometry_original_display_url = models.CharField(max_length=1024)
@@ -63,7 +73,8 @@ class AnalysisResult(models.Model):
             'subid': self.astrometry_job.submission.subid,
             'meta': {
                 'image_datetime': self.image_datetime,
-                'filter_name': self.filter_name,
+                'image_band': self.image_filter.band,
+                'photometric_system': self.image_filter.system,
             },
             'urls': {
                 'astrometry_original_display_url': self.astrometry_original_display_url,
@@ -108,17 +119,6 @@ class UserUploadedImage(models.Model):
 
     # Analysis result isn't filled until the job is actually processed.
     # analysis_result = models.ForeignKey(AnalysisResult, null=True)
-
-class ImageFilter(models.Model):
-    """
-    Model for image filter
-    """
-    band = models.CharField(max_length=512)
-    system = models.CharField(max_length=512)
-    range_min_nm = models.IntegerField()
-
-    def __str__(self):
-        return '%s (%s)' % (self.band, self.system)
 
 admin.site.register(AnalysisResult)
 admin.site.register(UserUploadedImage)
