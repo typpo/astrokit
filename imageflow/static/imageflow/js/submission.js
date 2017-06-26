@@ -51,11 +51,13 @@ function setupCanvasListeners(canvas) {
   }
 }
 
-(function() {
+$(function() {
   var canvas = document.getElementById('reference-star-plot');
   setupCanvasListeners(canvas);
   plotImage(canvas, window.originalImageUrl);
 
+  setupUserInputs();
+
   // Initialize tooltips.
   $('[data-toggle="tooltip"]').tooltip()
-})();
+});

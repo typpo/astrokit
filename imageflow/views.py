@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
+from django.utils.dateparse import parse_datetime
 
 import imageflow.s3_util as s3_util
 from astrometry.util import process_astrometry_online
@@ -51,6 +52,40 @@ def astrometry(request, subid):
     }
     return render_to_response('submission.html', template_args,
             context_instance=RequestContext(request))
+
+def set_datetime(request, subid):
+    try:
+        result = AnalysisResult.objects.get( \
+                astrometry_job__submission__subid=subid, \
+                status=AnalysisResult.COMPLETE)
+    except ObjectDoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Could not find corresponding AnalysisResult',
+        })
+
+    # Set new datetime.
+    try:
+        parsed_dt = parse_datetime(request.POST.get('image_datetime'))
+    except ValueError:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Invalid datetime',
+        })
+
+    if not parsed_dt:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Could not parse datetime',
+        })
+
+    result.image_datetime = parsed_dt
+    result.save()
+
+    return JsonResponse({
+        'success': True,
+        'msg': 'Resolved input to %s' % parsed_dt.isoformat()
+    })
 
 def point_sources(request, subid):
     # TODO(ian): Dedup this with above code.
