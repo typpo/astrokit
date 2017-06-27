@@ -38,7 +38,8 @@ function setupListeners() {
     $.post('/submission/' + window.subid + '/set_datetime', {
       image_datetime: val,
     }, function(data) {
-      console.log(data);
+      $('#edit-image-datetime-success').toggle(data.success);
+      $('#edit-image-datetime-failure').toggle(!data.success);
       document.body.style.cursor = 'default';
     });
   });
@@ -51,7 +52,8 @@ function setupListeners() {
     $.post('/submission/' + window.subid + '/set_filter_band', {
       filter_band: val,
     }, function(data) {
-      console.log(data);
+      $('#select-filter-name-success').toggle(data.success);
+      $('#select-filter-name-failure').toggle(!data.success);
       document.body.style.cursor = 'default';
     });
   });

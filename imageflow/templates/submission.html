@@ -23,6 +23,12 @@
 Parsed from fits <code>DATE-OBS</code> field (ISO 8601 format).
 </p>
 <div class="well">
+  <div id="edit-image-datetime-success" class="alert alert-success" style="display:none">
+    Date and time successfully updated.
+  </div>
+  <div id="edit-image-datetime-success" class="alert alert-danger" style="display:none">
+    Something went wrong - failed to update your setting.
+  </div>
   <input id="edit-image-datetime" class="form-control" style="width: 30em" type="text" value="{{result.meta.image_datetime | date:'c'}}">
 </div>
 
@@ -31,6 +37,12 @@ Parsed from fits <code>DATE-OBS</code> field (ISO 8601 format).
 Select the standard filter that most closely matches the filter used for this image.
 </p>
 <div class="well">
+  <div id="select-filter-name-success" class="alert alert-success" style="display:none">
+    Filter successfully updated.
+  </div>
+  <div id="select-filter-name-failure" class="alert alert-danger" style="display:none">
+    Something went wrong - failed to update your setting.
+  </div>
   <label>
     <select class="form-control" id="select-filter-name">
       {% for filter in image_filters %}
