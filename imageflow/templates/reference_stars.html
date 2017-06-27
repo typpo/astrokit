@@ -100,7 +100,17 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
   </div>
 </div>
 
-<h4>Compute transform coefficient T<sub><em>f</em></sub></h4>
+<h3>Reduction to Standard Magnitudes</h3>
+<p>
+Let's convert our raw instrumental magnitudes to standard magnitudes per the following equation:
+</p>
+<p>
+<blockquote>
+M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>t</sub> (CI<sub>t</sub> - CI<sub>c</sub>) + T<sub><em>f</em></sub> (CI<sub>t</sub> - CI<sub>c</sub>) + M<sub>c</sub>
+</blockquote>
+</p>
+
+<h4>Step 1: Compute transform coefficient T<sub><em>f</em></sub></h4>
 <p>
 T<sub><em>f</em></sub> converts your raw instrumental magnitude to a standard magnitude in color band <em>f</em>, solved for by the following equation:
 </p>
@@ -138,6 +148,16 @@ ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f<
       </div>
     </label>
   </form>
+</div>
+
+<h4>Step 2: Compute second-order extinction k"<sub><em>f</em></sub></h4>
+<div class="well">
+nyi
+</div>
+
+<h4>Step 3: Compute airmass X<sub>t</sub></h4>
+<div class="well">
+nyi
 </div>
 
 <div style="text-align: right">
