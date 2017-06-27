@@ -90,6 +90,40 @@ def set_datetime(request, subid):
         'msg': 'Resolved input to %s' % parsed_dt.isoformat()
     })
 
+def set_filter_band(request, subid):
+    try:
+        result = AnalysisResult.objects.get( \
+                astrometry_job__submission__subid=subid, \
+                status=AnalysisResult.COMPLETE)
+    except ObjectDoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Could not find corresponding AnalysisResult',
+        })
+
+    band = request.POST.get('filter_band')
+    if not band:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Filter band not specified',
+        })
+
+    try:
+        filter_band = ImageFilter.objects.get(band=band)
+    except ObjectDoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Invalid filter band',
+        })
+
+    result.image_filter = filter_band
+    result.save()
+
+    return JsonResponse({
+        'success': True,
+        'msg': 'Resolved input to %s' % str(filter_band)
+    })
+
 def point_sources(request, subid):
     # TODO(ian): Dedup this with above code.
     try:

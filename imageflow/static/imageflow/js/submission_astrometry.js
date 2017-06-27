@@ -47,6 +47,13 @@ function setupListeners() {
     var val = $(this).val();
     console.log('Select filter changed to', val);
 
+    document.body.style.cursor = 'wait';
+    $.post('/submission/' + window.subid + '/set_filter_band', {
+      filter_band: val,
+    }, function(data) {
+      console.log(data);
+      document.body.style.cursor = 'default';
+    });
   });
 }
 

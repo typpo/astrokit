@@ -103,7 +103,7 @@ class AnalysisResult(models.Model):
         return 'Sub %d Job %d, Band %s @ %s' % \
                 (self.astrometry_job.submission.subid, \
                  self.astrometry_job.jobid, \
-                 self.filter_name, \
+                 str(self.image_filter), \
                  str(self.image_datetime))
 
 
