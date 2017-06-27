@@ -47,11 +47,9 @@ def astrometry(request, subid):
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
-    image_filters = ImageFilter.objects.all()
-
     template_args = {
         'result': result.get_summary_obj(),
-        'image_filters': image_filters,
+        'image_filters': ImageFilter.objects.all(),
     }
     return render_to_response('submission.html', template_args,
             context_instance=RequestContext(request))
@@ -152,6 +150,7 @@ def reference_stars(request, subid):
 
     template_args = {
         'result': result.get_summary_obj(),
+        'image_filters': ImageFilter.objects.all(),
     }
     return render_to_response('reference_stars.html', template_args,
             context_instance=RequestContext(request))

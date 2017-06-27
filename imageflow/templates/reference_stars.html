@@ -100,18 +100,44 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
   </div>
 </div>
 
-<h4>Compute filter transform T<sub><em>f</em></sub></h4>
+<h4>Compute transform coefficient T<sub><em>f</em></sub></h4>
 <p>
-T<sub><em>f</em></sub> converts your raw instrumental magnitude to a standard magnitude in color band <em>f</em>.
+T<sub><em>f</em></sub> converts your raw instrumental magnitude to a standard magnitude in color band <em>f</em>, solved for by the following equation:
+</p>
+<p>
+<blockquote>
+  M<sub><em>f</em></sub> - m<sub><em>f</em></sub> = T<sub><em>f</em></sub> CI + ZP<sub><em>f</em></sub>
+</blockquote>
+</p>
+<p>
+M<sub><em>f</em></sub> = standard magnitude in color band of filter <em>f</em><br>
+m<sub><em>f</em></sub> = raw instrumental magnitude in color band of filter <em>f</em><br>
+T<sub><em>f</em></sub> = coefficient that converts raw instrumental magnitude to standard magnitude in color band <em>f</em><br>
+CI = standard color index<br>
+ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f</em>, at the airmass of the reference field.
 </p>
 <div class="well">
-  <label>
-    Select color index
-    <select id="select-color-index" class="form-control">
-      <option selected>B-V</option>
-      <option>g'-r'</option>
-    </select>
-  </label>
+  <form class="form-inline">
+    <label>
+      <div>
+        <h5>Select color index</h5>
+      </div>
+      <div>
+        <select id="select-color-index" class="form-control">
+          {% for filter in image_filters %}
+            <option value="{{filter.band}}">{{filter.band}} ({{filter.system}})</option>
+          {% endfor %}
+        </select>
+        -
+        <select id="select-color-index" class="form-control">
+          {{ loop.counter }}
+          {% for filter in image_filters %}
+            <option value="{{filter.band}}" {% if forloop.counter == 2 %}selected{% endif %}>{{filter.band}} ({{filter.system}})</option>
+          {% endfor %}
+        </select>
+      </div>
+    </label>
+  </form>
 </div>
 
 <div style="text-align: right">
