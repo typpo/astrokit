@@ -11,7 +11,7 @@ import imageflow.s3_util as s3_util
 from astrometry.util import process_astrometry_online
 
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
-from imageflow.models import AnalysisResult, UserUploadedImage
+from imageflow.models import AnalysisResult, ImageFilter, UserUploadedImage
 
 def index(request):
     return render_to_response('index.html', context_instance=RequestContext(request))
@@ -47,8 +47,11 @@ def astrometry(request, subid):
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
+    image_filters = ImageFilter.objects.all()
+
     template_args = {
         'result': result.get_summary_obj(),
+        'image_filters': image_filters,
     }
     return render_to_response('submission.html', template_args,
             context_instance=RequestContext(request))

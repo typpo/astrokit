@@ -33,14 +33,9 @@ Select the standard filter that most closely matches the filter used for this im
 <div class="well">
   <label>
     <select class="form-control" id="select-filter-name">
-      <option value="B" selected>B (Johnson)</option>
-      <option value="V">V (Johnson)</option>
-      <option value="g'">g' (Sloan)</option>
-      <option value="r'">r' (Sloan)</option>
-      <option value="i'">i' (Sloan)</option>
-      <option value="J">J (2MASS)</option>
-      <option value="H">H (2MASS)</option>
-      <option value="K">K (2MASS)</option>
+      {% for filter in image_filters %}
+        <option value="{{filter.band}}">{{filter.band}} ({{filter.system}})</option>
+      {% endfor %}
     </select>
   </label>
 </div>
