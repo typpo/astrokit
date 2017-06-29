@@ -38,7 +38,7 @@ class AnalysisResult(models.Model):
     astrometry_job = models.ForeignKey(AstrometrySubmissionJob)
 
     # Meta data.
-    image_datetime = models.DateTimeField(blank=True)
+    image_datetime = models.DateTimeField(null=True)
     image_filter = models.ForeignKey(ImageFilter, null=True)
 
 

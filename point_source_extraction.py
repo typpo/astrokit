@@ -101,11 +101,12 @@ def compute_psf_flux(image_data, sources, \
 
     psf_gaussian = GaussianPSF(1)
     computed_fluxes = psf_photometry(image_data, coords, psf_gaussian)
+    computed_fluxes_sorted = sorted(computed_fluxes)
 
     if scatter_output_path:
         logger.info('Saving scatter plot...')
         plt.close('all')
-        plt.scatter(sorted(sources['flux']), sorted(computed_fluxes))
+        plt.scatter(sorted(sources['flux']), computed_fluxes_sorted)
         plt.xlabel('Fluxes catalog')
         plt.ylabel('Fluxes photutils')
         plt.savefig(scatter_output_path)
@@ -113,7 +114,7 @@ def compute_psf_flux(image_data, sources, \
     if bar_output_path:
         logger.info('Saving bar chart...')
         plt.close('all')
-        plt.bar(xrange(len(computed_fluxes)), computed_fluxes)
+        plt.bar(xrange(len(computed_fluxes)), computed_fluxes_sorted[::-1])
         plt.ylabel('Flux')
         plt.savefig(bar_output_path)
 
@@ -130,12 +131,9 @@ def compute_psf_flux(image_data, sources, \
 
         # Plot it.
         plt.close('all')
-        plt.figure(figsize=(16, 12))
-        plt.imshow(residuals, cmap='hot', vmin=-1, vmax=10, interpolation='None', origin='lower')
-        plt.plot(coords[0], coords[1], marker='o', markerfacecolor='None', markeredgecolor='y', linestyle='None')
-        plt.xlim(0, 1024)
-        plt.ylim(0, 512)
-        plt.colorbar(orientation='horizontal')
+        plt.imshow(residuals, interpolation='None', origin='lower')
+        #plt.plot(coords[0], coords[1], marker='o', markerfacecolor='None', markeredgecolor='y', linestyle='None')
+        #plt.colorbar(orientation='horizontal')
         plt.savefig(residual_path)
 
 def load_image(path):
