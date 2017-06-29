@@ -32,22 +32,6 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
 </blockquote>
 </p>
 
-<h4>Step 1: Compute transform coefficient T<sub><em>f</em></sub></h4>
-<p>
-T<sub><em>f</em></sub> converts your raw instrumental magnitude to a standard magnitude in color band <em>f</em>, solved for by the following equation:
-</p>
-<p>
-<blockquote>
-  M<sub><em>f</em></sub> - m<sub><em>f</em></sub> = T<sub><em>f</em></sub> CI + ZP<sub><em>f</em></sub>
-</blockquote>
-</p>
-<p>
-M<sub><em>f</em></sub> = standard magnitude in color band of filter <em>f</em><br>
-m<sub><em>f</em></sub> = raw instrumental magnitude in color band of filter <em>f</em><br>
-T<sub><em>f</em></sub> = coefficient that converts raw instrumental magnitude to standard magnitude in color band <em>f</em><br>
-CI = standard color index<br>
-ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f</em>, at the airmass of the reference field.
-</p>
 <div class="well">
   <form class="form-inline">
     <label>
@@ -70,6 +54,28 @@ ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f<
       </div>
     </label>
   </form>
+</div>
+
+<h4>Step 1: Compute transform coefficient T<sub><em>f</em></sub></h4>
+<p>
+T<sub><em>f</em></sub> converts your raw instrumental magnitude to a standard magnitude in color band <em>f</em>, solved for by the following equation:
+</p>
+<p>
+<blockquote>
+  M<sub><em>f</em></sub> - m<sub><em>f</em></sub> = T<sub><em>f</em></sub> CI + ZP<sub><em>f</em></sub>
+</blockquote>
+</p>
+<p>
+M<sub><em>f</em></sub> = standard magnitude in color band of filter <em>f</em><br>
+m<sub><em>f</em></sub> = raw instrumental magnitude in color band of filter <em>f</em><br>
+T<sub><em>f</em></sub> = coefficient that converts raw instrumental magnitude to standard magnitude in color band <em>f</em><br>
+CI = standard color index<br>
+ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f</em>, at the airmass of the reference field.
+</p>
+
+<div class="well">
+[graph placeholder]
+<img src="http://i.imgur.com/mf6wabV.jpg">
 </div>
 
 <h4>Step 2: Compute second-order extinction k"<sub><em>f</em></sub></h4>
