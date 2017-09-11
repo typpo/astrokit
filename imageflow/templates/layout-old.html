@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Upload an image</title>
+    {% load staticfiles %}
+    <link rel="shortcut icon" type="image/png" href="{% static 'imageflow/images/favicon.png' %}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{% static 'imageflow/css/main.css' %}" />
+    {% block styles %}{% endblock %}
+</head>
+<body>
+  <div class="content drop-shadow lifted">
+    <div class="nav-header">
+      <a href="/">AstroKit</a> | 
+      <a href="{% url "browse-image-list" %}">Browse Images</a>
+      {% if request.user.is_authenticated %}
+         | <a href="{% url "my-image-list" %}">My Uploads</a>
+         | <a href="{% url "upload_image" %}">Upload Images</a>
+      {% endif %}
+      <div class="pull-right">
+        {% if request.user.is_authenticated %}
+          Welcome {{ request.user.username }}, <a href="{% url "logout" %}">Logout</a>
+        {% else %}
+          <a href="{% url "login" %}">Login</a> / 
+          <a href="{% url "register" %}">Register</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="heading-container">
+      <h1>{% block heading %}{% endblock %}</h1>
+    </div>
+
+    <div>
+      {% block content %}{% endblock %}
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

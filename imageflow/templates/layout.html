@@ -1,41 +1,125 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Upload an image</title>
-    {% load staticfiles %}
-    <link rel="shortcut icon" type="image/png" href="{% static 'imageflow/images/favicon.png' %}"/>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="{% static 'imageflow/css/main.css' %}" />
-    {% block styles %}{% endblock %}
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>AstroKit</title>
+
+  <link rel="shortcut icon" type="image/x-icon" href="{% static "imageflow/build/css/images/favicon.ico" %}" />
+
+  <!-- Vendor Styles -->
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="{% static "imageflow/build/css/style.css" %}" />
+  {% block styles %}{% endblock %}
+
+  <!-- Vendor JS -->
+  <script src="{% static "imageflow/build/vendor/jquery-3.1.1.min.js" %}"></script>
+
+  <!-- App JS -->
+  <script src="{% static "imageflow/build/js/functions.js" %}"></script>
+
+  {% block scripts %}
+  	
+  {% endblock scripts %}
 </head>
+
+
 <body>
-  <div class="content drop-shadow lifted">
-    <div class="nav-header">
-      <a href="/">AstroKit</a> | 
-      <a href="{% url "browse-image-list" %}">Browse Images</a>
-      {% if request.user.is_authenticated %}
-         | <a href="{% url "my-image-list" %}">My Uploads</a>
-         | <a href="{% url "upload_image" %}">Upload Images</a>
-      {% endif %}
-      <div class="pull-right">
-        {% if request.user.is_authenticated %}
-          Welcome {{ request.user.username }}, <a href="{% url "logout" %}">Logout</a>
-        {% else %}
-          <a href="{% url "login" %}">Login</a> / 
-          <a href="{% url "register" %}">Register</a>
-        {% endif %}
-      </div>
-    </div>
-    <div class="heading-container">
-      <h1>{% block heading %}{% endblock %}</h1>
-    </div>
+  <div class="wrapper">
+  	{% block socials %}
+	  	<div class="socials">
+		  <ul>
+			<li>
+			  <a href="#">
+				<i class="ico-facebook"></i>
+			  </a>
+			</li>
 
-    <div>
-      {% block content %}{% endblock %}
-    </div>
+			<li>
+			  <a href="#">
+				<i class="ico-twitter"></i>
+			  </a>
+			</li>
 
-    {% block scripts %}{% endblock %}
+			<li>
+			  <a href="#">
+				<i class="ico-youtube"></i>
+			  </a>
+			</li>
+
+			<li>
+			  <a href="#">
+				<i class="ico-googleplus"></i>
+			  </a>
+			</li>
+		  </ul>
+		</div><!-- /.socials -->
+  	{% endblock socials %}
+	
+	
+	{% block header %}
+		<header class="header">
+		  <a href="#" class="logo">AstroKit</a>
+		  
+		  <a href="#" class="burger">
+			<span></span>
+			
+			<span></span>
+			
+			<span></span>
+		  </a>
+		  
+		  <nav class="nav">
+			<ul>
+			  <li class="current">
+				<a href="#">Astrokit explained</a>
+			  </li>
+
+			  <li>
+				<a href="#">Research case studies</a>
+			  </li>
+
+			  <li>
+				<a href="#">Terminology</a>
+			  </li>
+
+			  <li>
+				<a href="#">Faq'<span>s</span></a>
+			  </li>
+
+			  <li>
+				<a href="#">Contact us</a>
+			  </li>
+
+			  <li>
+				<a href="#">Using Astrokit</a>
+			  </li>
+			</ul>
+		  </nav><!-- /.nav -->
+		</header><!-- /.header -->
+	{% endblock header %}
+
+
+	{% block content %}{% endblock content %}
+
+	<footer class="footer">
+	  <div class="container">
+		<div class="copyright">
+		  <div class="copyright__logo">
+			<img src="{% static "imageflow/build/css/images/temp/logo-fuse.png" %}" alt="">
+		  </div><!-- /.copyright__logo -->
+
+		  <span>Designed by FuseLab Creative</span>
+
+		  <span class="year">&copy; 2017</span>
+		</div><!-- /.copyright -->
+	  </div><!-- /.container -->
+	</footer><!-- /.footer -->
+  </div><!-- /.wrapper -->
 </body>
 </html>
+

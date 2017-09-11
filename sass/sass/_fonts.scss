@@ -1,0 +1,87 @@
+/* ------------------------------------------------------------ *\
+	Fonts
+\* ------------------------------------------------------------ */
+
+@font-face {
+	font-family: 'Avenir Next';
+	src: url('fonts/AvenirNext-DemiBold.eot');
+	src: url('fonts/AvenirNext-DemiBold.eot?#iefix') format('embedded-opentype'),
+		url('fonts/AvenirNext-DemiBold.woff') format('woff'),
+		url('fonts/AvenirNext-DemiBold.ttf') format('truetype'),
+		url('fonts/AvenirNext-DemiBold.svg#AvenirNext-DemiBold') format('svg');
+	font-weight: 600;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: 'Avenir Next';
+	src: url('fonts/AvenirNext_500_normal_1495440025.eot');
+	src: url('fonts/AvenirNext_500_normal_1495440025.eot?#iefix')
+			format('embedded-opentype'),
+		url('fonts/AvenirNext_500_normal_1495440025.woff') format('woff'),
+		url('fonts/AvenirNext_500_normal_1495440025.ttf') format('truetype'),
+		url('fonts/AvenirNext_500_normal_1495440025.svg#AvenirNext-DemiBold')
+			format('svg');
+	font-weight: 500;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Avenir Next";
+	src: url("fonts/AvenirNext400500600700_400_normal_1433751595.eot");
+	src: url("fonts/AvenirNext400500600700_400_normal_1433751595.eot?#iefix")
+			format("embedded-opentype"),
+		url("fonts/AvenirNext400500600700_400_normal_1433751595.svg#AvenirNext400500600700")
+			format("svg"),
+		url("fonts/AvenirNext400500600700_400_normal_1433751595.woff")
+			format("woff"),
+		url("fonts/AvenirNext400500600700_400_normal_1433751595.ttf")
+			format("truetype");
+	font-weight: 400;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Avenir Next";
+	src: url("fonts/AvenirNext400500600700_700_normal_1433751595.eot");
+	src: url("fonts/AvenirNext400500600700_700_normal_1433751595.eot?#iefix")
+			format("embedded-opentype"),
+		url("fonts/AvenirNext400500600700_700_normal_1433751595.svg#AvenirNext400500600700")
+			format("svg"),
+		url("fonts/AvenirNext400500600700_700_normal_1433751595.woff")
+			format("woff"),
+		url("fonts/AvenirNext400500600700_700_normal_1433751595.ttf")
+			format("truetype");
+	font-weight: 700;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Avenir Next";
+	src: url("fonts/AnevirNextFontFamiliyfromUltarLighttoHeavy_100_normal_1432904320.eot");
+	src: url("fonts/AnevirNextFontFamiliyfromUltarLighttoHeavy_100_normal_1432904320.eot?#iefix")
+			format("embedded-opentype"),
+		url("fonts/AnevirNextFontFamiliyfromUltarLighttoHeavy_100_normal_1432904320.svg#AvenirNext400500600700")
+			format("svg"),
+		url("fonts/AnevirNextFontFamiliyfromUltarLighttoHeavy_100_normal_1432904320.woff")
+			format("woff"),
+		url("fonts/AnevirNextFontFamiliyfromUltarLighttoHeavy_100_normal_1432904320.ttf")
+			format("truetype");
+	font-weight: 100;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Avenir Next";
+	src: url("fonts/AnevirNextFontFamiliyfromUltarLighttoHeavy_100_italic_1432904320.eot");
+	src: url("fonts/AnevirNextFontFamiliyfromUltarLighttoHeavy_100_italic_1432904320.eot?#iefix")
+			format("embedded-opentype"),
+		url("fonts/AnevirNextFontFamiliyfromUltarLighttoHeavy_100_italic_1432904320.svg#AvenirNext400500600700")
+			format("svg"),
+		url("fonts/AnevirNextFontFamiliyfromUltarLighttoHeavy_100_italic_1432904320.woff")
+			format("woff"),
+		url("fonts/AnevirNextFontFamiliyfromUltarLighttoHeavy_100_italic_1432904320.ttf")
+			format("truetype");
+	font-weight: 100;
+	font-style: italic;
+}

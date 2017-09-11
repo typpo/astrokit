@@ -1,0 +1,48 @@
+/* ------------------------------------------------------------ *\
+	Mixins
+\* ------------------------------------------------------------ */
+
+@mixin full {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+//Media  queries
+@mixin breakpoint-large-desktop {
+  @media (max-width: #{$breakpoint-large-desktop}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-small-desktop {
+  @media (max-width: #{$breakpoint-small-desktop}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-tablet-portrait {
+  @media (max-width: #{$breakpoint-tablet-portrait}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-mobile {
+  @media (max-width: #{$breakpoint-mobile}) {
+    @content;
+  }
+}
+
+@mixin breakpoint-mobile-portrait {
+  @media (max-width: #{$breakpoint-mobile-portrait}) {
+    @content;
+  }
+}
+
+@mixin retina {
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    @content;
+  }
+}

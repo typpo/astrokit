@@ -1,0 +1,60 @@
+/* ------------------------------------------------------------ *\
+	Link Nav
+\* ------------------------------------------------------------ */
+
+.link-nav {
+	display: inline-block; 
+	vertical-align: middle;
+	text-decoration: none;
+	text-transform: uppercase;
+	font-size: 14px;
+
+	& i {
+		margin: -3px 5px 0 0;
+	}
+
+	& .ico-upload {
+		transform: rotate(90deg);
+	}
+
+	&:hover {
+		opacity: 1;
+	}
+}
+
+/* ------------------------------------------------------------ *\
+	Link More
+\* ------------------------------------------------------------ */
+
+.link-more {
+	text-decoration: none;
+	text-transform: uppercase;
+	font-size: 18px;
+	color: $beige;
+	transition: color .4s;
+
+	&:after {
+		content: '';
+		width: 10px;
+		height: 10px;
+		border-bottom: 1px solid $beige;
+		border-right: 1px solid $beige;
+		display: inline-block;
+		margin-left: 10px;
+		transition: .4s;
+	}
+
+	&:hover {
+		color: #fff;
+	}
+
+	&:hover:after {
+		border-color: #fff;
+	}
+}
+
+@include breakpoint-tablet-portrait {
+	.link-more {
+		font-size: 14px;
+	}
+}

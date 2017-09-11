@@ -1,0 +1,148 @@
+/* ------------------------------------------------------------ *\
+	Lists
+\* ------------------------------------------------------------ */
+
+ul[class^=list-] {
+	list-style: none;
+}
+
+/* ------------------------------------------------------------ *\
+	List Features
+\* ------------------------------------------------------------ */
+
+.list-features {
+	border-top: 3px solid $beige;
+	font-size: 18px;
+
+	a {
+		text-decoration: none;
+		display: inline-block;
+		padding-right: 30px;
+
+		&:hover {
+			color: $beige;
+
+			&:after {
+				content: '';
+				width: 10px;
+				height: 10px;
+				display: inline-block;
+				border-bottom: 1px solid $beige;
+				border-right: 1px solid $beige;
+				margin-left: 10px;
+			}
+		}
+	}
+	li {
+		padding: 27px 0 28px 5px;
+
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	}
+}
+
+/* ------------------------------------------------------------ *\
+	List Tiles
+\* ------------------------------------------------------------ */
+
+.list-tiles {
+	counter-reset: num;
+	display: flex;
+	justify-content: space-around;
+	text-align: center;
+	font-size: 18px;
+	text-transform: uppercase;
+	margin-top: 70px;
+
+	li {
+		flex: 1;
+		position: relative;
+
+		& ~ li {
+			border-left: 1px solid rgba(255, 255, 255, 0.1);
+		}
+	}
+	span {
+		display: block;
+		min-height: 86px;
+	}
+	a {
+		text-decoration: none;
+		display: block;
+		padding: 10px 20px 20px;
+		min-height: 281px;
+		border-bottom: 1px solid transparent;
+		opacity: .2;
+
+		&:before {
+			content: '0' counter(num);
+			counter-increment: num;
+			font-size: 18px;
+			font-weight: 500;
+			display: block;
+			margin-bottom: 30px;
+			opacity: .5;
+		}
+
+		&:after {
+			content: '';
+			position: absolute; 
+			bottom: 39px;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 10px; 
+			height: 10px;
+			border-right: 1px solid $beige;
+			border-bottom: 1px solid $beige;
+			opacity: 0;
+			transition: opacity .4s;
+		}
+
+		&:hover {
+			border-bottom-color: $beige;
+			opacity: 1;
+		}
+
+		&:hover:after {
+			opacity: 1;
+		}
+	}
+
+	.long {
+		&:after,
+		&:before {
+			content: '';
+			width: 1px;
+			height: 210px;
+			background: rgba(255, 255, 255, 0.1);
+			display: block;
+			position: absolute;
+			left: -1px;
+			bottom: 100%;
+		}
+
+		&:after {
+			bottom: auto;
+			top: 100%;
+		}
+	}
+}
+
+@include breakpoint-tablet-portrait {
+	.list-tiles .long:after, .list-tiles .long:before {
+		display: none;
+	}
+}
+
+@include breakpoint-mobile {
+	.list-tiles {
+		display: block;
+	}
+
+	.list-tiles li ~ li {
+		border: 0;
+	}
+
+	.list-tiles a {
+		min-height: 0;
+	}
+}

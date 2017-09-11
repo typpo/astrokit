@@ -1,8 +1,9 @@
 import time
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
 from django.utils.dateparse import parse_datetime
@@ -17,24 +18,34 @@ def index(request):
     return render_to_response('index.html', context_instance=RequestContext(request))
 
 def upload_image(request):
-    if request.method == 'POST':
-        submissions = []
-        for key in request.FILES:
-            img = request.FILES[key]
-            # Data is read just once to avoid rewinding.
-            img_data = img.read()
-            url = s3_util.upload_to_s3(img_data, 'raw', img.name)
-            submission = process_astrometry_online(url)
-            UserUploadedImage(user=request.user,
-                              image_url=url,
-                              astrometry_submission_id=submission.subid).save()
-            submissions.append(submission)
+    if request.user.is_authenticated():
+        if request.method == 'POST':
+            testing = request.GET.get('testing', False)
+            submissions = []
+            for key in request.FILES:
+                img = request.FILES[key]
+                # Data is read just once to avoid rewinding.
+                img_data = img.read()
+                if not testing:
+                    url = s3_util.upload_to_s3(img_data, 'raw', img.name)
+                else:
+                    url = "http://placehold.it/300x300"
+                submission = process_astrometry_online(url, testing=testing)
+                UserUploadedImage(user=request.user,
+                                  image_url=url,
+                                  astrometry_submission_id=submission.subid).save()
+                submissions.append(submission)
 
-        # Redirect to submission viewing page.
-        return redirect('astrometry', subid=submissions[0].subid)
+            # Redirect to submission viewing page.
+            return JsonResponse({
+                'details': 'success',
+                'redirect_url': reverse(
+                    'astrometry', kwargs={'subid': submissions[0].subid})})
 
-    return render_to_response('upload_image.html', {},
-            context_instance=RequestContext(request))
+        return render_to_response('upload_image.html', {},
+                context_instance=RequestContext(request))
+    else:
+        return HttpResponseRedirect(reverse('login'))
 
 def astrometry(request, subid):
     # TODO(ian): Look up submission and view status.

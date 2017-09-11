@@ -1,0 +1,84 @@
+/* ------------------------------------------------------------ *\
+	Header
+\* ------------------------------------------------------------ */
+
+.header {
+	position: absolute;
+	z-index: 10;
+	top: 30px;
+	left: 0;
+	width: 100%;
+	padding: 0 36px;
+	background: transparent;
+	@include clearfix;
+}
+
+.header .logo {
+	float: left;
+}
+
+.header .nav {
+	float: right;
+}
+
+
+.header--secondary {
+	position: static;
+	padding-top: 22px;
+	padding-bottom: 36px;
+	margin-bottom: 32px; 
+	border-bottom: 1px solid #313030;
+	text-align: center;
+}
+
+.header--secondary .logo-small {
+	position: absolute;
+	top: 22px;
+	left: 36px;
+
+	@media (max-width: 1500px) {
+		left: calc((100vw - 1200px)/2);
+	}
+}
+
+.header--secondary > .link-nav {
+	position: absolute;
+	top: 44px;
+	right: 37px;
+	opacity: .4;
+
+	@media (max-width: 1500px) {
+		right: calc((100vw - 1200px)/2);
+	}
+}
+
+.header--secondary > .link-nav i {
+	margin: -3px 0 0 7px;
+}
+
+.header--secondary .header__inner {
+	display: inline-block;
+	vertical-align: middle;
+	padding-top: 15px; 
+	text-align: left;
+
+	.link-nav {
+		@media (max-width: 1500px) {
+			padding-left: 150px; 
+		}
+	}
+}
+
+
+
+@include breakpoint-small-desktop {
+	.header {
+		top: 20px;
+	}
+}
+
+@include breakpoint-mobile {
+	.header {
+		padding: 0 15px;
+	}
+}

@@ -1,0 +1,170 @@
+/* ------------------------------------------------------------ *\
+	Plot
+\* ------------------------------------------------------------ */
+
+.plot {
+	margin-bottom: 97px; 
+
+	.plot__head {
+		padding-bottom: 29px;
+		margin-bottom: 24px;
+		border-bottom: 1px solid #313030;
+		@include clearfix;
+	}
+	
+	.plot__title {
+		float: left;
+	}
+
+	.plot__title span {
+		color: $beige;
+	}
+
+	.plot__nav {
+		float: right;
+		padding-top: 4px;
+
+		ul {
+			@include clearfix;
+			list-style-type: none;
+		}
+
+		li {
+			float: left;
+		}
+
+		li + li {
+			margin-left: 40px;
+		}
+
+		a {
+			padding-bottom: 40px;
+			position: relative;
+			text-decoration: none;
+			text-transform: uppercase;
+			font-size: 14px;
+			opacity: .5;
+			transition: .3s;
+		}
+		
+		a:after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 0;
+			height: 2px;
+			background: $beige;
+			transition: .3s;
+		}
+
+		a:hover {
+			opacity: 1;
+		}
+
+		a:hover:after {
+			width: 100%;
+		}
+	}
+
+	.plot__bar {
+		@include clearfix;
+		margin-bottom: 18px; 
+
+		.plot__options {
+			float: left;
+			@include clearfix;
+
+			.plot__option {
+				float: left;
+				position: relative;
+				padding-left: 47px;
+
+				p {
+					margin-bottom: 0;
+					font-size: 20px;
+				}
+
+				a {
+					text-decoration: none;
+					font-size: 18px;
+					opacity: .4;
+				}
+
+				a:hover {
+					opacity: 1;
+				}
+
+				a + a {
+					margin-left: 13px;
+				}
+
+				&:after {
+					content: '';
+					position: absolute;
+					top: 12px;
+					left: 5px;
+					width: 24px;
+					height: 24px;
+					border: 3px solid #fff;
+					border-radius: 4px;
+					pointer-events: all;
+					cursor: pointer;
+				}
+
+				&:before {
+					content: '';
+					position: absolute;
+					top: 18px; 
+					left: 11px;
+					width: 12px; 
+					height: 12px; 
+					background: #fff;
+					border-radius: 2px;
+				}
+			}
+
+			.plot__option + .plot__option {
+				margin-left: 52px;
+			}
+
+			.current:after {
+				border-color: #74d327;
+			}
+
+			.current:before {
+				background: #74d327;
+			}
+		}
+
+		.plot__actions {
+			float: right;
+			padding-top: 10px;
+
+			a {
+				font-size: 14px;
+				opacity: .4;
+			}
+
+			a:hover {
+				opacity: 1;
+			}
+
+			a + a {
+				margin-left: 51px;
+			}
+
+			a i {
+				margin-right: 10px; 
+			}
+		}
+	}
+
+	.plot__image {
+		margin-left: -58px;
+
+		img {
+			max-width: none;
+		}
+	}
+}

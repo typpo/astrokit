@@ -1,0 +1,20 @@
+<head>
+	<meta charset="utf-8" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<title>AstroKit</title>
+
+	<link rel="shortcut icon" type="image/x-icon" href="css/images/favicon.ico" />
+
+	<!-- Vendor Styles -->
+
+	<!-- App Styles -->
+	<link rel="stylesheet" href="css/style.css" />
+
+	<!-- Vendor JS -->
+	<script src="vendor/jquery-3.1.1.min.js"></script>
+
+	<!-- App JS -->
+	<script src="js/functions.js"></script>
+</head>

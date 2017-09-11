@@ -1,0 +1,39 @@
+/* ------------------------------------------------------------ *\
+	Helpers
+\* ------------------------------------------------------------ */
+
+/*  Clear  */
+
+.clear:after { content: ''; line-height: 0; display: table; clear: both; }
+
+
+/*  Notext  */
+
+.notext { white-space: nowrap; text-indent: 100%; text-shadow: none; overflow: hidden; }
+.notext-old { font-size: 0; line-height: 0; text-indent: -4000px; }
+
+
+/*  Hidden  */
+
+[hidden],
+.hidden { display: none; }
+
+/*  Hover State  */
+
+.hover-state { opacity: 0; transition: opacity .3s; }
+
+
+/*  Alignleft  */
+
+.alignleft { float: left; }
+
+
+/*  Alignright  */
+
+.alignright { float: right; }
+
+
+/*  Disabled  */
+
+[disabled],
+.disabled { cursor: default; }
