@@ -1,0 +1,27 @@
+.accounts-container{
+	margin-top: 150px;
+}
+.accounts-container form{
+	text-align: center;
+}
+.accounts-container .form-group{
+	font-size: 15px;
+	width: 300px;
+	margin: 20px auto;
+	text-align: left;
+}
+.accounts-container .forgot-password{
+	font-size: 15px;
+	margin: 20px auto;
+}
+.accounts-container li li{
+	font-size: 13px;
+}
+.accounts-container li{
+	display: inline;
+	font-size: 15px;
+}
+.accounts-container .alert{
+	width: 300px;
+	margin: 20px auto;
+}
