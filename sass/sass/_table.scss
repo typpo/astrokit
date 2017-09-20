@@ -1,0 +1,36 @@
+/* ------------------------------------------------------------ *\
+	Table Estimation
+\* ------------------------------------------------------------ */
+
+.table-estimation {
+
+	th {
+		font-size: 18px; 
+		opacity: .5;
+		font-weight: 400;
+	}
+
+	td {
+		font-size: 18px;
+	}
+
+	thead > tr > th {
+		border-color: #3c3b3b;
+		border-width: 1px;
+		padding: 8px 0 33px 39px;
+	}
+
+	tbody > tr > td {
+		width: 25%;
+		border-color: #3c3b3b;
+		padding: 38px 0 36px 38px; 
+	}
+
+	tbody tr:nth-of-type(odd) {
+		background: #262525 !important; 
+	}
+
+	tbody > tr:last-child > td {
+		border-bottom: 1px solid #3c3b3b;
+	}
+}

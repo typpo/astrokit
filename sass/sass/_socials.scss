@@ -1,0 +1,83 @@
+/* ------------------------------------------------------------ *\
+	Socials
+\* ------------------------------------------------------------ */
+
+.socials {
+	position: absolute;
+	left: 3vw;
+	top: 510px;
+	z-index: 15;
+}
+.socials ul {
+	list-style: none;
+}
+.socials li + li {
+	position: relative;
+	margin-top: 74px;
+}
+
+.socials a {
+	text-decoration: none;
+	cursor: pointer; 
+}
+
+.socials i {
+	opacity: .4;
+	transition: opacity .4s;
+	cursor: pointer;
+}
+.socials i.hover-state {
+	position: absolute;
+	top: 6px;
+	left: 0;
+	opacity: 0;
+	transition: opacity .4s;
+}
+
+@include breakpoint-large-desktop {
+	.socials {
+		top: 80px;
+		right: 40px;
+		left: initial;
+		
+		li {
+			float: left;
+		}
+
+		li + li {
+			margin-top: 0;
+			margin-left: 74px;
+		}
+
+		ul {
+			@include clearfix;
+			display: inline-block;
+		}
+	}
+}
+
+@include breakpoint-tablet-portrait {
+	.socials {
+		top: 46px;
+		right: 50%;
+		transform: translateX(50%);
+	}
+}
+
+@include breakpoint-mobile {
+	.socials {
+		position: fixed;
+		z-index: 20;
+		width: 100%;
+		top: auto;
+		bottom: 0;
+		padding: 15px 20px;
+		text-align: center;
+		background: url(images/temp/intro-bg.jpg);
+		line-height: 0;
+	}
+
+	.socials li + li {
+		margin-left: 50px; 
+	}
+}

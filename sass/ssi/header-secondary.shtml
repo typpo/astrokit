@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!--#include virtual="head.shtml" -->
+<body class="body-secondary" style="background: #1a1919;">
+<div class="wrapper">
+	<header class="header header--secondary">
+		<a href="#" class="logo-small">AstroKit</a>
+		<div class="header__inner">
+			<div class="container">
+				<a href="#" class="link-nav">
+					<i class="ico-arrow-left"></i>
+			
+					Back
+				</a>
+			
+				<nav class="nav nav--secondary">
+					<ul>
+						<li>
+							<a href="#">Browse Images</a>
+						</li>
+				
+						<li>
+							<a href="#">My uploads</a>
+						</li>
+				
+						<li>
+							<a href="#">Upload Images</a>
+						</li>
+					</ul>
+				</nav><!-- /.nav /.nav-/-secondary -->
+			</div><!-- /.container -->
+		</div><!-- /.header__inner -->
+
+		<a href="#" class="link-nav">
+			Logout
+
+			<i class="ico-upload"></i>
+		</a>
+	</header><!-- /.header -->

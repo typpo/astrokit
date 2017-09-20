@@ -1,0 +1,47 @@
+/* ------------------------------------------------------------ *\
+	Graphs
+\* ------------------------------------------------------------ */
+
+.graphs {
+	margin-top: 53px; 
+
+	.col-sm-6:nth-child(odd) {
+		.graph img {
+			margin-left: -70px;
+		}
+	}
+
+	.col-sm-6:nth-child(even) {
+		.graph img {
+			margin-left: -28px;
+		}
+
+		.graph .graph__title {
+			padding-left: 42px; 
+		}
+	}
+
+	.col-sm-6:last-child {
+		.graph img {
+			margin-left: -18px; 
+		}
+	}
+}
+
+/* ------------------------------------------------------------ *\
+	Graph 
+\* ------------------------------------------------------------ */
+
+.graph {
+	margin-bottom: 110px;
+
+	.graph__title {
+		margin-bottom: 16px;
+		font-weight: 500;
+		font-size: 20px;
+	}
+
+	img {
+		max-width: none;
+	}
+}

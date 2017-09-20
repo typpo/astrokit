@@ -1,0 +1,177 @@
+/* ------------------------------------------------------------ *\
+	Base
+\* ------------------------------------------------------------ */
+
+body {
+	min-width: 320px;
+	background-color: #191818;
+	font-family: $font-family-avenirnext;
+	font-size: $font-size;
+	font-weight: 500;
+	line-height: $line-height;
+	color: #fff;
+	position: relative;
+
+	&:after {
+		content: '';
+		background: url(../css/images/temp/footer-bg.png) no-repeat 0 0;
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-size: 100% auto;
+		background-position: center bottom;
+	}
+}
+
+body.body-secondary:after {
+	width: 0;
+	height: 0; 
+}
+
+a {
+	color: inherit;
+	text-decoration: underline;
+}
+
+a:focus,
+a:hover {
+	text-decoration: none;
+	color: $beige;
+}
+
+a[href^="tel"] {
+	text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: 600;
+	margin-top: 0;
+}
+
+h1 {
+	font-size: 48px;
+}
+h2 {
+	font-size: 36px;
+	font-weight: 500;
+}
+h3 {
+	font-size: 30px;
+}
+h4 {
+	font-size: 28px;
+}
+h5 {
+	font-size: 24px;
+}
+h6 {
+	font-size: 18px;
+}
+
+p,
+ul,
+ol,
+dl,
+table,
+blockquote {
+}
+
+h1[class],
+h2[class],
+h3[class],
+h4[class],
+h5[class],
+h6[class],
+h1:last-child,
+h2:last-child,
+h3:last-child,
+h4:last-child,
+h5:last-child,
+h6:last-child,
+p:last-child,
+ul:last-child,
+ol:last-child,
+dl:last-child,
+table:last-child,
+blockquote:last-child {
+	margin-bottom: 0;
+}
+
+.main {
+	position: relative;
+	z-index: 1;
+}
+
+.wrapper {
+	overflow-x: hidden;
+	position: relative;
+}
+
+@include breakpoint-tablet-portrait {
+	body {
+		font-size: 20px; 
+	}
+	
+	h1 {
+	font-size: 40px;
+	}
+
+	h2 {
+		font-size: 30px;
+		font-weight: 500;
+	}
+
+	h3 {
+		font-size: 26px;
+	}
+
+	h4 {
+		font-size: 24px;
+	}
+
+	h5 {
+		font-size: 20px;
+	}
+
+	h6 {
+		font-size: 14px;
+	}
+}
+
+@include breakpoint-mobile {
+	body {
+		font-size: 16px; 
+	}
+	
+	h1 {
+	font-size: 36px;
+	}
+
+	h2 {
+		font-size: 28px;
+		font-weight: 500;
+	}
+
+	h3 {
+		font-size: 24px;
+	}
+
+	h4 {
+		font-size: 20px;
+	}
+
+	h5 {
+		font-size: 16px;
+	}
+
+	h6 {
+		font-size: 12px;
+	}
+}

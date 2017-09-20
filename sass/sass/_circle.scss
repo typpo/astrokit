@@ -1,0 +1,164 @@
+/* ------------------------------------------------------------ *\
+	Circle
+\* ------------------------------------------------------------ */
+
+.circle {
+	position: relative; 
+	width: 79vw; 
+	height: 79vw;
+	margin-top: -25vw;
+	margin-left: -12vw; 
+	max-width: 1295px;
+	max-height: 1295px;
+
+	ul {
+		list-style: none;
+		text-align: center;
+	}
+	a {
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: 500;
+		text-transform: uppercase;
+
+		span {
+			display: block;
+			opacity: .2;
+			margin-top: 27px;
+			position: relative;
+		}
+
+		span:after {
+			content: '';
+			width: 10px;
+			height: 10px;
+			border-bottom: 1px solid $beige;
+			border-right: 1px solid $beige;
+			display: inline-block;
+			position: absolute;
+			bottom: 3px;
+			left: 100%;
+			margin-left: 10px;
+			opacity: 0;
+		}
+
+		&:hover span {
+			opacity: 1;
+		}
+
+		&:hover span:after {
+			opacity: 1;
+		}
+	}
+
+	li {
+		position: absolute;
+
+		&:nth-child(1) {
+			top: 18.1%;
+			left: 62.4%;
+		}
+		&:nth-child(2) {
+			top: 30.3%;
+			left: 53.3%;
+		}
+		&:nth-child(3) {
+			top: 47.5%;
+			left: 76%;
+		}
+		&:nth-child(4) {
+			top: 69.2%;
+			left: 70.5%;
+		}
+		&:nth-child(5) {
+			top: 76.2%;
+			left: 43.6%;
+		}
+		&:nth-child(6) {
+			top: 83.5%;
+			left: 21.2%;
+		}
+		&:nth-child(7) {
+			top: 60.7%;
+			left: 12.6%;
+		}
+		&:nth-child(8) {
+			top: 43%;
+			left: 22%;
+		}
+	}
+
+	.circle__image {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
+	.current {
+		color: $beige;
+
+		span {
+			opacity: 1;
+		}
+
+		span:after {
+			content: '';
+			width: 10px;
+			height: 10px;
+			border-bottom: 1px solid $beige;
+			border-right: 1px solid $beige;
+			display: inline-block;
+			position: absolute;
+			bottom: 3px;
+			left: 100%;
+			margin-left: 10px;
+			opacity: 1;
+		}
+	}
+}
+
+@include breakpoint-small-desktop {
+	.circle li:nth-child(7) {
+		left: 11.2vw;
+	}
+	.circle i {
+		transform: scale(.8);
+	}
+}
+
+@include breakpoint-tablet-portrait {
+	.circle {
+		width: 100%;
+		margin-left: 0;
+	}
+}
+
+@include breakpoint-mobile {
+	.circle {
+		height: auto;
+		margin-top: 10px;
+	}
+
+	.circle .circle__image {
+		display: none;
+	}
+	
+	.circle li {
+		position: static !important; 
+		margin-bottom: 20px;
+		float: left;
+		width: 50%;
+	}
+
+	.circle li:nth-child(odd) {
+		clear: left;
+	}
+
+	.circle ul {
+		@include clearfix;
+	}
+
+	.circle .current span:after {
+		display: none;
+	}
+}

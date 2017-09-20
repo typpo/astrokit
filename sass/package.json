@@ -1,0 +1,31 @@
+{
+  "name": "2create-task-runner-sass",
+  "version": "2.0.0",
+  "description": "2create task runner sass",
+  "dependencies": {},
+  "devDependencies": {
+    "autoprefixer": "^6.5.1",
+    "browser-sync": "^2.17.5",
+    "file-exists": "^2.0.0",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-changed": "^1.3.2",
+    "gulp-copy": "0.0.2",
+    "gulp-filter": "~4.0.0",
+    "gulp-foreach": "^0.1.0",
+    "gulp-image-to-rule": "^1.2.0",
+    "gulp-sass": "^2.3.2",
+    "gulp-plumber": "~1.1.0",
+    "gulp-postcss": "^6.2.0",
+    "gulp-rimraf": "^0.2.0",
+    "gulp-sourcemaps": "~2.2.0",
+    "gulp-watch": "^4.3.10",
+    "node-ssi": "^0.3.2",
+    "postcss": "^5.2.5",
+    "postcss-sprites": "^4.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "2create",
+  "license": "MIT"
+}

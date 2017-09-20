@@ -3,32 +3,142 @@
 
 {% block heading %}Upload an image{% endblock %}
 
-{% block content %}
-    <p>
-      Provide up to 20 images for astrometry, photometry, and light curve analysis:
-    </p>
-    {% if request.user.is_authenticated %}
-      <div class="well">
-        <form action="/upload" class="dropzone" id="dropzone-upload">{% csrf_token %}</form>
-      </div>
-    {% else %}
-        You need to <a href="{% url "login" %}">login</a> before uploading photos.
-    {% endif %}
-  </div>
+{% block header %}
+  <header class="header header--secondary">
+    <a href="#" class="logo-small">AstroKit</a>
+    <div class="header__inner">
+      <div class="container">
+        <a href="#" class="link-nav">
+          <i class="ico-arrow-left"></i>
+      
+          Back
+        </a>
+      
+        <nav class="nav nav--secondary">
+          <ul>
+            <li>
+              <a href="#">Browse Images</a>
+            </li>
+        
+            <li>
+              <a href="#">My uploads</a>
+            </li>
+        
+            <li>
+              <a href="#">Upload Images</a>
+            </li>
+          </ul>
+        </nav><!-- /.nav /.nav-/-secondary -->
+      </div><!-- /.container -->
+    </div><!-- /.header__inner -->
 
+    <a href="#" class="link-nav">
+      Logout
+
+      <i class="ico-upload"></i>
+    </a>
+  </header><!-- /.header -->
+{% endblock header %}
+
+
+{% block content %}
+
+  <main class="main">
+    <div class="container">
+      <form class="section-upload dropzone" action="/upload?testing=1" id="dropzone-upload" method="post" enctype="mutlipart/form-data">{% csrf_token %}
+        <header class="section-upload__head">
+          <h2 class="section-upload__title">
+            Upload an <span>Image</span>
+          </h2><!-- /.section-upload__title -->
+
+          <h6 class="section-upload__subtitle">
+            Max 30 Images<span>*</span>
+          </h6><!-- /.section-upload__subtitle -->
+        </header><!-- /.section-upload__head -->
+
+        <div class="section-upload__body">
+          <div class="upload-field " >
+            <div class="upload-field__entry">
+              <i class="ico-files"></i>
+            
+              <h5>To upload image drag and drop<br>or</h5>
+            
+              <div class="btn btn--solid browse">Browse</div>
+            
+              <p>any .pdf, .png, .jpg, .gif</p>
+            </div><!-- /.upload-field__entry -->
+          </div><!-- /.upload-field -->
+
+          <div class="upload-files">
+            <div class="row">
+              
+            </div><!-- /.row -->
+          </div><!-- /.upload-field__files -->
+        </div><!-- /.section-upload__body -->
+
+        <div class="section-upload__actions">
+          <div class="btn btn--solid process_queue">Submit</div>
+        </div><!-- /.section-upload__actions -->
+        <div class="fallback">
+          <input name="file" type="file" multiple />
+        </div>
+      </form><!-- /.section-upload -->
+    </div><!-- /.container -->
+  </main><!-- /.main -->
 {% endblock %}
 {% block scripts %}
   <script src="{% static "imageflow/js/lib/dropzone.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/upload.js" %}" type="text/javascript"></script>
   <script type="text/javascript">
-    Dropzone.options.dropzoneUpload = {
+
+  Dropzone.autoDiscover = false;
+  $(function() {
+    
+    var myDropzone = new Dropzone(
+      "#dropzone-upload",
+    {
       uploadMultiple: true,
-      addRemoveLinks: false,
-      maxFiles: 20
-    }
+      addRemoveLinks: true,
+      maxFiles: 20,
+      dictDefaultMessage: "",
+      autoProcessQueue: false,
+      previewsContainer: ".upload-files .row",
+      dictRemoveFile: "",
+      previewTemplate: `
+      <div class="col-sm-2">
+        <figure class="upload-files__image">
+          <img data-dz-thumbnail>
+                          
+          <a href="#">
+            <i class="ico-delete" data-dz-remove></i>
+          </a>
+    
+          <div class="caption">
+            <p data-dz-name>default name</p>
+    
+            <p><span data-dz-size>default size</span></p>
+          </div><!-- /.caption -->
+        </figure><!-- /.upload-files__image -->
+      </div><!-- /.col-sm-2 -->
+      <div data-dz-uploadprogress></div>
+      <div data-dz-errormessage></div>
+      `,
+      success: function(file, response) {
+        window.location = response["redirect_url"]
+      }
+    })
+
+    $(".process_queue").on("click", function(){
+      myDropzone.processQueue();
+    })
+    $(".browse").on("click", function(e){
+      $(".dz-message").click();
+    })
+  })
+
   </script>
 {% endblock %}
 
 {% block styles %}
-  <link rel="stylesheet" type="text/css" href="{% static "imageflow/css/dropzone.css" %}">
+  
 {% endblock %}

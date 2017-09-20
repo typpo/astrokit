@@ -1,0 +1,34 @@
+/* ------------------------------------------------------------ *\
+	Variables
+\* ------------------------------------------------------------ */
+
+$font-size: 24px;
+$line-height: 1.2;
+
+$shell-max-width: 1300px;
+$shell-gutter: 10px;
+
+$beige: #86704d;
+
+$font-family-sans-serif: 'Arial', 'Helvetica', sans-serif;
+$font-family-serif: 'Times', serif;
+$font-family-avenirnext: 'Avenir Next', sans-serif;
+
+$grid-gutter-width: 30px !default;
+$container-large-desktop: (1200px + $grid-gutter-width) !default;
+
+$screen-lg: (1200px + $grid-gutter-width * 2);
+
+
+/*  Responsive Variables  */
+$responsive-xxs:                    374px;
+$responsive-xs:                     767px;
+$responsive-sm:                     1023px;
+$responsive-md:                     1259px;
+$responsive-lg:                     1380px;
+
+$breakpoint-mobile-portrait:        $responsive-xxs;
+$breakpoint-mobile:                 $responsive-xs;
+$breakpoint-tablet-portrait:        $responsive-sm;
+$breakpoint-small-desktop:          $responsive-md;
+$breakpoint-large-desktop:          $responsive-lg;
