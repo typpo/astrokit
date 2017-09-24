@@ -1,17 +1,33 @@
-{% extends 'layout-basic.html' %}
+{% extends 'layout.html' %}
 {% load staticfiles %}
 
 {% block heading %}View submission{% endblock %}
 
 {% block content %}
-<p>
-This submission is being processed.  The page will refresh periodically and
-results will appear when they're ready.
+<main class="main">
+	<div class="container">
+		This submission is being processed.  The page will refresh periodically and results will appear when they're ready.
+	</div>
+</main>
 
-<script>
-setTimeout(function() {
-  window.location.reload(true);
-}, 5000);
-</script>
-</p>
+{% endblock %}
+
+{% block scripts %}
+	<script>
+	setTimeout(function() {
+	  window.location.reload(true);
+	}, 5000);
+	</script>
+{% endblock scripts %}
+
+{% block styles %}
+	<style type="text/css">
+	.main{
+		margin-top: 150px;
+		font-size: 15px;
+	}
+	body{
+		min-height: 100vh;
+	}
+	</style>
 {% endblock %}

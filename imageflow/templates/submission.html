@@ -82,9 +82,9 @@
             <div class="plot__option">
               <p>Point source coordinates</p>
 
-              <a href="#">Coordinates JSON</a>
+              <a href="{{result.urls.coords_json_url}}">Coordinates JSON</a>
 
-              <a href="#">Coordinates FITS</a>
+              <a href="{{result.urls.coords_fits_url}}">Coordinates FITS</a>
             </div><!-- /.plot__option -->
           </div><!-- /.plot__options -->
           
@@ -95,7 +95,7 @@
               See Raport
             </a>
 
-            <a href="#" class="link-nav">
+            <a href="{{result.urls.coords_plot_url}}" download class="link-nav">
               <i class="ico-download"></i>
 
               Download
@@ -105,7 +105,7 @@
 
         <div class="plot__body">
           <div class="plot__image">
-            <img src="{% static "imageflow/build/css/images/temp/plot.jpg" %}" alt="">
+            <img src="{{result.urls.coords_plot_url}}" alt="">
           </div><!-- /.plot__image -->
         </div><!-- /.plot__body -->
       </div><!-- /.plot -->
@@ -122,92 +122,21 @@
           
                   <th>Field Y</th>
           
-                  <th>Estimated Lux</th>
+                  <th>Estimated Flux</th>
           
                   <th>Estimated Magnitude</th>
                 </tr>
               </thead>
           
               <tbody>
-                <tr>
-                  <td>632.123647</td>
-          
-                  <td>19.32334556</td>
-          
-                  <td>171.25</td>
-          
-                  <td>5.54445577669</td>
-                </tr>
-          
-                <tr>
-                  <td>632.123647</td>
-          
-                  <td>19.32334556</td>
-          
-                  <td>171.25</td>
-          
-                  <td>5.54445577669</td>
-                </tr>
-          
-                <tr>
-                  <td>632.123647</td>
-          
-                  <td>19.32334556</td>
-          
-                  <td>171.25</td>
-          
-                  <td>5.54445577669</td>
-                </tr>
-          
-                <tr>
-                  <td>632.123647</td>
-          
-                  <td>19.32334556</td>
-          
-                  <td>171.25</td>
-          
-                  <td>5.54445577669</td>
-                </tr>
-          
-                <tr>
-                  <td>632.123647</td>
-          
-                  <td>19.32334556</td>
-          
-                  <td>171.25</td>
-          
-                  <td>5.54445577669</td>
-                </tr>
-          
-                <tr>
-                  <td>632.123647</td>
-          
-                  <td>19.32334556</td>
-          
-                  <td>171.25</td>
-          
-                  <td>5.54445577669</td>
-                </tr>
-          
-                <tr>
-                  <td>632.123647</td>
-          
-                  <td>19.32334556</td>
-          
-                  <td>171.25</td>
-          
-                  <td>5.54445577669</td>
-                </tr>
-          
-                <tr>
-                  <td>632.123647</td>
-          
-                  <td>19.32334556</td>
-          
-                  <td>171.25</td>
-          
-                  <td>5.54445577669</td>
-                </tr>
+                {% for point_source in result.data.coords %}
+                  <tr>
+                    <td>{{point_source.field_x}}</td>
+                    <td>{{point_source.field_y}}</td>
+                    <td>{{point_source.est_flux}}</td>
+                    <td>{{point_source.est_mag}}</td>
+                  </tr>
+                {% endfor %}
               </tbody>
             </table><!-- /.table table-striped table-inverse -->
           </div><!-- /.table-estimation --></div><!-- /.section-secondary__body -->
