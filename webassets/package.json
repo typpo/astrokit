@@ -24,6 +24,8 @@
     "postcss-sprites": "^4.0.0"
   },
   "scripts": {
+    "build": "gulp build",
+    "watch": "gulp build && gulp serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
