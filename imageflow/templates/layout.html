@@ -57,48 +57,85 @@
 		  </ul>
 		</div><!-- /.socials -->
   	{% endblock socials %}
-	
-	
+
+
 	{% block header %}
-		<header class="header">
-		  <a href="#" class="logo">AstroKit</a>
-		  
-		  <a href="#" class="burger">
-			<span></span>
-			
-			<span></span>
-			
-			<span></span>
-		  </a>
-		  
-		  <nav class="nav">
-			<ul>
-			  <li class="current">
-				<a href="#">Astrokit explained</a>
-			  </li>
+    {% if user.is_authenticated %}
+      <header class="header header--secondary">
+        <a href="#" class="logo-small">AstroKit</a>
+        <div class="header__inner">
+          <div class="container">
+            <a href="#" class="link-nav">
+              <i class="ico-arrow-left"></i>
 
-			  <li>
-				<a href="#">Research case studies</a>
-			  </li>
+              Back
+            </a>
 
-			  <li>
-				<a href="#">Terminology</a>
-			  </li>
+            <nav class="nav nav--secondary">
+              <ul>
+                <li>
+                  <a href="#">Browse Images</a>
+                </li>
 
-			  <li>
-				<a href="#">Faq'<span>s</span></a>
-			  </li>
+                <li>
+                  <a href="#">My uploads</a>
+                </li>
 
-			  <li>
-				<a href="#">Contact us</a>
-			  </li>
+                <li>
+                  <a href="#">Upload Images</a>
+                </li>
+              </ul>
+            </nav><!-- /.nav /.nav-/-secondary -->
+          </div><!-- /.container -->
+        </div><!-- /.header__inner -->
 
-			  <li>
-				<a href="#">Using Astrokit</a>
-			  </li>
-			</ul>
-		  </nav><!-- /.nav -->
-		</header><!-- /.header -->
+        <a href="#" class="link-nav">
+          Logout
+
+          <i class="ico-upload"></i>
+        </a>
+      </header><!-- /.header -->
+    {% else %}
+      <header class="header">
+        <a href="#" class="logo">AstroKit</a>
+
+        <a href="#" class="burger">
+        <span></span>
+
+        <span></span>
+
+        <span></span>
+        </a>
+
+        <nav class="nav">
+        <ul>
+          <li class="current">
+          <a href="#">Astrokit explained</a>
+          </li>
+
+          <li>
+          <a href="#">Research case studies</a>
+          </li>
+
+          <li>
+          <a href="#">Terminology</a>
+          </li>
+
+          <li>
+          <a href="#">Faq'<span>s</span></a>
+          </li>
+
+          <li>
+          <a href="#">Contact us</a>
+          </li>
+
+          <li>
+          <a href="#">Using Astrokit</a>
+          </li>
+        </ul>
+        </nav><!-- /.nav -->
+      </header><!-- /.header -->
+    {% endif %}
 	{% endblock header %}
 
 

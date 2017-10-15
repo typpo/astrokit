@@ -19,6 +19,10 @@ $container-large-desktop: (1200px + $grid-gutter-width) !default;
 
 $screen-lg: (1200px + $grid-gutter-width * 2);
 
+$breadcrumb-bg: inherit;
+$well-bg: inherit;
+$well-border: #aaa;
+
 
 /*  Responsive Variables  */
 $responsive-xxs:                    374px;

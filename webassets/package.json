@@ -1,7 +1,7 @@
 {
-  "name": "2create-task-runner-sass",
+  "name": "astrokit-sass",
   "version": "2.0.0",
-  "description": "2create task runner sass",
+  "description": "Task runner, mostly for sass compilation right now",
   "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^6.5.1",
@@ -24,8 +24,8 @@
     "postcss-sprites": "^4.0.0"
   },
   "scripts": {
+    "build": "gulp build",
+    "watch": "gulp build && gulp serve",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "2create",
-  "license": "MIT"
+  }
 }
