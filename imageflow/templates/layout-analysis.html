@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+{% load staticfiles %}
+{% load jsonify %}
+
+{% block content %}
+<main class="main">
+  <div class="container">
+    {% block content-interior %}{% endblock %}
+  </div>
+</main>
+{% endblock %}

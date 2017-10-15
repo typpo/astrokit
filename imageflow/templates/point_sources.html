@@ -1,53 +1,49 @@
-{% extends 'layout.html' %}
+{% extends 'layout-analysis.html' %}
 {% load staticfiles %}
 {% load jsonify %}
 
 {% block heading %}Submission - Point Sources{% endblock %}
 
-{% block content %}
-<main class="main">
-  <div class="container">
-    <ol class="breadcrumb">
-      <li><a href="#">Astrometry</a></li>
-      <li class="active">Point Sources</li>
-      <li><a href="#">Reference Stars</a></li>
-      <li><a href="#">Reduction</a></li>
-      <li><a href="#">Light Curve</a></li>
-    </ol>
+{% block content-interior %}
+<ol class="breadcrumb">
+  <li><a href="#">Astrometry</a></li>
+  <li class="active">Point Sources</li>
+  <li><a href="#">Reference Stars</a></li>
+  <li><a href="#">Reduction</a></li>
+  <li><a href="#">Light Curve</a></li>
+</ol>
 
-    <h3>Point-spread function analysis</h3>
+<h3>Point-spread function analysis</h3>
 
-    <h4>Fluxes for each point source</h4>
-    <div class="well">
-      <img src="{{result.urls.psf_bar_url}}" />
-      <a href="{{result.urls.psf_bar_url}}" download>Download</a>
-    </div>
+<h4>Fluxes for each point source</h4>
+<div class="well">
+  <img src="{{result.urls.psf_bar_url}}" />
+  <a href="{{result.urls.psf_bar_url}}" download>Download</a>
+</div>
 
-    <h4>Histogram of flux distribution</h4>
-    <div class="well">
-      <img src="{{result.urls.psf_hist_url}}" />
-      <a href="{{result.urls.psf_hist_url}}" download>Download</a>
-    </div>
+<h4>Histogram of flux distribution</h4>
+<div class="well">
+  <img src="{{result.urls.psf_hist_url}}" />
+  <a href="{{result.urls.psf_hist_url}}" download>Download</a>
+</div>
 
-    <h4>Computed flux (astrokit) vs astrometry.net coarse flux estimation.</h4>
-    <div class="well">
-      <img src="{{result.urls.psf_scatter_url}}" />
-      <a href="{{result.urls.psf_scatter_url}}" download>Download</a>
-    </div>
+<h4>Computed flux (astrokit) vs astrometry.net coarse flux estimation.</h4>
+<div class="well">
+  <img src="{{result.urls.psf_scatter_url}}" />
+  <a href="{{result.urls.psf_scatter_url}}" download>Download</a>
+</div>
 
-    <h4>Residual image</h4>
-    <div class="well">
-      <img src="{{result.urls.psf_residual_image_url}}" />
-      <a href="{{result.urls.psf_residual_image_url}}" download>Download</a>
-    </div>
+<h4>Residual image</h4>
+<div class="well">
+  <img src="{{result.urls.psf_residual_image_url}}" />
+  <a href="{{result.urls.psf_residual_image_url}}" download>Download</a>
+</div>
 
-    <div style="text-align: right">
-      <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
-      <a href="/submission/reference_stars/{{result.subid}}"
-         class="btn btn-lg btn-success">View reference stars</a>
-    </div>
-  </div>
-</main>
+<div style="text-align: right">
+  <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
+  <a href="/submission/reference_stars/{{result.subid}}"
+     class="btn btn-lg btn-success">View reference stars</a>
+</div>
 {% endblock %}
 {% block scripts %}
 {% endblock %}
