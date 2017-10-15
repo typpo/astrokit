@@ -12,20 +12,20 @@
       <div class="container">
         <a href="#" class="link-nav">
           <i class="ico-arrow-left"></i>
-      
+
           Back
         </a>
-      
+
         <nav class="nav nav--secondary">
           <ul>
             <li>
               <a href="#">Browse Images</a>
             </li>
-        
+
             <li>
               <a href="#">My uploads</a>
             </li>
-        
+
             <li>
               <a href="#">Upload Images</a>
             </li>
@@ -57,15 +57,15 @@
               <li>
                 <a href="#">Point Sources</a>
               </li>
-              
+
               <li>
                 <a href="#">Catalog Stars</a>
               </li>
-              
+
               <li>
                 <a href="#">Light Curve</a>
               </li>
-            </ul>           
+            </ul>
           </div><!-- /.plot__nav -->
         </header><!-- /.plot__head -->
 
@@ -87,7 +87,7 @@
               <a href="{{result.urls.coords_fits_url}}">Coordinates FITS</a>
             </div><!-- /.plot__option -->
           </div><!-- /.plot__options -->
-          
+
           <div class="plot__actions">
             <a href="#" class="link-nav">
               <i class="ico-folder"></i>
@@ -112,22 +112,22 @@
 
       <section class="section-secondary">
         <h5 class="section-secondary__title">Estimation table</h5><!-- /.section-secondary__title -->
-        
+
         <div class="section-secondary__body">
           <div class="table-estimation">
             <table class="table table-striped">
               <thead>
                 <tr>
                   <th>Field X</th>
-          
+
                   <th>Field Y</th>
-          
+
                   <th>Estimated Flux</th>
-          
+
                   <th>Estimated Magnitude</th>
                 </tr>
               </thead>
-          
+
               <tbody>
                 {% for point_source in result.data.coords %}
                   <tr>
@@ -144,48 +144,48 @@
 
       <section class="section-secondary">
         <h5 class="section-secondary__title">Point-Spread Function Analysis</h5><!-- /.section-secondary__title -->
-        
+
         <div class="section-secondary__body">
           <div class="graphs">
             <div class="row">
               <div class="col-sm-6 col-xs-12">
                 <div class="graph">
                   <h6 class="graph__title">Bar graph showing flux for each point source in the image.</h6><!-- /.graph__title -->
-                
+
                   <img src="{% static "imageflow/build/css/images/temp/graph1.jpg" %}" alt="">
                 </div><!-- /.graph -->
               </div><!-- /.col-sm-6 ./col-xs-12 -->
-                
+
               <div class="col-sm-6 col-xs-12">
                 <div class="graph">
                   <h6 class="graph__title">Scatte plot showing computed flux vs naive flux estimation.</h6><!-- /.graph__title -->
-                
+
                   <img src="{% static "imageflow/build/css/images/temp/graph2.jpg" %}" alt="">
                 </div><!-- /.graph -->
               </div><!-- /.col-sm-6 /.col-xs-12 -->
-            
+
               <div class="col-sm-6 col-xs-12">
                 <div class="graph">
                   <h6 class="graph__title">Histogram of flux distribution</h6><!-- /.graph__title -->
-                
+
                   <img src="{% static "imageflow/build/css/images/temp/graph3.jpg" %}" alt="">
                 </div><!-- /.graph -->
               </div><!-- /.col-sm-2 -->
-                
+
               <div class="col-sm-6 col-xs-12">
                 <div class="graph">
                   <h6 class="graph__title">Residual image</h6><!-- /.graph__title -->
-                
+
                   <img src="{% static "imageflow/build/css/images/temp/graph4.jpg" %}" alt="">
                 </div><!-- /.graph -->
               </div><!-- /.col-sm-2 -->
             </div><!-- /.row -->
           </div><!-- /.graphs -->
         </div><!-- /.section-secondary__body -->
-        
+
         <div class="section-secondary__actions">
           <a href="#" class="btn btn--solid btn--inversed">Back</a>
-        
+
           <a href="#" class="btn btn--solid btn--inversed">Next</a>
         </div><!-- /.section-secondary__actions -->
       </section><!-- /.section-secondary -->
