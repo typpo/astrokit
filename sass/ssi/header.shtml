@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+	<!--#include virtual="head.shtml" -->
+<body>
+<div class="wrapper">
+	<div class="socials">
+		<ul>
+			<li>
+				<a href="#">
+					<i class="ico-facebook"></i>
+				</a>
+			</li>
+
+			<li>
+				<a href="#">
+					<i class="ico-twitter"></i>
+				</a>
+			</li>
+
+			<li>
+				<a href="#">
+					<i class="ico-youtube"></i>
+				</a>
+			</li>
+
+			<li>
+				<a href="#">
+					<i class="ico-googleplus"></i>
+				</a>
+			</li>
+		</ul>
+	</div><!-- /.socials -->
+	
+	<header class="header">
+		<a href="#" class="logo">AstroKit</a>
+		
+		<a href="#" class="burger">
+			<span></span>
+			
+			<span></span>
+			
+			<span></span>
+		</a>
+		
+		<nav class="nav">
+			<ul>
+				<li class="current">
+					<a href="#">Astrokit explained</a>
+				</li>
+
+				<li>
+					<a href="#">Research case studies</a>
+				</li>
+
+				<li>
+					<a href="#">Terminology</a>
+				</li>
+
+				<li>
+					<a href="#">Faq'<span>s</span></a>
+				</li>
+
+				<li>
+					<a href="#">Contact us</a>
+				</li>
+
+				<li>
+					<a href="#">Using Astrokit</a>
+				</li>
+			</ul>
+		</nav><!-- /.nav -->
+	</header><!-- /.header -->

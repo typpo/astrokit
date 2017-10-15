@@ -1,0 +1,58 @@
+/* ------------------------------------------------------------ *\
+	Burger
+\* ------------------------------------------------------------ */
+
+@include breakpoint-tablet-portrait {
+	.burger {
+		display: block;
+		position: absolute;
+		z-index: 15;
+		top: 26px;
+		right: 20px;
+		width: 35px;
+		height: 30px;
+		opacity: .5;
+	}
+
+	.burger span {
+		display: block;
+		position: absolute;
+		width: 35px;
+		height: 5px;
+		background: #fff;
+		transition: top .2s .25s, left .2s .25s, opacity .2s .25s, transform .2s 0s;
+	}
+
+	.burger span:nth-child(1) {
+		top: 0;
+	} 
+
+	.burger span:nth-child(2) {
+		top: 10px;
+	}
+
+	.burger span:nth-child(3) {
+		top: 20px;
+	}
+
+	.burger--active span {
+		transition: background .2s, top .2s, left .2s, opacity .2s, transform .2s .25s;
+	}
+
+	.burger--active span:nth-child(1),
+	.burger--active span:nth-child(3) {
+		top: 12px;
+	}
+
+	.burger--active span:nth-child(2) {
+		opacity: 0;
+	}
+
+	.burger--active span:nth-child(1) {
+		transform: rotate(45deg);
+	}
+
+	.burger--active span:nth-child(3) {
+		transform: rotate(-45deg);
+	}
+}

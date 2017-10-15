@@ -1,0 +1,100 @@
+/* ------------------------------------------------------------ *\
+	Nav
+\* ------------------------------------------------------------ */
+
+.nav {
+	padding-top: 4px;
+
+	ul {
+		@include clearfix;
+	}
+
+	li {
+		float: left;
+	}
+	li + li {
+		margin-left: 38px;
+	}
+
+	a {
+		text-transform: uppercase;
+		text-decoration: none;
+		font-size: 14px;
+		opacity: .4;
+		transition: opacity .3s, color .3s;
+	}
+	a:hover {
+		color: #86704d;
+		opacity: 1;
+	}
+	a span {
+		text-transform: none;
+	}
+
+	.current a {
+		opacity: 1;
+	}
+}
+
+.nav--secondary {
+	padding-top: 0;
+
+	li + li {
+		margin-left: 45px;
+	}
+
+	@media (max-width: 1500px) {
+		padding-right: 200px; 
+	}
+}
+
+@include breakpoint-small-desktop {
+	.nav a {
+		font-size: 12px;
+	}
+}
+
+@include breakpoint-tablet-portrait {
+	.nav {
+		position: absolute;
+		z-index: 10;
+		top: 70px;
+		right: 0;
+		width: 100%;
+		padding: 0 20px;
+		margin-top: 0;
+		pointer-events: none;
+		transform: translateX(100%);
+		transition: transform .3s;
+		border-radius: 6px;
+		text-align: right;
+
+		li {
+			float: none;
+		}
+
+		li + li {
+			margin-left: 0;
+			margin-top: 20px;
+		}
+
+		a {
+			font-size: 16px;
+		}
+	}
+	
+	.nav--visible {
+		pointer-events: all;
+		transform: translateX(0);
+	}
+}
+
+@include breakpoint-mobile {
+	.nav {
+		background: #191818;
+		text-align: left;
+		padding-top: 20px;
+		padding-bottom: 20px;
+		top: 0;
+	}
+}

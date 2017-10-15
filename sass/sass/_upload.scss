@@ -1,0 +1,142 @@
+/* ------------------------------------------------------------ *\
+	Upload Field
+\* ------------------------------------------------------------ */
+
+.upload-field {
+	min-height: 500px;
+	padding: 103px 0 95px;
+	margin-bottom: 8px;
+	border: 1px dashed $beige;
+	text-align: center;
+	background: #121111;
+
+	.upload-field__entry {
+		i {
+			margin-bottom: 23px;
+		}
+
+		h5 {
+			font-weight: 500;
+			line-height: 1.6;
+			margin-bottom: 19px;
+		}
+
+		.btn {
+			margin-bottom: 29px; 
+		}
+
+		p {
+			font-size: 18px; 
+			opacity: .2;
+		}
+	}
+}
+
+/* ------------------------------------------------------------ *\
+	Upload Files
+\* ------------------------------------------------------------ */
+
+.upload-files {
+	padding: 0 12px;
+
+	.upload-files__image {
+		position: relative;
+		min-height: 194px;
+		margin-bottom: 8px;
+		text-align: center;
+		background: #313030;
+		margin: 0 -12px 8px;
+		
+		&:hover {
+			cursor: pointer;
+
+			.caption {
+				opacity: .1;
+				background: #313030; 
+
+				p {
+					visibility: hidden;
+				}
+			}
+
+			img {
+				opacity: .1;
+			}
+
+			.ico-delete {
+				opacity: 1;
+			}
+		}
+
+		i {
+			position: absolute;
+			top: 33px;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+		.ico-delete {
+			opacity: 0;
+			transition: .3s;
+		}
+
+		.caption {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			padding: 15px 18px 15px;
+			font-size: 18px;
+			text-align: left;
+			background: #000;
+			transition: .3s;
+
+			p {
+				opacity: .5;
+				margin-bottom: 2px;
+			}
+
+			span {
+				opacity: .5;
+			}
+		}
+
+		img {
+			transition: .3s;
+		}
+	}
+
+	.uploading {
+		.caption:before {
+			content: '';
+			position: absolute;
+			top: -4px;
+			left: 0;
+			right: 0;
+			width: 100%;
+			height: 4px;
+			background: #474647;
+		}
+
+		.caption:after {
+			content: '';
+			position: absolute; 
+			top: -4px;
+			left: 0;
+			width: 70%;
+			height: 4px;
+			background: #74d327;
+		}
+	}
+}
+/*
+
+	.col-sm-2 {
+		padding: 0 3px;
+	}
+}
+
+
+}
+}
+*/

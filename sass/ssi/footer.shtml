@@ -1,0 +1,16 @@
+	<footer class="footer">
+		<div class="container">
+			<div class="copyright">
+				<div class="copyright__logo">
+					<img src="css/images/temp/logo-fuse.png" alt="">
+				</div><!-- /.copyright__logo -->
+
+				<span>Designed by FuseLab Creative</span>
+
+				<span class="year">&copy; 2017</span>
+			</div><!-- /.copyright -->
+		</div><!-- /.container -->
+	</footer><!-- /.footer -->
+</div><!-- /.wrapper -->
+</body>
+</html>

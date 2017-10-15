@@ -1,0 +1,37 @@
+/* ------------------------------------------------------------ *\
+	Tabs
+\* ------------------------------------------------------------ */
+
+.tabs {
+}
+
+/* ------------------------------------------------------------ *\
+	Tab
+\* ------------------------------------------------------------ */
+
+.tab {
+	display: none;
+	padding-top: 122px;
+
+	&.current {
+		display: block;
+	}
+
+	.tab__title {
+		font-size: 30px;
+		margin-bottom: 136px;
+		font-weight: 500;
+	}
+}
+
+@include breakpoint-tablet-portrait {
+	.tab .tab__title {
+		margin-bottom: 20px;
+	}
+}
+
+@include breakpoint-mobile {
+	.tab {
+		padding-top: 30px;
+	}
+}

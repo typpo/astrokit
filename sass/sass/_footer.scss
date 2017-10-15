@@ -1,0 +1,47 @@
+/* ------------------------------------------------------------ *\
+	Footer
+\* ------------------------------------------------------------ */
+
+.footer {
+	position: relative;
+	z-index: 1;
+	padding: 39px 0 50px;
+
+	.copyright {
+		display: flex;
+		align-items: center;
+		font-size: 18px;
+		color: rgba(255, 255, 255, 0.3);
+		top: 5px;
+
+		span {
+			margin-left: 75px;
+			position: relative;
+			top: 5px;
+		}
+
+		.year {
+			margin-left: auto;
+		}
+	}
+}
+
+@include breakpoint-mobile {
+	.footer {
+		padding-bottom: 80px;
+	}
+
+	.footer .copyright {
+		display: block;
+	}
+	
+	.footer .copyright span {
+		width: 100%;
+		margin-left: 0;
+		font-size: 15px; 
+	}
+
+	.footer .copyright .copyright__logo {
+		display: block;
+	}
+}

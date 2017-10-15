@@ -22,6 +22,10 @@ Install numpy and scipy first (scikit bug): `pip install numpy scipy`
 
 Install pip dependencies: `pip install -r requirements.txt`
 
+Install node modules: `npm install sass/`
+
+Compile sass files using gulp: `cd sass && gulp build`
+
 [NOT NEEDED ANYMORE]  ~~Setup the astrometry analyzer: `./astrometry/setup/setup.sh`.  This will take some time.~~
 
 Run the server:  `./manage.py runserver`.
