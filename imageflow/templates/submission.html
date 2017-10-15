@@ -5,153 +5,153 @@
 {% block socials %}{% endblock socials %}
 
 {% block content %}
-  <main class="main">
-    <div class="container">
-      <div class="plot">
-        <header class="plot__head">
-          <h2 class="plot__title">
-            Point <span>Sources</span>
-          </h2><!-- /.plot__title -->
+<main class="main">
+  <div class="container">
+    <div class="plot">
+      <header class="plot__head">
+        <h2 class="plot__title">
+          Point <span>Sources</span>
+        </h2><!-- /.plot__title -->
 
-          <div class="plot__nav">
-            <ul>
-              <li>
-                <a href="#">Point Sources</a>
-              </li>
+        <div class="plot__nav">
+          <ul>
+            <li>
+              <a href="#">Point Sources</a>
+            </li>
 
-              <li>
-                <a href="#">Catalog Stars</a>
-              </li>
+            <li>
+              <a href="#">Catalog Stars</a>
+            </li>
 
-              <li>
-                <a href="#">Light Curve</a>
-              </li>
-            </ul>
-          </div><!-- /.plot__nav -->
-        </header><!-- /.plot__head -->
+            <li>
+              <a href="#">Light Curve</a>
+            </li>
+          </ul>
+        </div><!-- /.plot__nav -->
+      </header><!-- /.plot__head -->
 
-        <div class="plot__bar">
-          <div class="plot__options">
-            <div class="plot__option current">
-              <p>Annotated plot</p>
+      <div class="plot__bar">
+        <div class="plot__options">
+          <div class="plot__option current">
+            <p>Annotated plot</p>
 
-              <a href="#">Image FITS</a>
+            <a href="#">Image FITS</a>
 
-              <a href="#">Matched stars FITS</a>
-            </div><!-- /.plot__option -->
+            <a href="#">Matched stars FITS</a>
+          </div><!-- /.plot__option -->
 
-            <div class="plot__option">
-              <p>Point source coordinates</p>
+          <div class="plot__option">
+            <p>Point source coordinates</p>
 
-              <a href="{{result.urls.coords_json_url}}">Coordinates JSON</a>
+            <a href="{{result.urls.coords_json_url}}">Coordinates JSON</a>
 
-              <a href="{{result.urls.coords_fits_url}}">Coordinates FITS</a>
-            </div><!-- /.plot__option -->
-          </div><!-- /.plot__options -->
+            <a href="{{result.urls.coords_fits_url}}">Coordinates FITS</a>
+          </div><!-- /.plot__option -->
+        </div><!-- /.plot__options -->
 
-          <div class="plot__actions">
-            <a href="#" class="link-nav">
-              <i class="ico-folder"></i>
+        <div class="plot__actions">
+          <a href="#" class="link-nav">
+            <i class="ico-folder"></i>
 
-              See Raport
-            </a>
+            See Raport
+          </a>
 
-            <a href="{{result.urls.coords_plot_url}}" download class="link-nav">
-              <i class="ico-download"></i>
+          <a href="{{result.urls.coords_plot_url}}" download class="link-nav">
+            <i class="ico-download"></i>
 
-              Download
-            </a>
-          </div><!-- /.plot__actions -->
-        </div><!-- /.plot__bar -->
+            Download
+          </a>
+        </div><!-- /.plot__actions -->
+      </div><!-- /.plot__bar -->
 
-        <div class="plot__body">
-          <div class="plot__image">
-            <img src="{{result.urls.coords_plot_url}}" alt="">
-          </div><!-- /.plot__image -->
-        </div><!-- /.plot__body -->
-      </div><!-- /.plot -->
+      <div class="plot__body">
+        <div class="plot__image">
+          <img src="{{result.urls.coords_plot_url}}" alt="">
+        </div><!-- /.plot__image -->
+      </div><!-- /.plot__body -->
+    </div><!-- /.plot -->
 
-      <section class="section-secondary">
-        <h5 class="section-secondary__title">Estimation table</h5><!-- /.section-secondary__title -->
+    <section class="section-secondary">
+      <h5 class="section-secondary__title">Estimation table</h5><!-- /.section-secondary__title -->
 
-        <div class="section-secondary__body">
-          <div class="table-estimation">
-            <table class="table table-striped">
-              <thead>
+      <div class="section-secondary__body">
+        <div class="table-estimation">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Field X</th>
+
+                <th>Field Y</th>
+
+                <th>Estimated Flux</th>
+
+                <th>Estimated Magnitude</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for point_source in result.data.coords %}
                 <tr>
-                  <th>Field X</th>
-
-                  <th>Field Y</th>
-
-                  <th>Estimated Flux</th>
-
-                  <th>Estimated Magnitude</th>
+                  <td>{{point_source.field_x}}</td>
+                  <td>{{point_source.field_y}}</td>
+                  <td>{{point_source.est_flux}}</td>
+                  <td>{{point_source.est_mag}}</td>
                 </tr>
-              </thead>
+              {% endfor %}
+            </tbody>
+          </table><!-- /.table table-striped table-inverse -->
+        </div><!-- /.table-estimation --></div><!-- /.section-secondary__body -->
+    </section><!-- /.section-secondary -->
 
-              <tbody>
-                {% for point_source in result.data.coords %}
-                  <tr>
-                    <td>{{point_source.field_x}}</td>
-                    <td>{{point_source.field_y}}</td>
-                    <td>{{point_source.est_flux}}</td>
-                    <td>{{point_source.est_mag}}</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table><!-- /.table table-striped table-inverse -->
-          </div><!-- /.table-estimation --></div><!-- /.section-secondary__body -->
-      </section><!-- /.section-secondary -->
+    <section class="section-secondary">
+      <h5 class="section-secondary__title">Point-Spread Function Analysis</h5><!-- /.section-secondary__title -->
 
-      <section class="section-secondary">
-        <h5 class="section-secondary__title">Point-Spread Function Analysis</h5><!-- /.section-secondary__title -->
+      <div class="section-secondary__body">
+        <div class="graphs">
+          <div class="row">
+            <div class="col-sm-6 col-xs-12">
+              <div class="graph">
+                <h6 class="graph__title">Bar graph showing flux for each point source in the image.</h6><!-- /.graph__title -->
 
-        <div class="section-secondary__body">
-          <div class="graphs">
-            <div class="row">
-              <div class="col-sm-6 col-xs-12">
-                <div class="graph">
-                  <h6 class="graph__title">Bar graph showing flux for each point source in the image.</h6><!-- /.graph__title -->
+                <img src="{% static "imageflow/build/css/images/temp/graph1.jpg" %}" alt="">
+              </div><!-- /.graph -->
+            </div><!-- /.col-sm-6 ./col-xs-12 -->
 
-                  <img src="{% static "imageflow/build/css/images/temp/graph1.jpg" %}" alt="">
-                </div><!-- /.graph -->
-              </div><!-- /.col-sm-6 ./col-xs-12 -->
+            <div class="col-sm-6 col-xs-12">
+              <div class="graph">
+                <h6 class="graph__title">Scatte plot showing computed flux vs naive flux estimation.</h6><!-- /.graph__title -->
 
-              <div class="col-sm-6 col-xs-12">
-                <div class="graph">
-                  <h6 class="graph__title">Scatte plot showing computed flux vs naive flux estimation.</h6><!-- /.graph__title -->
+                <img src="{% static "imageflow/build/css/images/temp/graph2.jpg" %}" alt="">
+              </div><!-- /.graph -->
+            </div><!-- /.col-sm-6 /.col-xs-12 -->
 
-                  <img src="{% static "imageflow/build/css/images/temp/graph2.jpg" %}" alt="">
-                </div><!-- /.graph -->
-              </div><!-- /.col-sm-6 /.col-xs-12 -->
+            <div class="col-sm-6 col-xs-12">
+              <div class="graph">
+                <h6 class="graph__title">Histogram of flux distribution</h6><!-- /.graph__title -->
 
-              <div class="col-sm-6 col-xs-12">
-                <div class="graph">
-                  <h6 class="graph__title">Histogram of flux distribution</h6><!-- /.graph__title -->
+                <img src="{% static "imageflow/build/css/images/temp/graph3.jpg" %}" alt="">
+              </div><!-- /.graph -->
+            </div><!-- /.col-sm-2 -->
 
-                  <img src="{% static "imageflow/build/css/images/temp/graph3.jpg" %}" alt="">
-                </div><!-- /.graph -->
-              </div><!-- /.col-sm-2 -->
+            <div class="col-sm-6 col-xs-12">
+              <div class="graph">
+                <h6 class="graph__title">Residual image</h6><!-- /.graph__title -->
 
-              <div class="col-sm-6 col-xs-12">
-                <div class="graph">
-                  <h6 class="graph__title">Residual image</h6><!-- /.graph__title -->
+                <img src="{% static "imageflow/build/css/images/temp/graph4.jpg" %}" alt="">
+              </div><!-- /.graph -->
+            </div><!-- /.col-sm-2 -->
+          </div><!-- /.row -->
+        </div><!-- /.graphs -->
+      </div><!-- /.section-secondary__body -->
 
-                  <img src="{% static "imageflow/build/css/images/temp/graph4.jpg" %}" alt="">
-                </div><!-- /.graph -->
-              </div><!-- /.col-sm-2 -->
-            </div><!-- /.row -->
-          </div><!-- /.graphs -->
-        </div><!-- /.section-secondary__body -->
+      <div class="section-secondary__actions">
+        <a href="#" class="btn btn--solid btn--inversed">Back</a>
 
-        <div class="section-secondary__actions">
-          <a href="#" class="btn btn--solid btn--inversed">Back</a>
-
-          <a href="#" class="btn btn--solid btn--inversed">Next</a>
-        </div><!-- /.section-secondary__actions -->
-      </section><!-- /.section-secondary -->
-    </div><!-- /.container -->
-  </main><!-- /.main -->
+        <a href="#" class="btn btn--solid btn--inversed">Next</a>
+      </div><!-- /.section-secondary__actions -->
+    </section><!-- /.section-secondary -->
+  </div><!-- /.container -->
+</main><!-- /.main -->
 {% endblock %}
 
 {% csrf_token %}
