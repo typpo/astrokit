@@ -2,156 +2,91 @@
 {% load staticfiles %}
 {% load jsonify %}
 
-{% block socials %}{% endblock socials %}
+{% block heading %}Submission - Astrometry{% endblock %}
 
-{% block content %}
-<main class="main">
-  <div class="container">
-    <div class="plot">
-      <header class="plot__head">
-        <h2 class="plot__title">
-          Point <span>Sources</span>
-        </h2><!-- /.plot__title -->
+{% block content-interior %}
+<ol class="breadcrumb">
+  <li class="active">Astrometry</li>
+  <li><a href="#">Point Sources</a></li>
+  <li><a href="#">Reference Stars</a></li>
+  <li><a href="#">Reduction</a></li>
+  <li><a href="#">Light Curve</a></li>
+</ol>
 
-        <div class="plot__nav">
-          <ul>
-            <li>
-              <a href="#">Point Sources</a>
-            </li>
+<h3>Original image</h3>
+<div class="well">
+  <img src="{{result.urls.original_display_url}}" />
+  <a href="{{result.urls.original_display_url}}" download>Download</a>
+</div>
 
-            <li>
-              <a href="#">Catalog Stars</a>
-            </li>
+<h3>Date &amp; time</h3>
+<p>
+Parsed from fits <code>DATE-OBS</code> field (ISO 8601 format).
+</p>
+<div class="well">
+  <div id="edit-image-datetime-success" class="alert alert-success" style="display:none">
+    Date and time successfully updated.
+  </div>
+  <div id="edit-image-datetime-success" class="alert alert-danger" style="display:none">
+    Something went wrong - failed to update your setting.
+  </div>
+  <input id="edit-image-datetime" class="form-control" style="width: 30em" type="text" value="{{result.meta.image_datetime | date:'c'}}">
+</div>
 
-            <li>
-              <a href="#">Light Curve</a>
-            </li>
-          </ul>
-        </div><!-- /.plot__nav -->
-      </header><!-- /.plot__head -->
+<h3>Filter</h3>
+<p>
+Select the standard filter that most closely matches the filter used for this image.
+</p>
+<div class="well">
+  <div id="select-filter-name-success" class="alert alert-success" style="display:none">
+    Filter successfully updated.
+  </div>
+  <div id="select-filter-name-failure" class="alert alert-danger" style="display:none">
+    Something went wrong - failed to update your setting.
+  </div>
+  <label>
+    <select class="form-control" id="select-filter-name">
+      {% for filter in image_filters %}
+        <option value="{{filter.band}}">{{filter.band}} ({{filter.system}})</option>
+      {% endfor %}
+    </select>
+  </label>
+</div>
 
-      <div class="plot__bar">
-        <div class="plot__options">
-          <div class="plot__option current">
-            <p>Annotated plot</p>
+<h3>Point source coordinates</h3>
+<a href="{{result.urls.coords_json_url}}">Coordinates JSON</a>
+&middot;
+<a href="{{result.urls.coords_fits_url}}">Coordinates FITS</a>
+<div class="well">
+  <img src="{{result.urls.coords_plot_url}}" />
+  <a href="{{result.urls.coords_plot_url}}" download>Download</a>
+</div>
 
-            <a href="#">Image FITS</a>
+<h3>Instrumental photometry</h3>
+<div class="well" style="overflow: auto; max-height: 400px">
+  <table class="table table-striped">
+    <tr>
+      <th>Field X</th>
+      <th>Field Y</th>
+      <th>Estimated flux</th>
+      <th>Estimated magnitude</th>
+    </tr>
+    {% for point_source in result.data.coords %}
+      <tr>
+        <td>{{point_source.field_x}}</td>
+        <td>{{point_source.field_y}}</td>
+        <td>{{point_source.est_flux}}</td>
+        <td>{{point_source.est_mag}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
 
-            <a href="#">Matched stars FITS</a>
-          </div><!-- /.plot__option -->
-
-          <div class="plot__option">
-            <p>Point source coordinates</p>
-
-            <a href="{{result.urls.coords_json_url}}">Coordinates JSON</a>
-
-            <a href="{{result.urls.coords_fits_url}}">Coordinates FITS</a>
-          </div><!-- /.plot__option -->
-        </div><!-- /.plot__options -->
-
-        <div class="plot__actions">
-          <a href="#" class="link-nav">
-            <i class="ico-folder"></i>
-
-            See Raport
-          </a>
-
-          <a href="{{result.urls.coords_plot_url}}" download class="link-nav">
-            <i class="ico-download"></i>
-
-            Download
-          </a>
-        </div><!-- /.plot__actions -->
-      </div><!-- /.plot__bar -->
-
-      <div class="plot__body">
-        <div class="plot__image">
-          <img src="{{result.urls.coords_plot_url}}" alt="">
-        </div><!-- /.plot__image -->
-      </div><!-- /.plot__body -->
-    </div><!-- /.plot -->
-
-    <section class="section-secondary">
-      <h5 class="section-secondary__title">Estimation table</h5><!-- /.section-secondary__title -->
-
-      <div class="section-secondary__body">
-        <div class="table-estimation">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Field X</th>
-
-                <th>Field Y</th>
-
-                <th>Estimated Flux</th>
-
-                <th>Estimated Magnitude</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {% for point_source in result.data.coords %}
-                <tr>
-                  <td>{{point_source.field_x}}</td>
-                  <td>{{point_source.field_y}}</td>
-                  <td>{{point_source.est_flux}}</td>
-                  <td>{{point_source.est_mag}}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table><!-- /.table table-striped table-inverse -->
-        </div><!-- /.table-estimation --></div><!-- /.section-secondary__body -->
-    </section><!-- /.section-secondary -->
-
-    <section class="section-secondary">
-      <h5 class="section-secondary__title">Point-Spread Function Analysis</h5><!-- /.section-secondary__title -->
-
-      <div class="section-secondary__body">
-        <div class="graphs">
-          <div class="row">
-            <div class="col-sm-6 col-xs-12">
-              <div class="graph">
-                <h6 class="graph__title">Bar graph showing flux for each point source in the image.</h6><!-- /.graph__title -->
-
-                <img src="{% static "imageflow/build/css/images/temp/graph1.jpg" %}" alt="">
-              </div><!-- /.graph -->
-            </div><!-- /.col-sm-6 ./col-xs-12 -->
-
-            <div class="col-sm-6 col-xs-12">
-              <div class="graph">
-                <h6 class="graph__title">Scatte plot showing computed flux vs naive flux estimation.</h6><!-- /.graph__title -->
-
-                <img src="{% static "imageflow/build/css/images/temp/graph2.jpg" %}" alt="">
-              </div><!-- /.graph -->
-            </div><!-- /.col-sm-6 /.col-xs-12 -->
-
-            <div class="col-sm-6 col-xs-12">
-              <div class="graph">
-                <h6 class="graph__title">Histogram of flux distribution</h6><!-- /.graph__title -->
-
-                <img src="{% static "imageflow/build/css/images/temp/graph3.jpg" %}" alt="">
-              </div><!-- /.graph -->
-            </div><!-- /.col-sm-2 -->
-
-            <div class="col-sm-6 col-xs-12">
-              <div class="graph">
-                <h6 class="graph__title">Residual image</h6><!-- /.graph__title -->
-
-                <img src="{% static "imageflow/build/css/images/temp/graph4.jpg" %}" alt="">
-              </div><!-- /.graph -->
-            </div><!-- /.col-sm-2 -->
-          </div><!-- /.row -->
-        </div><!-- /.graphs -->
-      </div><!-- /.section-secondary__body -->
-
-      <div class="section-secondary__actions">
-        <a href="#" class="btn btn--solid btn--inversed">Back</a>
-
-        <a href="#" class="btn btn--solid btn--inversed">Next</a>
-      </div><!-- /.section-secondary__actions -->
-    </section><!-- /.section-secondary -->
-  </div><!-- /.container -->
-</main><!-- /.main -->
+<div style="text-align: right">
+  <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
+  <a href="/submission/point_sources/{{result.subid}}"
+     class="btn btn-lg btn-success">View point source analysis</a>
+</div>
 {% endblock %}
 
 {% csrf_token %}
@@ -160,5 +95,6 @@
   <script>
     window.subid = {{result.subid | jsonify }};
   </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="{% static "imageflow/js/submission_astrometry.js" %}" type="text/javascript"></script>
 {% endblock %}
