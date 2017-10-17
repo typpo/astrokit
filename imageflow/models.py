@@ -40,6 +40,9 @@ class AnalysisResult(models.Model):
     # Meta data.
     image_datetime = models.DateTimeField(null=True)
     image_filter = models.ForeignKey(ImageFilter, null=True)
+    image_latitude = models.FloatField()
+    image_longitude = models.FloatField()
+    image_elevation_m = models.FloatField()
 
 
     # Processed output urls on S3.
@@ -72,7 +75,10 @@ class AnalysisResult(models.Model):
             'jobid': self.astrometry_job.jobid,
             'subid': self.astrometry_job.submission.subid,
             'meta': {
-                'image_datetime': self.image_datetime,
+                'datetime': self.image_datetime,
+                'latitude': self.image_latitude,
+                'longitude': self.image_longitude,
+                'elevation': self.image_elevation,
                 'image_band': self.image_filter.band if self.image_filter else '',
                 'photometric_system': self.image_filter.system if self.image_filter else '',
             },
