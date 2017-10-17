@@ -47,10 +47,42 @@ Select the standard filter that most closely matches the filter used for this im
   <label>
     <select class="form-control" id="select-filter-name">
       {% for filter in image_filters %}
-        <option value="{{filter.band}}">{{filter.band}} ({{filter.system}})</option>
+        <option value="{{filter.band}}" {% if filter.band == result.meta.image_band %}selected{% endif %}>
+          {{filter.band}} ({{filter.system}})
+        </option>
       {% endfor %}
     </select>
   </label>
+</div>
+
+<h3>Coordinates</h3>
+<p>
+Latitude Longitude coordinates of observation.
+</p>
+<div class="well">
+  <div id="set-latlng-success" class="alert alert-success" style="display:none">
+    Coordinates successfully updated.
+  </div>
+  <div id="set-latlng-success" class="alert alert-danger" style="display:none">
+    Something went wrong - failed to update your setting.
+  </div>
+  Latitude <input id="set-latitude" class="form-control" style="width: 30em" type="text" value="{{result.meta.longitude}}">
+  <br>
+  Longitude <input id="set-longitude" class="form-control" style="width: 30em" type="text" value="{{result.meta.latitude}}">
+</div>
+
+<h3>Elevation</h3>
+<p>
+Elevation above sea level, in meters.
+</p>
+<div class="well">
+  <div id="set-elevation-success" class="alert alert-success" style="display:none">
+    Elevation successfully updated.
+  </div>
+  <div id="set-elevation-success" class="alert alert-danger" style="display:none">
+    Something went wrong - failed to update your setting.
+  </div>
+  <input id="set-elevation" class="form-control" style="width: 30em" type="text" value="{{result.meta.elevation}}">
 </div>
 
 <h3>Point source coordinates</h3>

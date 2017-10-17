@@ -40,9 +40,9 @@ class AnalysisResult(models.Model):
     # Meta data.
     image_datetime = models.DateTimeField(null=True)
     image_filter = models.ForeignKey(ImageFilter, null=True)
-    image_latitude = models.FloatField()
-    image_longitude = models.FloatField()
-    image_elevation_m = models.FloatField()
+    image_latitude = models.FloatField(default=0)
+    image_longitude = models.FloatField(default=0)
+    image_elevation = models.FloatField(default=0)
 
 
     # Processed output urls on S3.
@@ -78,7 +78,7 @@ class AnalysisResult(models.Model):
                 'datetime': self.image_datetime,
                 'latitude': self.image_latitude,
                 'longitude': self.image_longitude,
-                'elevation': self.image_elevation_m,
+                'elevation': self.image_elevation,
                 'image_band': self.image_filter.band if self.image_filter else '',
                 'photometric_system': self.image_filter.system if self.image_filter else '',
             },
