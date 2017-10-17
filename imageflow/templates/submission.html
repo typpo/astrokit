@@ -65,20 +65,24 @@ Select the standard filter that most closely matches the filter used for this im
 <h3>Instrumental photometry</h3>
 <div class="well" style="overflow: auto; max-height: 400px">
   <table class="table table-striped">
-    <tr>
-      <th>Field X</th>
-      <th>Field Y</th>
-      <th>Estimated flux</th>
-      <th>Estimated magnitude</th>
-    </tr>
-    {% for point_source in result.data.coords %}
+    <thead>
       <tr>
-        <td>{{point_source.field_x}}</td>
-        <td>{{point_source.field_y}}</td>
-        <td>{{point_source.est_flux}}</td>
-        <td>{{point_source.est_mag}}</td>
+        <th>Field X</th>
+        <th>Field Y</th>
+        <th>Estimated flux</th>
+        <th>Estimated magnitude</th>
       </tr>
-    {% endfor %}
+    </thead>
+    <tbody>
+      {% for point_source in result.data.coords %}
+        <tr>
+          <td>{{point_source.field_x}}</td>
+          <td>{{point_source.field_y}}</td>
+          <td>{{point_source.est_flux}}</td>
+          <td>{{point_source.est_mag}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
   </table>
 </div>
 
