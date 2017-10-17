@@ -5,7 +5,7 @@
 body {
 	min-width: 320px;
 	background-color: #191818;
-	font-family: $font-family-avenirnext;
+	font-family: $font-family-sans-serif;
 	font-size: $font-size;
 	font-weight: 500;
 	line-height: $line-height;
@@ -27,7 +27,7 @@ body {
 
 body.body-secondary:after {
 	width: 0;
-	height: 0; 
+	height: 0;
 }
 
 a {
@@ -116,9 +116,9 @@ blockquote:last-child {
 
 @include breakpoint-tablet-portrait {
 	body {
-		font-size: 20px; 
+		font-size: 20px;
 	}
-	
+
 	h1 {
 	font-size: 40px;
 	}
@@ -147,9 +147,9 @@ blockquote:last-child {
 
 @include breakpoint-mobile {
 	body {
-		font-size: 16px; 
+		font-size: 16px;
 	}
-	
+
 	h1 {
 	font-size: 36px;
 	}
