@@ -70,6 +70,9 @@ class AnalysisResult(models.Model):
     catalog_reference_stars = JSONField()
     catalog_reference_stars_json_url = models.CharField(max_length=1024)
 
+    # Reductions.
+    reference_stars_with_airmass = JSONField()
+
     def get_summary_obj(self):
         return {
             'jobid': self.astrometry_job.jobid,
