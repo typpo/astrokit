@@ -105,6 +105,7 @@ class AnalysisResult(models.Model):
                 'coords': self.coords,
                 'reference_stars': self.reference_stars,
                 'catalog_reference_stars': self.catalog_reference_stars,
+                'reference_stars_with_airmass': self.reference_stars_with_airmass,
             },
         }
 

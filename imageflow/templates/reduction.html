@@ -97,14 +97,14 @@ nyi
       <th>Dec (obs)</th>
       <th>Airmass</th>
     </tr>
-    {% for star in result.data.catalog_reference_stars %}
+    {% for star in result.data.reference_stars_with_airmass %}
       <tr>
         <td>
           <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
         </td>
         <td>{{star.index_ra}}</td>
         <td>{{star.index_dec}}</td>
-        <td>1.5</td>
+        <td>{{star.airmass}}</td>
       </tr>
     {% endfor %}
   </table>
