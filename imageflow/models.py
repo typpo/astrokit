@@ -78,7 +78,7 @@ class AnalysisResult(models.Model):
                 'datetime': self.image_datetime,
                 'latitude': self.image_latitude,
                 'longitude': self.image_longitude,
-                'elevation': self.image_elevation,
+                'elevation': self.image_elevation_m,
                 'image_band': self.image_filter.band if self.image_filter else '',
                 'photometric_system': self.image_filter.system if self.image_filter else '',
             },
