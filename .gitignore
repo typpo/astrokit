@@ -1,5 +1,7 @@
 venv
 
+webassets/css
+
 cache/catalog.db
 
 examples/*/*.fit
