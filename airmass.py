@@ -1,13 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
-import numpy as np
 from astropy import units as u
 from astropy.time import Time
 from astropy.coordinates import SkyCoord, EarthLocation, AltAz
 
-J2000_UNIX_TIMESTAMP = datetime.fromtimestamp(946727930.816)
-
 def compute_airmass(latitude, longitude, elevation, ra, dec, obs_time):
+    # http://docs.astropy.org/en/v1.1.1/coordinates/observing-example.html
     coord = SkyCoord(ra * u.deg, dec * u.deg, frame='icrs')
     loc = EarthLocation(lat=latitude * u.deg, lon=longitude * u.deg, height=elevation)
     time = Time(obs_time.isoformat())
