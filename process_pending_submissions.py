@@ -280,11 +280,11 @@ class SubmissionHandler():
         ref_stars = \
                 compute_apparent_magnitudes.choose_reference_stars(correlations, coords)
 
-        name = '%d_%d_reference_stars.json' % (submission.subid, job.jobid)
+        name = '%d_%d_image_reference_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            result.reference_stars = ref_stars
-            result.reference_stars_json_url = \
+            result.image_reference_stars = ref_stars
+            result.image_reference_stars_json_url = \
                     s3_util.upload_to_s3(json.dumps(ref_stars, indent=2, use_decimal=True), \
                                          upload_key_prefix, name)
 

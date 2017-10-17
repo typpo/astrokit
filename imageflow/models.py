@@ -65,8 +65,8 @@ class AnalysisResult(models.Model):
     psf_residual_image_url = models.CharField(max_length=1024)
 
     # Reference stars and magnitudes.
-    reference_stars = JSONField()
-    reference_stars_json_url = models.CharField(max_length=1024)
+    image_reference_stars = JSONField()
+    image_reference_stars_json_url = models.CharField(max_length=1024)
     catalog_reference_stars = JSONField()
     catalog_reference_stars_json_url = models.CharField(max_length=1024)
 
@@ -103,7 +103,6 @@ class AnalysisResult(models.Model):
             },
             'data': {
                 'coords': self.coords,
-                'reference_stars': self.reference_stars,
                 'catalog_reference_stars': self.catalog_reference_stars,
                 'reference_stars_with_airmass': self.reference_stars_with_airmass,
             },
