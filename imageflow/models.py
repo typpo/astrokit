@@ -18,6 +18,9 @@ class ImageFilter(models.Model):
     system = models.CharField(max_length=512)
     range_min_nm = models.IntegerField()
 
+    def get_by_natural_key(self, key):
+        return self.get(band=band)
+
     def __str__(self):
         return '%s (%s)' % (self.band, self.system)
 
@@ -39,7 +42,7 @@ class AnalysisResult(models.Model):
 
     # Meta data.
     image_datetime = models.DateTimeField(null=True)
-    image_filter = models.ForeignKey(ImageFilter, null=True)
+    image_filter = models.ForeignKey(ImageFilter, null=True, default='B')
     image_latitude = models.FloatField(default=0)
     image_longitude = models.FloatField(default=0)
     image_elevation = models.FloatField(default=0)
@@ -72,6 +75,12 @@ class AnalysisResult(models.Model):
 
     # Reductions.
     reference_stars_with_airmass = JSONField()
+    color_index_1 = models.ForeignKey(ImageFilter, null=True,
+                                      related_name='reduction_color_index_1_set',
+                                      default='B')
+    color_index_2 = models.ForeignKey(ImageFilter, null=True,
+                                      related_name='reduction_color_index_2_set',
+                                      default='V')
 
     def get_summary_obj(self):
         return {

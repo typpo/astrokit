@@ -100,6 +100,15 @@ def set_datetime(request, subid):
     })
 
 def set_filter_band(request, subid):
+    return set_band(request, subid, 'image_filter')
+
+def set_color_index_1(request, subid):
+    return set_band(request, subid, 'reduction_color_index_1')
+
+def set_color_index_2(request, subid):
+    return set_band(request, subid, 'reduction_color_index_2')
+
+def set_band(request, subid, attrname):
     try:
         result = AnalysisResult.objects.get( \
                 astrometry_job__submission__subid=subid, \
@@ -125,7 +134,7 @@ def set_filter_band(request, subid):
             'msg': 'Invalid filter band',
         })
 
-    result.image_filter = filter_band
+    setattr(result, attrname, filter_band)
     result.save()
 
     return JsonResponse({

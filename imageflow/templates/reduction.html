@@ -39,13 +39,19 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
         <h5>Select color index</h5>
       </div>
       <div>
-        <select id="select-color-index" class="form-control">
+        <div id="select-color-index-success" class="alert alert-success" style="display:none">
+          Color index successfully updated.
+        </div>
+        <div id="select-color-index-success" class="alert alert-danger" style="display:none">
+          Something went wrong - failed to update your setting.
+        </div>
+        <select id="select-color-index-1" class="form-control">
           {% for filter in image_filters %}
             <option value="{{filter.band}}">{{filter.band}} ({{filter.system}})</option>
           {% endfor %}
         </select>
         -
-        <select id="select-color-index" class="form-control">
+        <select id="select-color-index-2" class="form-control">
           {{ loop.counter }}
           {% for filter in image_filters %}
             <option value="{{filter.band}}" {% if forloop.counter == 2 %}selected{% endif %}>{{filter.band}} ({{filter.system}})</option>
@@ -117,6 +123,7 @@ nyi
 {% endblock %}
 {% block scripts %}
   <script>
+    window.subid = {{result.subid | jsonify }};
     window.originalImageUrl = {{result.urls.original_display_url | jsonify}};
     window.catalogReferenceStars = {{ result.data.catalog_reference_stars | jsonify }};
   </script>
