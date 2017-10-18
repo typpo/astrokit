@@ -104,7 +104,7 @@ nyi
         </td>
         <td>{{star.index_ra}}</td>
         <td>{{star.index_dec}}</td>
-        <td>{{star.airmass}}</td>
+        <td><strong>{{star.airmass}}</strong></td>
       </tr>
     {% endfor %}
   </table>
@@ -120,6 +120,6 @@ nyi
     window.originalImageUrl = {{result.urls.original_display_url | jsonify}};
     window.catalogReferenceStars = {{ result.data.catalog_reference_stars | jsonify }};
   </script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <script src="{% static "imageflow/js/submission.js" %}" type="text/javascript"></script>
+  <script src="{% static "imageflow/js/submission_util.js" %}" type="text/javascript"></script>
+  <script src="{% static "imageflow/js/submission_reduction.js" %}" type="text/javascript"></script>
 {% endblock %}
