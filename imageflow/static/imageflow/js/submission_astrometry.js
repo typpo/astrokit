@@ -30,30 +30,40 @@ function getCookie(name) {
 }
 
 function setupListeners() {
-  $('#edit-image-datetime').on('change', function() {
+  setupListener('set_datetime',
+                $('#edit-image-datetime'),
+                $('#edit-image-datetime-success'),
+                $('#edit-image-datetime-failure'));
+
+  setupListener('set_filter_band',
+                $('#select-filter-name'),
+                $('#select-filter-name-success'),
+                $('#select-filter-name-failure'));
+
+  setupListener('set_elevation',
+                $('#set-elevation'),
+                $('#set-elevation-success'),
+                $('#set-elevation-failure'));
+
+  setupListener('set_latitude',
+                $('#set-latitude'),
+                $('#set-latlng-success'),
+                $('#set-latlng-failure'));
+
+  setupListener('set_longitude',
+                $('#set-longitude'),
+                $('#set-latlng-success'),
+                $('#set-latlng-failure'));
+}
+
+function setupListener(apiPath, $control, $success, $failure) {
+  $control.on('change', function() {
     var val = $(this).val();
-    console.log('Datetime changed to', val);
 
     document.body.style.cursor = 'wait';
-    $.post('/submission/' + window.subid + '/set_datetime', {
-      image_datetime: val,
-    }, function(data) {
-      $('#edit-image-datetime-success').toggle(data.success);
-      $('#edit-image-datetime-failure').toggle(!data.success);
-      document.body.style.cursor = 'default';
-    });
-  });
-
-  $('#select-filter-name').on('change', function() {
-    var val = $(this).val();
-    console.log('Select filter changed to', val);
-
-    document.body.style.cursor = 'wait';
-    $.post('/submission/' + window.subid + '/set_filter_band', {
-      filter_band: val,
-    }, function(data) {
-      $('#select-filter-name-success').toggle(data.success);
-      $('#select-filter-name-failure').toggle(!data.success);
+    $.post('/submission/' + window.subid + '/' + apiPath, {val: val}, function(data) {
+      $success.toggle(data.success);
+      $failure.toggle(!data.success);
       document.body.style.cursor = 'default';
     });
   });

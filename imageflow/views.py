@@ -78,7 +78,7 @@ def set_datetime(request, subid):
 
     # Set new datetime.
     try:
-        parsed_dt = parse_datetime(request.POST.get('image_datetime'))
+        parsed_dt = parse_datetime(request.POST.get('val'))
     except ValueError:
         return JsonResponse({
             'success': False,
@@ -110,7 +110,7 @@ def set_filter_band(request, subid):
             'msg': 'Could not find corresponding AnalysisResult',
         })
 
-    band = request.POST.get('filter_band')
+    band = request.POST.get('val')
     if not band:
         return JsonResponse({
             'success': False,
@@ -131,6 +131,41 @@ def set_filter_band(request, subid):
     return JsonResponse({
         'success': True,
         'msg': 'Resolved input to %s' % str(filter_band)
+    })
+
+def set_elevation(request, subid):
+    return set_float(request, subid, 'image_elevation')
+
+def set_latitude(request, subid):
+    return set_float(request, subid, 'image_latitude')
+
+def set_longitude(request, subid):
+    return set_float(request, subid, 'image_longitude')
+
+def set_float(request, subid, attrname):
+    try:
+        result = AnalysisResult.objects.get( \
+                astrometry_job__submission__subid=subid, \
+                status=AnalysisResult.COMPLETE)
+    except ObjectDoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Could not find corresponding AnalysisResult',
+        })
+
+    try:
+        val = float(request.POST.get('val'))
+    except ValueError:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Could not parse as float',
+        })
+
+    setattr(result, attrname, val)
+    result.save()
+
+    return JsonResponse({
+        'success': True,
     })
 
 def point_sources(request, subid):

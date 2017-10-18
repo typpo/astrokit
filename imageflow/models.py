@@ -40,6 +40,9 @@ class AnalysisResult(models.Model):
     # Meta data.
     image_datetime = models.DateTimeField(null=True)
     image_filter = models.ForeignKey(ImageFilter, null=True)
+    image_latitude = models.FloatField(default=0)
+    image_longitude = models.FloatField(default=0)
+    image_elevation = models.FloatField(default=0)
 
 
     # Processed output urls on S3.
@@ -62,17 +65,23 @@ class AnalysisResult(models.Model):
     psf_residual_image_url = models.CharField(max_length=1024)
 
     # Reference stars and magnitudes.
-    reference_stars = JSONField()
-    reference_stars_json_url = models.CharField(max_length=1024)
+    image_reference_stars = JSONField()
+    image_reference_stars_json_url = models.CharField(max_length=1024)
     catalog_reference_stars = JSONField()
     catalog_reference_stars_json_url = models.CharField(max_length=1024)
+
+    # Reductions.
+    reference_stars_with_airmass = JSONField()
 
     def get_summary_obj(self):
         return {
             'jobid': self.astrometry_job.jobid,
             'subid': self.astrometry_job.submission.subid,
             'meta': {
-                'image_datetime': self.image_datetime,
+                'datetime': self.image_datetime,
+                'latitude': self.image_latitude,
+                'longitude': self.image_longitude,
+                'elevation': self.image_elevation,
                 'image_band': self.image_filter.band if self.image_filter else '',
                 'photometric_system': self.image_filter.system if self.image_filter else '',
             },
@@ -94,8 +103,8 @@ class AnalysisResult(models.Model):
             },
             'data': {
                 'coords': self.coords,
-                'reference_stars': self.reference_stars,
                 'catalog_reference_stars': self.catalog_reference_stars,
+                'reference_stars_with_airmass': self.reference_stars_with_airmass,
             },
         }
 
