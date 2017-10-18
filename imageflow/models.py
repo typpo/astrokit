@@ -17,6 +17,7 @@ class ImageFilter(models.Model):
     band = models.CharField(max_length=512)
     system = models.CharField(max_length=512)
     range_min_nm = models.IntegerField()
+    urat1_key = models.CharField(max_length=50)
 
     def get_by_natural_key(self, key):
         return self.get(band=band)
