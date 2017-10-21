@@ -75,7 +75,7 @@ class AnalysisResult(models.Model):
     catalog_reference_stars_json_url = models.CharField(max_length=1024)
 
     # Reductions.
-    reference_stars_with_airmass = JSONField()
+    reduced_stars = JSONField()
     color_index_1 = models.ForeignKey(ImageFilter, null=True,
                                       related_name='reduction_color_index_1_set',
                                       default='B')
