@@ -17,7 +17,7 @@ def run_reductions(analysis):
 
         annotated_stars.append(star)
 
-    analysis.reference_stars_with_airmass = annotated_stars
+    analysis.reduced_stars = annotated_stars
     analysis.save()
 
 if __name__ == '__main__':
