@@ -3,6 +3,7 @@
 import sys
 
 import airmass
+import transformation_coefficient
 
 def run_reductions(analysis):
     '''Run reductions on a given AnalysisResult and attach airmass to the
@@ -16,6 +17,8 @@ def run_reductions(analysis):
         star['airmass'] = float(computed_airmass)
 
         annotated_stars.append(star)
+
+    computed_tf = transformation_coefficient.compute_tf_from_analysis(analysis)
 
     analysis.reduced_stars = annotated_stars
     analysis.save()
