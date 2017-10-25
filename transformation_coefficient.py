@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from imageflow.s3_util import upload_to_s3
 
-def compute_tf_from_analysis(analysis, graph_output_path):
+def compute_tf_for_analysis(analysis, graph_output_path):
     apparent_mags = []
     standard_mags = []
     colors_1 = []

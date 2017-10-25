@@ -83,6 +83,9 @@ class AnalysisResult(models.Model):
                                       related_name='reduction_color_index_2_set',
                                       default='V')
 
+    transformation_coefficient = models.FloatField()
+    transformation_coefficient_graph_url = models.CharField(max_length=1024)
+
     def get_summary_obj(self):
         return {
             'jobid': self.astrometry_job.jobid,
