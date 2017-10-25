@@ -9,18 +9,13 @@ def run_reductions(analysis):
     '''Run reductions on a given AnalysisResult and attach airmass to the
     catalog reference stars.
     '''
-    annotated_stars = []
-    for star in analysis.catalog_reference_stars:
-        ra = star['index_ra']
-        dec = star['index_dec']
-        computed_airmass = airmass.compute_airmass_from_analysis(analysis, ra, dec)
-        star['airmass'] = float(computed_airmass)
 
-        annotated_stars.append(star)
+    analysis.reduced_stars = airmass.compute_airmass_for_analysis(analysis)
 
-    computed_tf = transformation_coefficient.compute_tf_from_analysis(analysis)
+    computed_tf, tf_graph_url = transformation_coefficient.compute_tf_for_analysis(analysis)
+    analysis.tf = computed_tf
+    analysis.tf_graph_url = tf_graph_url
 
-    analysis.reduced_stars = annotated_stars
     analysis.save()
 
 if __name__ == '__main__':
