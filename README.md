@@ -6,9 +6,9 @@ characterization.  It's supported by [NASA](http://nspires.nasaprs.com/external/
 Users (scientists, amateur astronomers) will upload sky imagery and receive
 astrometry, photometry, and light curve results derived from their images.
 
-## Installation
+# Installation
 
-### Python dependencies
+## Python dependencies
 
 Install virtualenv (`sudo apt-get install python-virtualenv` on Debian/Ubuntu). 
 
@@ -18,7 +18,7 @@ Enter the environment (you'll have to do this each time you want to run astrokit
 
 Install python dependencies:  `pip install -r requirements.txt`
 
-### Other system dependencies
+## Other system dependencies
 
 Install matplotlib: `sudo apt-get install libfreetype6-dev libxft-dev`
 
@@ -32,16 +32,6 @@ Postgres is optional but used in production:
 
     sudo apt-get install postgresql postgresql-server-dev-9.4
     
-### Server setup
-
-Run migrations:  `./manage.py migrate`
-
-And create an admin user:  `./manage.py createsuperuser`
-
-## Run the server
-
-`./manage.py runserver` and visit http://localhost:5000
-
 ## Optional: IRAF setup
 
 Download IRAF: http://iraf.noao.edu/ (README: ftp://iraf.noao.edu/iraf/v216/README)
@@ -52,6 +42,16 @@ Put these statically linked binaries in your path:
 
 ftp://iraf.noao.edu/pub/fitz/xgterm.STATIC
 ftp://iraf.noao.edu/pub/fitz/ximtool.STATIC
+    
+# Before you run the server
+
+Run migrations:  `./manage.py migrate`
+
+And create an admin user:  `./manage.py createsuperuser`
+
+# Run the server
+
+`./manage.py runserver` and visit http://localhost:5000
 
 # Contributing
 
