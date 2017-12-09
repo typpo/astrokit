@@ -100,47 +100,51 @@ def set_datetime(request, subid):
     })
 
 def set_filter_band(request, subid):
-    return set_band(request, subid, 'image_filter')
-
-def set_color_index_1(request, subid):
-    return set_band(request, subid, 'reduction_color_index_1')
-
-def set_color_index_2(request, subid):
-    return set_band(request, subid, 'reduction_color_index_2')
-
-def set_band(request, subid, attrname):
-    try:
-        result = AnalysisResult.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=AnalysisResult.COMPLETE)
-    except ObjectDoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'msg': 'Could not find corresponding AnalysisResult',
-        })
-
-    band = request.POST.get('val')
-    if not band:
-        return JsonResponse({
-            'success': False,
-            'msg': 'Filter band not specified',
-        })
-
-    try:
-        filter_band = ImageFilter.objects.get(band=band)
-    except ObjectDoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'msg': 'Invalid filter band',
-        })
-
-    setattr(result, attrname, filter_band)
-    result.save()
-
+    analysis, filter_band = resolve_band(request, subid)
+    analysis.image_filter = filter_band
+    analysis.save()
     return JsonResponse({
         'success': True,
         'msg': 'Resolved input to %s' % str(filter_band)
     })
+
+def set_color_index_1(request, subid):
+    analysis, filter_band = resolve_band(request, subid)
+    analysis.reduction.color_index_1 = filter_band
+    analysis.reduction.save()
+    return JsonResponse({
+        'success': True,
+        'msg': 'Resolved input to %s' % str(filter_band)
+    })
+
+def set_color_index_2(request, subid):
+    analysis, filter_band = resolve_band(request, subid)
+    analysis.reduction.color_index_2 = filter_band
+    analysis.reduction.save()
+    return JsonResponse({
+        'success': True,
+        'msg': 'Resolved input to %s' % str(filter_band)
+    })
+
+
+def resolve_band(request, subid):
+    try:
+        analysis = AnalysisResult.objects.get( \
+                astrometry_job__submission__subid=subid, \
+                status=AnalysisResult.COMPLETE)
+    except ObjectDoesNotExist:
+        raise Error('Could not find corresponding AnalysisResult')
+
+    band = request.POST.get('val')
+    if not band:
+        raise Error('Filter band not specified')
+
+    try:
+        filter_band = ImageFilter.objects.get(band=band)
+    except ObjectDoesNotExist:
+        raise Error('Invalid filter band')
+
+    return analysis, filter_band
 
 def set_elevation(request, subid):
     return set_float(request, subid, 'image_elevation')
