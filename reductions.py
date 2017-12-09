@@ -19,7 +19,8 @@ def run_reductions(analysis):
     catalog reference stars.
     '''
 
-    reduction = Reduction(color_index_1=ImageFilter.objects.get(band='B'),
+    reduction = Reduction(analysis=analysis,
+                          color_index_1=ImageFilter.objects.get(band='B'),
                           color_index_2=ImageFilter.objects.get(band='V'))
 
     # Airmass
@@ -30,6 +31,7 @@ def run_reductions(analysis):
     reduction.transformation_coefficient = computed_tf
     analysis.transformation_coefficient_graph_url = tf_graph_url
 
+    reduction.status = Reduction.COMPLETE
     reduction.save()
 
 if __name__ == '__main__':

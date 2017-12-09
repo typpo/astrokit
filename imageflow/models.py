@@ -134,8 +134,7 @@ class Reduction(models.Model):
     )
     status = models.CharField(
             max_length=50, choices=STATUSES, default=PENDING)
-    user = models.ForeignKey(User)
-    analysis = models.ForeignKey(AnalysisResult)
+    analysis = models.OneToOneField(AnalysisResult)
 
     # Data fields
     reduced_stars = JSONField()
@@ -160,6 +159,9 @@ class Reduction(models.Model):
             }
         }
 
+    def __str__(self):
+        return 'Reduction for Analysis %s' % (str(self.analysis))
+
 
 class UserUploadedImage(models.Model):
     """
@@ -175,5 +177,6 @@ class UserUploadedImage(models.Model):
     # analysis_result = models.ForeignKey(AnalysisResult, null=True)
 
 admin.site.register(AnalysisResult)
+admin.site.register(Reduction)
 admin.site.register(UserUploadedImage)
 admin.site.register(ImageFilter)
