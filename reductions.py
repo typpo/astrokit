@@ -19,9 +19,7 @@ def run_reductions(analysis):
     catalog reference stars.
     '''
 
-    reduction = Reduction(analysis=analysis,
-                          color_index_1=ImageFilter.objects.get(band='B'),
-                          color_index_2=ImageFilter.objects.get(band='V'))
+    reduction = Reduction.get_or_create(analysis=analysis)
 
     # Airmass
     reduction.reduced_stars = airmass.compute_airmass_for_analysis(analysis, reduction)
