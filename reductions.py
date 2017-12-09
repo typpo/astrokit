@@ -3,7 +3,7 @@
 import sys
 
 import airmass
-import transformation_coefficient
+import transformation_coefficient as tf
 
 def run_reductions(analysis):
     '''Run reductions on a given AnalysisResult and attach airmass to the
@@ -12,7 +12,7 @@ def run_reductions(analysis):
 
     analysis.reduced_stars = airmass.compute_airmass_for_analysis(analysis)
 
-    computed_tf, tf_graph_url = transformation_coefficient.compute_tf_for_analysis(analysis)
+    computed_tf, tf_graph_url = tf.compute_tf_for_analysis(analysis, '/tmp/tf_graph.png')
     analysis.tf = computed_tf
     analysis.tf_graph_url = tf_graph_url
 

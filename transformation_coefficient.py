@@ -19,7 +19,7 @@ def compute_tf_for_analysis(analysis, graph_output_path):
     tf_graph_url = None
     if graph_output_path:
         plt.plot(xs, ys, '+', label='Original data', markersize=10)
-        plt.plot(xs, m*xs + c, 'r', label='Fitted line')
+        plt.plot(xs, tf*xs + c, 'r', label='Fitted line')
         plt.xlabel('%s - %s' % (analysis.color_index_1.band , analysis.color_index_2.band))
         plt.ylabel('M - m')
         plt.legend()

@@ -117,7 +117,7 @@ class AnalysisResult(models.Model):
             'data': {
                 'coords': self.coords,
                 'catalog_reference_stars': self.catalog_reference_stars,
-                'reference_stars_with_airmass': self.reference_stars_with_airmass,
+                'reduced_stars': self.reduced_stars,
             },
         }
 
