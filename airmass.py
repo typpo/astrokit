@@ -4,7 +4,7 @@ from astropy import units as u
 from astropy.time import Time
 from astropy.coordinates import SkyCoord, EarthLocation, AltAz
 
-def compute_airmass_for_analysis(analysis):
+def compute_airmass_for_analysis(analysis, reduction):
     annotated_stars = []
     for star in analysis.catalog_reference_stars:
         ra = star['index_ra']

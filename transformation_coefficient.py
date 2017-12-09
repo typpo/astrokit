@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 from imageflow.s3_util import upload_to_s3
 
-def compute_tf_for_analysis(analysis, graph_output_path):
+def compute_tf_for_analysis(analysis, reduction, graph_output_path):
     apparent_mags = []
     standard_mags = []
     colors_1 = []
@@ -11,8 +11,8 @@ def compute_tf_for_analysis(analysis, graph_output_path):
     for star in analysis.catalog_reference_stars:
         apparent_mags.append(star['instrumental_mag'])
         standard_mags.append(star[analysis.image_filter.urat1_key])
-        colors_1.append(star[analysis.color_index_1.urat1_key])
-        colors_2.append(star[analysis.color_index_2.urat1_key])
+        colors_1.append(star[reduction.color_index_1.urat1_key])
+        colors_2.append(star[reduction.color_index_2.urat1_key])
 
     tf, (xs, ys, A, c) = compute_tf(apparent_mags, standard_mags, colors_1, colors_2)
 
@@ -20,7 +20,7 @@ def compute_tf_for_analysis(analysis, graph_output_path):
     if graph_output_path:
         plt.plot(xs, ys, '+', label='Original data', markersize=10)
         plt.plot(xs, tf*xs + c, 'r', label='Fitted line')
-        plt.xlabel('%s - %s' % (analysis.color_index_1.band , analysis.color_index_2.band))
+        plt.xlabel('%s - %s' % (reduction.color_index_1.band , reduction.color_index_2.band))
         plt.ylabel('M - m')
         plt.legend()
         plt.savefig(graph_output_path)

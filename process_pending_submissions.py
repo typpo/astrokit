@@ -324,3 +324,4 @@ def get_args():
 if __name__ == '__main__':
     args = get_args()
     process_pending_submissions(args)
+    process_pending_reductions()

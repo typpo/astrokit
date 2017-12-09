@@ -10,20 +10,27 @@ from jsonfield import JSONField
 
 from astrometry.models import AstrometrySubmissionJob
 
+class ImageFilterManager(models.Manager):
+    def get_by_natural_key(self, band):
+        return self.get(band=band)
+
 class ImageFilter(models.Model):
     """
     Model for image filter
     """
-    band = models.CharField(max_length=512)
+    objects = ImageFilterManager()
+
+    band = models.CharField(max_length=512, unique=True)
     system = models.CharField(max_length=512)
     range_min_nm = models.IntegerField()
     urat1_key = models.CharField(max_length=50)
 
-    def get_by_natural_key(self, key):
-        return self.get(band=band)
-
     def __str__(self):
         return '%s (%s)' % (self.band, self.system)
+
+    def __unicode__(self):
+        return u'%s (%s)' % (self.band, self.system)
+
 
 class AnalysisResult(models.Model):
     PENDING = 'PENDING'
@@ -43,7 +50,7 @@ class AnalysisResult(models.Model):
 
     # Meta data.
     image_datetime = models.DateTimeField(null=True)
-    image_filter = models.ForeignKey(ImageFilter, null=True, default='B')
+    image_filter = models.ForeignKey(ImageFilter, null=True)
     image_latitude = models.FloatField(default=0)
     image_longitude = models.FloatField(default=0)
     image_elevation = models.FloatField(default=0)
@@ -73,18 +80,6 @@ class AnalysisResult(models.Model):
     image_reference_stars_json_url = models.CharField(max_length=1024)
     catalog_reference_stars = JSONField()
     catalog_reference_stars_json_url = models.CharField(max_length=1024)
-
-    # Reductions.
-    reduced_stars = JSONField()
-    color_index_1 = models.ForeignKey(ImageFilter, null=True,
-                                      related_name='reduction_color_index_1_set',
-                                      default='B')
-    color_index_2 = models.ForeignKey(ImageFilter, null=True,
-                                      related_name='reduction_color_index_2_set',
-                                      default='V')
-
-    transformation_coefficient = models.FloatField()
-    transformation_coefficient_graph_url = models.CharField(max_length=1024)
 
     def get_summary_obj(self):
         return {
@@ -117,7 +112,6 @@ class AnalysisResult(models.Model):
             'data': {
                 'coords': self.coords,
                 'catalog_reference_stars': self.catalog_reference_stars,
-                'reduced_stars': self.reduced_stars,
             },
         }
 
@@ -127,6 +121,44 @@ class AnalysisResult(models.Model):
                  self.astrometry_job.jobid, \
                  str(self.image_filter), \
                  str(self.image_datetime))
+
+
+class Reduction(models.Model):
+    PENDING = 'PENDING'
+    COMPLETE = 'COMPLETE'
+    FAILED = 'FAILED'
+    STATUSES = (
+        (PENDING, 'Pending'),
+        (COMPLETE, 'Complete'),
+        (FAILED, 'Failed'),
+    )
+    status = models.CharField(
+            max_length=50, choices=STATUSES, default=PENDING)
+    user = models.ForeignKey(User)
+    analysis = models.ForeignKey(AnalysisResult)
+
+    # Data fields
+    reduced_stars = JSONField()
+    color_index_1 = models.ForeignKey(ImageFilter,
+                                      null=True,
+                                      related_name='reduction_color_index_1_set')
+    color_index_2 = models.ForeignKey(ImageFilter,
+                                      null=True,
+                                      related_name='reduction_color_index_2_set')
+
+    transformation_coefficient = models.FloatField()
+    transformation_coefficient_graph_url = models.CharField(max_length=1024)
+
+    def get_summary_obj(self):
+        return {
+            'urls': {
+                'transformation_coefficient_graph_url': self.transformation_coefficient_graph_url,
+            },
+            'data': {
+                'reduced_stars': self.reduced_stars,
+                'transformation_coefficient': self.transformation_coefficient,
+            }
+        }
 
 
 class UserUploadedImage(models.Model):
