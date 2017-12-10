@@ -4,6 +4,7 @@ import os
 import sys
 
 import django
+import numpy as np
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 sys.path.insert(0, os.getcwd())
@@ -14,13 +15,9 @@ import transformation_coefficient as tf
 
 from imageflow.models import Reduction, ImageFilter
 
-def run_reductions(analysis):
-    '''Run reductions on a given AnalysisResult and attach airmass to the
-    catalog reference stars.
+def supporting_calculations(analysis, reduction):
+    '''Compute airmass and transformation coefficient.
     '''
-
-    reduction, _ = Reduction.objects.get_or_create(analysis=analysis)
-
     # Airmass
     reduction.reduced_stars = airmass.annotate_with_airmass(analysis, reduction)
 
@@ -28,6 +25,37 @@ def run_reductions(analysis):
     computed_tf, tf_graph_url = tf.compute_tf_for_analysis(analysis, reduction, save_graph=True)
     reduction.transformation_coefficient = computed_tf
     reduction.tf_graph_url = tf_graph_url
+
+
+def run_reductions(analysis):
+    '''Run reductions on a given AnalysisResult.
+    '''
+    reduction, _ = Reduction.objects.get_or_create(analysis=analysis)
+
+    supporting_calculations(analysis, reduction)
+
+    # Now put it all together.
+    for i in xrange(len(reduction.reduced_stars)):
+        # TODO(ian): Eliminate the outer loop. We only need to do this for the
+        # unknown. Computing standard mag for each catalog star will help us
+        # know our % error, though.
+        star = reduction.reduced_stars[i]
+        # Mt = (mt - mc) - k"f Xt (CIt - CIc) + Tf (CIt - CIc) + Mc
+        estimates = []
+        for j in xrange(len(reduction.reduced_stars)):
+            if i == j:
+                continue
+            comparison_star = reduction.reduced_stars[j]
+            term1 = star['instrumental_mag'] - comparison_star['instrumental_mag']
+            ci_target = star[reduction.color_index_1.urat1_key] - star[reduction.color_index_2.urat1_key]
+            ci_comparison = comparison_star[reduction.color_index_1.urat1_key] - comparison_star[reduction.color_index_2.urat1_key]
+            ci_diff = (ci_target - ci_comparison)
+            term2 = reduction.second_order_extinction * comparison_star['airmass'] * ci_diff
+            term3 = reduction.tf * ci_diff
+            combined = term1 - term2 + term3 + comparison_star[analysis.image_filter.urat1_key]
+            estimates.append(combined)
+
+        reduction.reduced_stars[i]['mag_standard'] = np.mean(estimates)
 
     reduction.status = Reduction.COMPLETE
     reduction.save()

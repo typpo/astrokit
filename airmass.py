@@ -17,7 +17,6 @@ def annotate_with_airmass(analysis, reduction):
         annotated_stars.append(star)
     return annotated_stars
 
-
 def compute_airmass_for_point(latitude, longitude, elevation, obs_time, ra, dec):
     # Astropy reference: http://docs.astropy.org/en/v1.1.1/coordinates/observing-example.html
     # For the math behind it: http://www.stargazing.net/kepler/altaz.html#twig02
