@@ -99,15 +99,6 @@ def set_datetime(request, subid):
         'msg': 'Resolved input to %s' % parsed_dt.isoformat()
     })
 
-def set_filter_band(request, subid):
-    analysis, filter_band = resolve_band(request, subid)
-    analysis.image_filter = filter_band
-    analysis.save()
-    return JsonResponse({
-        'success': True,
-        'msg': 'Resolved input to %s' % str(filter_band)
-    })
-
 def set_color_index_1(request, subid):
     analysis, filter_band = resolve_band(request, subid)
     analysis.reduction.color_index_1 = filter_band
@@ -155,7 +146,10 @@ def set_latitude(request, subid):
 def set_longitude(request, subid):
     return set_float(request, subid, 'image_longitude')
 
-def set_float(request, subid, attrname):
+def set_second_order_extinction(request, subid):
+    return set_float(request, subid, 'image_longitude', on_reduction=True)
+
+def set_float(request, subid, attrname, on_reduction=False):
     try:
         result = AnalysisResult.objects.get( \
                 astrometry_job__submission__subid=subid, \
@@ -174,8 +168,12 @@ def set_float(request, subid, attrname):
             'msg': 'Could not parse as float',
         })
 
-    setattr(result, attrname, val)
-    result.save()
+    if on_reduction:
+        setattr(result.reduction, attrname, val)
+        result.reduction.save()
+    else:
+        setattr(result, attrname, val)
+        result.save()
 
     return JsonResponse({
         'success': True,
