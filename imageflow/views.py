@@ -234,6 +234,9 @@ def reduction(request, subid):
     return render_to_response('reduction.html', template_args,
             context_instance=RequestContext(request))
 
+def add_to_light_curve(request, subid):
+    return 'not yet implemented'
+
 def light_curve(request, subid):
     # TODO(ian): Dedup this with above code.
     try:
