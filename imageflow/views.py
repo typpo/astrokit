@@ -224,6 +224,8 @@ def reduction(request, subid):
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
+    # TODO(ian): Run reduction if necessary.
+
     template_args = {
         'result': result.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
