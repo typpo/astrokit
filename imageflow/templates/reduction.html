@@ -105,7 +105,7 @@ nyi
       <th>Dec (obs)</th>
       <th>Airmass</th>
     </tr>
-    {% for star in result.data.reference_stars_with_airmass %}
+    {% for star in reduction.data.reduced_stars %}
       <tr>
         <td>
           <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
