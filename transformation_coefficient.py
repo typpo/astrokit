@@ -1,9 +1,15 @@
+import logging
+from cStringIO import StringIO
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 from imageflow.s3_util import upload_to_s3
 
-def compute_tf_for_analysis(analysis, reduction, graph_output_path):
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def compute_tf_for_analysis(analysis, reduction, save_graph=False):
     apparent_mags = []
     standard_mags = []
     colors_1 = []
@@ -17,15 +23,18 @@ def compute_tf_for_analysis(analysis, reduction, graph_output_path):
     tf, (xs, ys, A, c) = compute_tf(apparent_mags, standard_mags, colors_1, colors_2)
 
     tf_graph_url = None
-    if graph_output_path:
+    if save_graph:
         plt.plot(xs, ys, '+', label='Original data', markersize=10)
         plt.plot(xs, tf*xs + c, 'r', label='Fitted line')
         plt.xlabel('%s - %s' % (reduction.color_index_1.band , reduction.color_index_2.band))
         plt.ylabel('M - m')
         plt.legend()
-        plt.savefig(graph_output_path)
 
-        # TODO(ian): Upload graph to s3
+        img_graph = StringIO()
+        plt.savefig(img_graph)
+
+        tf_graph_url = upload_graph(analysis, reduction, img_graph.getvalue())
+        logger.info('---> Uploaded to %s' % tf_graph_url)
 
     return tf, tf_graph_url
 
@@ -37,6 +46,18 @@ def compute_tf(apparent_mags, standard_mags, colors_1, colors_2):
     m, c = np.linalg.lstsq(A, ys)[0]
 
     return m, (xs, ys, A, c)
+
+def upload_graph(analysis, reduction, img_graph):
+    job = analysis.astrometry_job
+    submission = job.submission
+
+    logger.info('-> Uploading tf graph for submission %d' % (submission.subid))
+
+    upload_key_prefix = 'processed/%d' % (submission.subid)
+
+    name = '%d_%d_tf_graph.jpg' % (submission.subid, job.jobid)
+    logger.info('  -> Uploading %s...' % name)
+    return upload_to_s3(img_graph, upload_key_prefix, name)
 
 def test():
     compute_tf([0, .5, 1, 1.5],

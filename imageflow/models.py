@@ -145,17 +145,17 @@ class Reduction(models.Model):
                                       null=True,
                                       related_name='reduction_color_index_2_set')
 
-    transformation_coefficient = models.FloatField()
-    transformation_coefficient_graph_url = models.CharField(max_length=1024)
+    tf = models.FloatField()
+    tf_graph_url = models.CharField(max_length=1024)
 
     def get_summary_obj(self):
         return {
             'urls': {
-                'transformation_coefficient_graph_url': self.transformation_coefficient_graph_url,
+                'tf_graph_url': self.tf_graph_url,
             },
             'data': {
                 'reduced_stars': self.reduced_stars,
-                'transformation_coefficient': self.transformation_coefficient,
+                'tf': self.tf,
             }
         }
 

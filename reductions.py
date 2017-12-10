@@ -19,15 +19,15 @@ def run_reductions(analysis):
     catalog reference stars.
     '''
 
-    reduction = Reduction.get_or_create(analysis=analysis)
+    reduction, _ = Reduction.objects.get_or_create(analysis=analysis)
 
     # Airmass
-    reduction.reduced_stars = airmass.compute_airmass_for_analysis(analysis, reduction)
+    reduction.reduced_stars = airmass.annotate_with_airmass(analysis, reduction)
 
     # Transformation coefficient
-    computed_tf, tf_graph_url = tf.compute_tf_for_analysis(analysis, reduction, '/tmp/tf_graph.png')
+    computed_tf, tf_graph_url = tf.compute_tf_for_analysis(analysis, reduction, save_graph=True)
     reduction.transformation_coefficient = computed_tf
-    analysis.transformation_coefficient_graph_url = tf_graph_url
+    reduction.tf_graph_url = tf_graph_url
 
     reduction.status = Reduction.COMPLETE
     reduction.save()
