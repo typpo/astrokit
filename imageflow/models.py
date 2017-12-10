@@ -151,9 +151,11 @@ class Reduction(models.Model):
     def get_summary_obj(self):
         return {
             'urls': {
-                'tf_graph_url': self.tf_graph_url,
+                'tf_graph': self.tf_graph_url,
             },
             'data': {
+                'color_index_1_band': self.color_index_1.band if self.color_index_1 else '',
+                'color_index_2_band': self.color_index_2.band if self.color_index_1 else '',
                 'reduced_stars': self.reduced_stars,
                 'tf': self.tf,
             }

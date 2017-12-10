@@ -228,6 +228,7 @@ def reduction(request, subid):
 
     template_args = {
         'result': result.get_summary_obj(),
+        'reduction': result.reduction.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
     }
     return render_to_response('reduction.html', template_args,
