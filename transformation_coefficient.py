@@ -34,7 +34,7 @@ def compute_tf_for_analysis(analysis, reduction, save_graph=False):
         plt.savefig(img_graph)
 
         tf_graph_url = upload_graph(analysis, reduction, img_graph.getvalue())
-        logger.info('---> Uploaded to %s' % tf_graph_url)
+        logger.info('  -> Uploaded to %s' % tf_graph_url)
 
     return tf, tf_graph_url
 
