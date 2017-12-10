@@ -23,10 +23,11 @@
 
 
 .header--secondary {
-	position: static;
+	//position: static;
+	position: relative;
 	padding-top: 22px;
 	padding-bottom: 36px;
-	margin-bottom: 32px; 
+	margin-bottom: 32px;
 	border-bottom: 1px solid #313030;
 	text-align: center;
 }
@@ -59,12 +60,12 @@
 .header--secondary .header__inner {
 	display: inline-block;
 	vertical-align: middle;
-	padding-top: 15px; 
+	padding-top: 15px;
 	text-align: left;
 
 	.link-nav {
 		@media (max-width: 1500px) {
-			padding-left: 150px; 
+			padding-left: 150px;
 		}
 	}
 }
