@@ -99,6 +99,15 @@ def set_datetime(request, subid):
         'msg': 'Resolved input to %s' % parsed_dt.isoformat()
     })
 
+def set_filter_band(request, subid):
+    analysis, filter_band = resolve_band(request, subid)
+    analysis.image_filter = filter_band
+    analysis.save()
+    return JsonResponse({
+        'success': True,
+        'msg': 'Resolved input to %s' % str(filter_band)
+    })
+
 def set_color_index_1(request, subid):
     analysis, filter_band = resolve_band(request, subid)
     analysis.reduction.color_index_1 = filter_band
@@ -116,7 +125,6 @@ def set_color_index_2(request, subid):
         'success': True,
         'msg': 'Resolved input to %s' % str(filter_band)
     })
-
 
 def resolve_band(request, subid):
     try:
@@ -147,11 +155,11 @@ def set_longitude(request, subid):
     return set_float(request, subid, 'image_longitude')
 
 def set_second_order_extinction(request, subid):
-    return set_float(request, subid, 'image_longitude', on_reduction=True)
+    return set_float(request, subid, 'second_order_extinction', on_reduction=True)
 
 def set_float(request, subid, attrname, on_reduction=False):
     try:
-        result = AnalysisResult.objects.get( \
+        analysis = AnalysisResult.objects.get( \
                 astrometry_job__submission__subid=subid, \
                 status=AnalysisResult.COMPLETE)
     except ObjectDoesNotExist:
@@ -169,11 +177,11 @@ def set_float(request, subid, attrname, on_reduction=False):
         })
 
     if on_reduction:
-        setattr(result.reduction, attrname, val)
-        result.reduction.save()
+        setattr(analysis.reduction, attrname, val)
+        analysis.reduction.save()
     else:
-        setattr(result, attrname, val)
-        result.save()
+        setattr(analysis, attrname, val)
+        analysis.save()
 
     return JsonResponse({
         'success': True,

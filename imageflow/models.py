@@ -33,7 +33,7 @@ class ImageFilter(models.Model):
 
 
 class LightCurve(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, null=True)
 
     name = models.CharField(max_length=1024)
 
@@ -159,6 +159,7 @@ class Reduction(models.Model):
                                       null=True,
                                       related_name='reduction_color_index_2_set')
 
+    second_order_extinction = models.FloatField()
     tf = models.FloatField()
     tf_graph_url = models.CharField(max_length=1024)
 
@@ -170,6 +171,7 @@ class Reduction(models.Model):
             'data': {
                 'color_index_1_band': self.color_index_1.band if self.color_index_1 else '',
                 'color_index_2_band': self.color_index_2.band if self.color_index_1 else '',
+                'second_order_extinction': self.second_order_extinction,
                 'reduced_stars': self.reduced_stars,
                 'tf': self.tf,
             }

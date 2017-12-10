@@ -89,7 +89,13 @@ ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f<
 
 <h4>Step 2: Compute second-order extinction k"<sub><em>f</em></sub></h4>
 <div class="well">
-  <input type="text" id="second_order_extinction" value="{{reduction.second_order_extinction}}" />
+  <div id="second-order-extinction-success" class="alert alert-success" style="display:none">
+    k'' successfully updated.
+  </div>
+  <div id="second-order-extinction-success" class="alert alert-danger" style="display:none">
+    Something went wrong - failed to update your setting.
+  </div>
+  <input type="text" class="form-control" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" />
 </div>
 
 <h4>Step 3: Compute airmass X<sub>t</sub></h4>
