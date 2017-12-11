@@ -55,7 +55,11 @@ def run_reductions(analysis):
             combined = term1 - term2 + term3 + comparison_star[analysis.image_filter.urat1_key]
             estimates.append(combined)
 
-        reduction.reduced_stars[i]['mag_standard'] = np.mean(estimates)
+        star['mag_standard'] = np.mean(estimates)
+
+        # Set mag_catalog to the URAT1 magnitude in this band.
+        star['mag_catalog'] = star[analysis.image_filter.urat1_key]
+        star['mag_error'] = star['mag_standard'] - star['mag_catalog']
 
     reduction.status = Reduction.COMPLETE
     reduction.save()
