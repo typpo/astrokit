@@ -20,7 +20,7 @@ jsonfield==1.0.3
 keyring==10.3.2
 matplotlib==1.5.1
 networkx==1.11
-numpy==1.10.4
+numpy==1.14.0
 packaging==16.8
 paramiko==1.16.0
 photutils==0.2.1
