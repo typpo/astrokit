@@ -12,7 +12,7 @@ import imageflow.s3_util as s3_util
 from astrometry.util import process_astrometry_online
 
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
-from imageflow.models import AnalysisResult, ImageFilter, UserUploadedImage
+from imageflow.models import AnalysisResult, ImageFilter, Reduction, UserUploadedImage
 
 def index(request):
     return render_to_response('index.html', context_instance=RequestContext(request))
@@ -230,15 +230,18 @@ def reduction(request, subid):
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
-    # TODO(ian): Run reduction if necessary.
 
-    template_args = {
-        'result': result.get_summary_obj(),
-        'reduction': result.reduction.get_summary_obj(),
-        'image_filters': ImageFilter.objects.all(),
-    }
-    return render_to_response('reduction.html', template_args,
-            context_instance=RequestContext(request))
+    try:
+        template_args = {
+            'result': result.get_summary_obj(),
+            'reduction': result.reduction.get_summary_obj(),
+            'image_filters': ImageFilter.objects.all(),
+        }
+        return render_to_response('reduction.html', template_args,
+                context_instance=RequestContext(request))
+    except Reduction.DoesNotExist:
+        # TODO(ian): Run reduction if necessary.
+        return JsonResponse({'success': False, 'message': 'Need to run reductions'})
 
 def add_to_light_curve(request, subid):
     return 'not yet implemented'
