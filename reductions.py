@@ -23,14 +23,20 @@ def supporting_calculations(analysis, reduction):
 
     # Transformation coefficient
     computed_tf, tf_graph_url = tf.compute_tf_for_analysis(analysis, reduction, save_graph=True)
-    reduction.transformation_coefficient = computed_tf
+    reduction.tf = computed_tf
     reduction.tf_graph_url = tf_graph_url
 
 
 def run_reductions(analysis):
     '''Run reductions on a given AnalysisResult.
     '''
-    reduction, _ = Reduction.objects.get_or_create(analysis=analysis)
+    # reduction, _ = Reduction.objects.get_or_create(analysis=analysis)
+    try:
+        reduction = Reduction.objects.get(analysis=analysis)
+    except Reduction.DoesNotExist:
+        reduction = Reduction(analysis=analysis)
+        reduction.color_index_1 = analysis.image_filter
+        reduction.color_index_2 = analysis.image_filter
 
     supporting_calculations(analysis, reduction)
 
