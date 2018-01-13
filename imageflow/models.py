@@ -159,7 +159,7 @@ class Reduction(models.Model):
                                       null=True,
                                       related_name='reduction_color_index_2_set')
 
-    second_order_extinction = models.FloatField()
+    second_order_extinction = models.FloatField(default=0)
     tf = models.FloatField()
     tf_graph_url = models.CharField(max_length=1024)
 
