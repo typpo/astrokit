@@ -20,7 +20,8 @@ def upload_to_s3(image_data, key_prefix, name, overwrite=True):
     '''
     conn = boto.connect_s3(
             settings.AWS_ACCESS_KEY_ID,
-            settings.AWS_SECRET_ACCESS_KEY)
+            settings.AWS_SECRET_ACCESS_KEY,
+            is_secure=False)
     bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME, validate=True)
     k = Key(bucket)
     keyname = '%s/%d-%s' % (key_prefix, int(time.time()), name)
