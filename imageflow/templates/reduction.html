@@ -65,6 +65,10 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
   </form>
 </div>
 
+<div style="margin-bottom:1em">
+  <a href="#" class="btn btn-primary js-run-reductions">Re-run reductions</a>
+</div>
+
 <h4>Step 1: Compute transform coefficient T<sub><em>f</em></sub></h4>
 <p>
 T<sub><em>f</em></sub> is a coefficient that converts your raw instrumental magnitude to a standard magnitude in color band <em>f</em>. It is solved for by the following equation:
@@ -163,6 +167,7 @@ Slope = t<sub><em>f</em></sub> = {{reduction.data.tf}}
 
 <div style="text-align: right">
   <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
+  <a href="#" class="btn btn-lg btn-default js-run-reductions">Re-run Reductions</a>
   <a href="/submission/reduction/{{result.subid}}" class="btn btn-primary">Review</a>
 </div>
 {% endblock %}

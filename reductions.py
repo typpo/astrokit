@@ -30,7 +30,6 @@ def supporting_calculations(analysis, reduction):
 def run_reductions(analysis):
     '''Run reductions on a given AnalysisResult.
     '''
-    # reduction, _ = Reduction.objects.get_or_create(analysis=analysis)
     try:
         reduction = Reduction.objects.get(analysis=analysis)
     except Reduction.DoesNotExist:

@@ -14,4 +14,9 @@ $(function() {
                 $('#second-order-extinction'),
                 $('#second-order-extinction-success'),
                 $('#second-order-extinction-failure'));
+
+  $('.js-run-reductions').on('click', function() {
+    alert('NYI');
+    return false;
+  });
 });

@@ -230,7 +230,6 @@ def reduction(request, subid):
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
-
     try:
         template_args = {
             'result': result.get_summary_obj(),
