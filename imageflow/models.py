@@ -146,10 +146,12 @@ class AnalysisResult(models.Model):
 
 class Reduction(models.Model):
     PENDING = 'PENDING'
+    RUNNING = 'RUNNING'
     COMPLETE = 'COMPLETE'
     FAILED = 'FAILED'
     STATUSES = (
         (PENDING, 'Pending'),
+        (RUNNING, 'Running'),
         (COMPLETE, 'Complete'),
         (FAILED, 'Failed'),
     )
