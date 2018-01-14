@@ -98,6 +98,7 @@ class AnalysisResult(models.Model):
     def create_reduction_if_not_exists(self):
         if not hasattr(self, 'reduction'):
             self.reduction = Reduction(analysis=self)
+            self.reduction.status = Reduction.CREATED
             self.reduction.color_index_1 = self.image_filter
             self.reduction.color_index_2 = self.image_filter
             self.reduction.save()

@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#
+# Usage: ./reductions.py [analysis_id]
+#
 
 import os
 import sys
@@ -69,11 +72,13 @@ def run_reductions(analysis):
     reduction.status = Reduction.COMPLETE
     reduction.save()
 
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print 'Usage: reductions.py <submission id>'
-        sys.exit(1)
+def process_pending_reductions():
+    pending = Reduction.objects.all().filter(
+            status=Reduction.PENDING)
+    for reduction in pending:
+        run_reductions(reduction.analysis)
 
+if __name__ == '__main__':
     import os
     import django
     from django.core.exceptions import ObjectDoesNotExist
@@ -82,14 +87,17 @@ if __name__ == '__main__':
     django.setup()
 
     from imageflow.models import AnalysisResult
-    subid = sys.argv[1]
 
-    try:
-        result = AnalysisResult.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=AnalysisResult.COMPLETE)
-    except ObjectDoesNotExist:
-        print 'Could not find submission', subid
-        sys.exit(1)
-
-    run_reductions(result)
+    if len(sys.argv) > 1:
+        subid = sys.argv[1]
+        try:
+            result = AnalysisResult.objects.get( \
+                    astrometry_job__submission__subid=subid, \
+                    status=AnalysisResult.COMPLETE)
+        except ObjectDoesNotExist:
+            print 'Could not find submission', subid
+            sys.exit(1)
+        run_reductions(result)
+    else:
+        # Run all pending reductions.
+        process_pending_reductions()

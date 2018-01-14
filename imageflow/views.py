@@ -157,6 +157,16 @@ def set_longitude(request, subid):
     return set_float(request, subid, 'image_longitude')
 
 def set_second_order_extinction(request, subid):
+    try:
+        analysis = AnalysisResult.objects.get( \
+                astrometry_job__submission__subid=subid, \
+                status=AnalysisResult.COMPLETE)
+    except ObjectDoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Could not find corresponding AnalysisResult',
+        })
+    analysis.create_reduction_if_not_exists()
     return set_float(request, subid, 'second_order_extinction', on_reduction=True)
 
 def set_float(request, subid, attrname, on_reduction=False):
@@ -187,6 +197,23 @@ def set_float(request, subid, attrname, on_reduction=False):
 
     return JsonResponse({
         'success': True,
+    })
+
+def set_reduction_to_pending(request, subid):
+    try:
+        analysis = AnalysisResult.objects.get( \
+                astrometry_job__submission__subid=subid, \
+                status=AnalysisResult.COMPLETE)
+    except ObjectDoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Could not find corresponding AnalysisResult',
+        })
+    analysis.create_reduction_if_not_exists()
+    analysis.reduction.status = Reduction.PENDING
+    return JsonResponse({
+        'success': True,
+        'message': 'Reduction status set to pending',
     })
 
 def point_sources(request, subid):

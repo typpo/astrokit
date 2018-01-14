@@ -69,7 +69,21 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
   <a href="#" class="btn btn-primary js-run-reductions">Run reductions</a>
 </div>
 
-<h4>Step 1: Compute transform coefficient T<sub><em>f</em></sub></h4>
+<h4>Step 1: Enter second-order extinction k"<sub><em>f</em></sub></h4>
+<div class="well">
+  <div id="second-order-extinction-success" class="alert alert-success" style="display:none">
+    k'' successfully updated.
+  </div>
+  <div id="second-order-extinction-success" class="alert alert-danger" style="display:none">
+    Something went wrong - failed to update your setting.
+  </div>
+  <p>
+    Second-order extinction is nearly constant and usually only significant for B-V color index measurements. Set to 0 if you do not want to include a term for second-order extinction.
+  </p>
+  <input type="text" class="form-control" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
+</div>
+
+<h4>Step 2: Compute transform coefficient T<sub><em>f</em></sub></h4>
 <p>
 T<sub><em>f</em></sub> is a coefficient that converts your raw instrumental magnitude to a standard magnitude in color band <em>f</em>. It is solved for by the following equation:
 </p>
@@ -94,17 +108,6 @@ ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f<
     Slope = t<sub><em>f</em></sub> = {{reduction.data.tf}}
     <img src="{{reduction.urls.tf_graph}}">
   {% endif %}
-</div>
-
-<h4>Step 2: Compute second-order extinction k"<sub><em>f</em></sub></h4>
-<div class="well">
-  <div id="second-order-extinction-success" class="alert alert-success" style="display:none">
-    k'' successfully updated.
-  </div>
-  <div id="second-order-extinction-success" class="alert alert-danger" style="display:none">
-    Something went wrong - failed to update your setting.
-  </div>
-  <input type="text" class="form-control" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
 </div>
 
 <h4>Step 3: Compute airmass X<sub>t</sub></h4>
