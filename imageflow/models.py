@@ -95,6 +95,13 @@ class AnalysisResult(models.Model):
     catalog_reference_stars = JSONField()
     catalog_reference_stars_json_url = models.CharField(max_length=1024)
 
+    def create_reduction_if_not_exists(self):
+        if not hasattr(self, 'reduction'):
+            self.reduction = Reduction(analysis=self)
+            self.reduction.color_index_1 = self.image_filter
+            self.reduction.color_index_2 = self.image_filter
+            self.reduction.save()
+
     def get_summary_obj(self):
         return {
             'jobid': self.astrometry_job.jobid,
@@ -160,13 +167,16 @@ class Reduction(models.Model):
                                       related_name='reduction_color_index_2_set')
 
     second_order_extinction = models.FloatField(default=0)
-    tf = models.FloatField()
-    tf_graph_url = models.CharField(max_length=1024)
+    tf = models.FloatField(null=True)
+    tf_graph_url = models.CharField(max_length=1024, null=True)
 
     def get_summary_obj(self):
         return {
             'urls': {
                 'tf_graph': self.tf_graph_url,
+            },
+            'meta': {
+                'status': self.status,
             },
             'data': {
                 'color_index_1_band': self.color_index_1.band if self.color_index_1 else '',

@@ -110,6 +110,7 @@ def set_filter_band(request, subid):
 
 def set_color_index_1(request, subid):
     analysis, filter_band = resolve_band(request, subid)
+    analysis.create_reduction_if_not_exists()
     analysis.reduction.color_index_1 = filter_band
     analysis.reduction.save()
     return JsonResponse({
@@ -119,6 +120,7 @@ def set_color_index_1(request, subid):
 
 def set_color_index_2(request, subid):
     analysis, filter_band = resolve_band(request, subid)
+    analysis.create_reduction_if_not_exists()
     analysis.reduction.color_index_2 = filter_band
     analysis.reduction.save()
     return JsonResponse({
@@ -230,17 +232,23 @@ def reduction(request, subid):
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
+    template_args = {
+        'result': result.get_summary_obj(),
+        'image_filters': ImageFilter.objects.all(),
+    }
     try:
-        template_args = {
-            'result': result.get_summary_obj(),
+        template_args.update({
             'reduction': result.reduction.get_summary_obj(),
-            'image_filters': ImageFilter.objects.all(),
-        }
+        })
         return render_to_response('reduction.html', template_args,
                 context_instance=RequestContext(request))
     except Reduction.DoesNotExist:
         # TODO(ian): Run reduction if necessary.
-        return JsonResponse({'success': False, 'message': 'Need to run reductions'})
+        template_args.update({
+            'no_reduction': True
+        })
+        return render_to_response('reduction.html', template_args,
+                context_instance=RequestContext(request))
 
 def add_to_light_curve(request, subid):
     return 'not yet implemented'
