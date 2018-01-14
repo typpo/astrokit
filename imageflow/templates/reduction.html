@@ -102,7 +102,7 @@ ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f<
 </p>
 
 <div class="well">
-  {% if no_reduction or reduction.meta.status == 'PENDING' %}
+  {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask"><em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em></p>
   {% else %}
     Slope = t<sub><em>f</em></sub> = {{reduction.data.tf}}
@@ -113,7 +113,7 @@ ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f<
 <h4>Step 3: Compute airmass X<sub>t</sub></h4>
 
 <div class="well">
-  {% if no_reduction or reduction.meta.status == 'PENDING' %}
+  {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask"><em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em></p>
   {% else %}
     <p>
@@ -143,7 +143,7 @@ ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f<
 <h4>Step 4: Apply the formula to get M<sub><em>t</em></sub></h4>
 
 <div class="well">
-  {% if no_reduction or reduction.meta.status == 'PENDING' %}
+  {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask"><em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em></p>
   {% else %}
     <p>
