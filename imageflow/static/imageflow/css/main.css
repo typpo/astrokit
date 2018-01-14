@@ -2,6 +2,7 @@ body {
   background-color: #252525;
   font-family: "proxima-nova",Helvetica,sans-serif;
 }
+
 .nav-header {
   position: absolute;
   top: 0;
@@ -12,14 +13,26 @@ body {
   padding-left: 40px;
   z-index: 9999;
 }
+
 .nav-header a {
   color: #000;
 }
+
 .heading-container {
   border-bottom: 1px solid #ccc;
   width: 100%;
   margin-bottom: 15px;
 }
+
+.container-analysis {
+  width: 100%;
+}
+
+.run-reductions-mask {
+  font-size: 14px;
+  text-align: center;
+}
+
 .content {
   background-color: #fffefb;
   max-width: 1280px;

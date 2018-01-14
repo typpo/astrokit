@@ -10,20 +10,20 @@
       <div class="container">
         <a href="#" class="link-nav">
           <i class="ico-arrow-left"></i>
-      
+
           Back
         </a>
-      
+
         <nav class="nav nav--secondary">
           <ul>
             <li>
               <a href="#">Browse Images</a>
             </li>
-        
+
             <li>
               <a href="#">My uploads</a>
             </li>
-        
+
             <li>
               <a href="#">Upload Images</a>
             </li>
@@ -60,18 +60,18 @@
           <div class="upload-field " >
             <div class="upload-field__entry">
               <i class="ico-files"></i>
-            
+
               <h5>To upload image drag and drop<br>or</h5>
-            
+
               <div class="btn btn--solid browse">Browse</div>
-            
+
               <p>any .pdf, .png, .jpg, .gif</p>
             </div><!-- /.upload-field__entry -->
           </div><!-- /.upload-field -->
 
           <div class="upload-files">
             <div class="row">
-              
+
             </div><!-- /.row -->
           </div><!-- /.upload-field__files -->
         </div><!-- /.section-upload__body -->
@@ -93,7 +93,7 @@
 
   Dropzone.autoDiscover = false;
   $(function() {
-    
+
     var myDropzone = new Dropzone(
       "#dropzone-upload",
     {
@@ -108,14 +108,14 @@
       <div class="col-sm-2">
         <figure class="upload-files__image">
           <img data-dz-thumbnail>
-                          
+
           <a href="#">
             <i class="ico-delete" data-dz-remove></i>
           </a>
-    
+
           <div class="caption">
             <p data-dz-name>default name</p>
-    
+
             <p><span data-dz-size>default size</span></p>
           </div><!-- /.caption -->
         </figure><!-- /.upload-files__image -->
@@ -140,5 +140,5 @@
 {% endblock %}
 
 {% block styles %}
-  
+
 {% endblock %}
