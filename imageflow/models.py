@@ -145,18 +145,20 @@ class AnalysisResult(models.Model):
 
 
 class Reduction(models.Model):
+    CREATED = 'CREATED'
     PENDING = 'PENDING'
     RUNNING = 'RUNNING'
     COMPLETE = 'COMPLETE'
     FAILED = 'FAILED'
     STATUSES = (
+        (CREATED, 'Created'),
         (PENDING, 'Pending'),
         (RUNNING, 'Running'),
         (COMPLETE, 'Complete'),
         (FAILED, 'Failed'),
     )
     status = models.CharField(
-            max_length=50, choices=STATUSES, default=PENDING)
+            max_length=50, choices=STATUSES, default=CREATED)
     analysis = models.OneToOneField(AnalysisResult)
 
     # Data fields
