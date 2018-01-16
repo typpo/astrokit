@@ -199,7 +199,8 @@ def set_float(request, subid, attrname, on_reduction=False):
         'success': True,
     })
 
-def set_reduction_to_pending(request, subid):
+def set_reduction_status(request, subid):
+    # TODO(ian): Verify owner of reduction for all these AnalysisResult fetches.
     try:
         analysis = AnalysisResult.objects.get( \
                 astrometry_job__submission__subid=subid, \
@@ -214,6 +215,22 @@ def set_reduction_to_pending(request, subid):
     return JsonResponse({
         'success': True,
         'message': 'Reduction status set to pending',
+    })
+
+def get_reduction_status(request, subid):
+    try:
+        analysis = AnalysisResult.objects.get( \
+                astrometry_job__submission__subid=subid, \
+                status=AnalysisResult.COMPLETE)
+    except ObjectDoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Could not find corresponding AnalysisResult',
+        })
+    analysis.create_reduction_if_not_exists()
+    return JsonResponse({
+        'success': True,
+        'status': analysis.reduction.status,
     })
 
 def point_sources(request, subid):

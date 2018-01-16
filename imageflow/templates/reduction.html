@@ -79,6 +79,7 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
 
 <div style="margin-bottom:1.8em">
   <a href="#" class="btn btn-primary btn-lg js-run-reductions">Run reductions</a>
+  <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
 </div>
 
 <h4>Step 3: Compute transform coefficient T<sub><em>f</em></sub></h4>
@@ -103,7 +104,10 @@ In which:<br>
 
 <div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
-    <p class="run-reductions-mask"><em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em></p>
+    <p class="run-reductions-mask">
+      <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
+      <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+    </p>
   {% else %}
     Slope = t<sub><em>f</em></sub> = {{reduction.data.tf}}
     <img src="{{reduction.urls.tf_graph}}">
@@ -114,7 +118,10 @@ In which:<br>
 
 <div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
-    <p class="run-reductions-mask"><em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em></p>
+    <p class="run-reductions-mask">
+      <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
+      <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+    </p>
   {% else %}
     <p>
       Using date <strong>{{result.meta.datetime | date:'c'}}</strong> and altitude <strong>{{result.meta.elevation}} meters</strong>.
@@ -144,7 +151,10 @@ In which:<br>
 
 <div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
-    <p class="run-reductions-mask"><em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em></p>
+    <p class="run-reductions-mask">
+      <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
+      <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+    </p>
   {% else %}
     <p>
       Given the formula:
@@ -183,6 +193,7 @@ In which:<br>
 <div style="text-align: right">
   <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
   <a href="#" class="btn btn-lg btn-default js-run-reductions">Run Reductions</a>
+  <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
   <a href="/submission/reduction/{{result.subid}}" class="btn btn-lg btn-primary">Review</a>
 </div>
 {% endblock %}

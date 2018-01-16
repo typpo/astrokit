@@ -33,6 +33,10 @@ body {
   text-align: center;
 }
 
+.run-reductions-mask img {
+  margin: 0 auto;
+}
+
 .content {
   background-color: #fffefb;
   max-width: 1280px;
