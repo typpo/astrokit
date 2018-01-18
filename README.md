@@ -49,9 +49,17 @@ Run migrations:  `./manage.py migrate`
 
 And create an admin user:  `./manage.py createsuperuser`
 
+Install frontend dependencies (only needed once, or when package.json changes):
+```
+cd webassets
+yarn install
+```
+
+Build frontend dependencies (necessary whenever you change something in webassets/): `yarn run build`
+
 # Run the server
 
-`./manage.py runserver` and visit http://localhost:5000
+`./manage.py runserver` and visit http://localhost:8000
 
 # Contributing
 
