@@ -44,7 +44,7 @@ class LightCurve(models.Model):
         return 'NYI'
 
 
-class AnalysisResult(models.Model):
+class ImageAnalysis(models.Model):
     PENDING = 'PENDING'
     COMPLETE = 'COMPLETE'
     FAILED = 'FAILED'
@@ -160,7 +160,7 @@ class Reduction(models.Model):
     )
     status = models.CharField(
             max_length=50, choices=STATUSES, default=CREATED)
-    analysis = models.OneToOneField(AnalysisResult)
+    analysis = models.OneToOneField(ImageAnalysis)
 
     # Data fields
     reduced_stars = JSONField()
@@ -207,9 +207,9 @@ class UserUploadedImage(models.Model):
     created_at = models.DateTimeField(auto_now=True)
 
     # Analysis result isn't filled until the job is actually processed.
-    # analysis_result = models.ForeignKey(AnalysisResult, null=True)
+    # analysis_result = models.ForeignKey(ImageAnalysis, null=True)
 
-admin.site.register(AnalysisResult)
+admin.site.register(ImageAnalysis)
 admin.site.register(Reduction)
 admin.site.register(UserUploadedImage)
 admin.site.register(ImageFilter)

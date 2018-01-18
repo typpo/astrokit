@@ -31,7 +31,7 @@ def supporting_calculations(analysis, reduction):
 
 
 def run_reductions(analysis):
-    '''Run reductions on a given AnalysisResult.
+    '''Run reductions on a given ImageAnalysis.
     '''
     try:
         reduction = Reduction.objects.get(analysis=analysis)
@@ -86,14 +86,14 @@ if __name__ == '__main__':
     sys.path.insert(0, os.getcwd())
     django.setup()
 
-    from imageflow.models import AnalysisResult
+    from imageflow.models import ImageAnalysis
 
     if len(sys.argv) > 1:
         subid = sys.argv[1]
         try:
-            result = AnalysisResult.objects.get( \
+            result = ImageAnalysis.objects.get( \
                     astrometry_job__submission__subid=subid, \
-                    status=AnalysisResult.COMPLETE)
+                    status=ImageAnalysis.COMPLETE)
         except ObjectDoesNotExist:
             print 'Could not find submission', subid
             sys.exit(1)
