@@ -8,7 +8,6 @@ from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
 from django.utils.dateparse import parse_datetime
 
-import imageflow.s3_util as s3_util
 from astrometry.util import create_new_lightcurve
 
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
