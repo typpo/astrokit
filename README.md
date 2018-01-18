@@ -61,6 +61,10 @@ Build frontend dependencies (necessary whenever you change something in webasset
 
 `./manage.py runserver` and visit http://localhost:8000
 
+# Use some examples
+
+Go to `examples/blcam` and run `./download.sh` to download some example fits.
+
 # Contributing
 
 If you are looking to help to with a code contribution our project uses Python (Django), Javascript, HTML/CSS. If you don't feel ready to make a code contribution yet, feel free to reach out and we can discuss how to get involved!
