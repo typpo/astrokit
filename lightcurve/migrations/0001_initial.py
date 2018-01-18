@@ -12,17 +12,19 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('photometry', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='URLCode',
+            name='LightCurve',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(max_length=16, unique=True)),
-                ('created_at', models.DateTimeField(auto_now=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('name', models.CharField(max_length=1024)),
+                ('image_filter', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='lightcurve_image_filter_set', to='photometry.ImageFilter')),
+                ('magband', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='lightcurve_magband_set', to='photometry.ImageFilter')),
+                ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

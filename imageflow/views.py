@@ -9,7 +9,7 @@ from django.template import RequestContext
 from django.utils.dateparse import parse_datetime
 
 import imageflow.s3_util as s3_util
-from astrometry.util import process_astrometry_online
+from astrometry.util import create_new_lightcurve
 
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
@@ -20,21 +20,8 @@ def index(request):
 def upload_image(request):
     if request.user.is_authenticated():
         if request.method == 'POST':
-            testing = request.GET.get('testing', False)
-            submissions = []
-            for key in request.FILES:
-                img = request.FILES[key]
-                # Data is read just once to avoid rewinding.
-                img_data = img.read()
-                if not testing:
-                    url = s3_util.upload_to_s3(img_data, 'raw', img.name)
-                else:
-                    url = 'http://placehold.it/300x300'
-                submission = process_astrometry_online(url, testing=testing)
-                UserUploadedImage(user=request.user,
-                                  image_url=url,
-                                  astrometry_submission_id=submission.subid).save()
-                submissions.append(submission)
+            img_datas = [request.FILES[key].read() for key in request.FILES]
+            lightcurve = create_new_lightcurve('Light Curve %d' % (time.time()), img_datas)
 
             # Redirect to submission viewing page.
             return JsonResponse({

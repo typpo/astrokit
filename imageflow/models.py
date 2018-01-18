@@ -9,40 +9,8 @@ from django.contrib.auth.models import User
 from jsonfield import JSONField
 
 from astrometry.models import AstrometrySubmissionJob
-
-class ImageFilterManager(models.Manager):
-    def get_by_natural_key(self, band):
-        return self.get(band=band)
-
-class ImageFilter(models.Model):
-    """
-    Model for image filter
-    """
-    objects = ImageFilterManager()
-
-    band = models.CharField(max_length=512, unique=True)
-    system = models.CharField(max_length=512)
-    range_min_nm = models.IntegerField()
-    urat1_key = models.CharField(max_length=50)
-
-    def __str__(self):
-        return '%s (%s)' % (self.band, self.system)
-
-    def __unicode__(self):
-        return u'%s (%s)' % (self.band, self.system)
-
-
-class LightCurve(models.Model):
-    user = models.ForeignKey(User, null=True)
-
-    name = models.CharField(max_length=1024)
-
-    image_filter = models.ForeignKey(ImageFilter, related_name='lightcurve_image_filter_set')
-    magband = models.ForeignKey(ImageFilter, related_name='lightcurve_magband_set')
-
-    def to_alcdef(self):
-        return 'NYI'
-
+from lightcurve.models import LightCurve
+from photometry.models import ImageFilter
 
 class ImageAnalysis(models.Model):
     PENDING = 'PENDING'
@@ -68,7 +36,6 @@ class ImageAnalysis(models.Model):
     image_latitude = models.FloatField(default=0)
     image_longitude = models.FloatField(default=0)
     image_elevation = models.FloatField(default=0)
-
 
     # Processed output urls on S3.
     astrometry_original_display_url = models.CharField(max_length=1024)
@@ -212,4 +179,3 @@ class UserUploadedImage(models.Model):
 admin.site.register(ImageAnalysis)
 admin.site.register(Reduction)
 admin.site.register(UserUploadedImage)
-admin.site.register(ImageFilter)

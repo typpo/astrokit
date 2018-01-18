@@ -8,8 +8,19 @@ import time
 
 from django.conf import settings
 
-from models import AstrometrySubmission
-from astrometry_client import Client
+from astrometry.models import AstrometrySubmission
+from astrometry.astrometry_client import Client
+
+def create_new_lightcurve(name, img_datas):
+    for img_data in img_datas:
+        submissions = []
+
+        url = s3_util.upload_to_s3(img_data, 'raw', img.name)
+        submission = process_astrometry_online(url, testing=testing)
+        UserUploadedImage(user=request.user,
+                          image_url=url,
+                          astrometry_submission_id=submission.subid).save()
+        submissions.append(submission)
 
 def process_astrometry_online(url):
     '''

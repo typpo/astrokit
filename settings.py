@@ -44,7 +44,9 @@ INSTALLED_APPS = [
 
     # Astrokit
     'astrometry',
+    'photometry',
     'imageflow',
+    'lightcurve',
     'accounts',
 ]
 
