@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 import os
 import sys
 import time
@@ -48,11 +49,11 @@ class Client(object):
         '''
         if self.session is not None:
             args.update({ 'session' : self.session })
-        #print 'Python:', args
+        print('Python:', args)
         json = python2json(args)
-        #print 'Sending json:', json
+        print('Sending json:', json)
         url = self.get_url(service)
-        #print 'Sending to URL:', url
+        print('Sending to URL:', url)
 
         # If we're sending a file, format a multipart/form-data
         if file_args is not None:
@@ -84,9 +85,9 @@ class Client(object):
                     # doesn't provide the flexibility to override, so we
                     # have to copy-n-paste-n-modify.
                     for h, v in msg.items():
-                        print >> self._fp, ('%s: %s\r\n' % (h,v)),
+                        print(('%s: %s\r\n' % (h,v)), end='', file=self._fp)
                     # A blank line always separates headers from body
-                    print >> self._fp, '\r\n',
+                    print('\r\n', end='', file=self._fp)
 
                 # The _write_multipart method calls "clone" for the
                 # subparts.  We hijack that, setting root=False
@@ -102,9 +103,9 @@ class Client(object):
         else:
             # Else send x-www-form-encoded
             data = {'request-json': json}
-            #print 'Sending form data:', data
+            print('Sending form data:', data)
             data = urlencode(data)
-            #print 'Sending data:', data
+            print('Sending data:', data)
             headers = {}
 
         request = Request(url=url, headers=headers, data=data)
@@ -112,26 +113,26 @@ class Client(object):
         try:
             f = urlopen(request)
             txt = f.read()
-            #print 'Got json:', txt
+            print('Got json:', txt)
             result = json2python(txt)
-            #print 'Got result:', result
+            print('Got result:', result)
             stat = result.get('status')
-            #print 'Got status:', stat
+            print('Got status:', stat)
             if stat == 'error':
                 errstr = result.get('errormessage', '(none)')
                 raise RequestError('server error message: ' + errstr)
             return result
-        except HTTPError, e:
-            #print 'HTTPError', e
+        except HTTPError as e:
+            print('HTTPError', e)
             txt = e.read()
             open('err.html', 'wb').write(txt)
-            #print 'Wrote error text to err.html'
+            print('Wrote error text to err.html')
 
     def login(self, apikey):
         args = { 'apikey' : apikey }
         result = self.send_request('login', args)
         sess = result.get('session')
-        #print 'Got session:', sess
+        print('Got session:', sess)
         if not sess:
             raise RequestError('no session in result')
         self.session = sess
@@ -153,7 +154,9 @@ class Client(object):
                                 ('downsample_factor', None, int),
                                 ('tweak_order', None, int),
                                 ('crpix_center', None, bool),
-                                # image_width, image_height
+                                ('x', None, list),
+                                ('y', None, list),
+            # image_width, image_height
                                 ]:
             if key in kwargs:
                 val = kwargs.pop(key)
@@ -161,7 +164,7 @@ class Client(object):
                 args.update({key: val})
             elif default is not None:
                 args.update({key: default})
-        #print 'Upload args:', args
+        print('Upload args:', args)
         return args
 
     def url_upload(self, url, **kwargs):
@@ -170,15 +173,17 @@ class Client(object):
         result = self.send_request('url_upload', args)
         return result
 
-    def upload(self, fn, **kwargs):
+    def upload(self, fn=None, **kwargs):
         args = self._get_upload_args(**kwargs)
-        try:
-            f = open(fn, 'rb')
-            result = self.send_request('upload', args, (fn, f.read()))
-            return result
-        except IOError:
-            #print 'File %s does not exist' % fn
-            raise
+        file_args = None
+        if fn is not None:
+            try:
+                f = open(fn, 'rb')
+                file_args = (fn, f.read())
+            except IOError:
+                print('File %s does not exist' % fn)
+                raise
+        return self.send_request('upload', args, file_args)
 
     def submission_images(self, subid):
         result = self.send_request('submission_images', {'subid':subid})
@@ -193,11 +198,11 @@ class Client(object):
                       cd21 = wcs.cd[2], cd22 = wcs.cd[3],
                       imagew = wcs.imagew, imageh = wcs.imageh)
         result = self.send_request(service, {'wcs':params})
-        #print 'Result status:', result['status']
+        print('Result status:', result['status'])
         plotdata = result['plot']
         plotdata = base64.b64decode(plotdata)
         open(outfn, 'wb').write(plotdata)
-        #print 'Wrote', outfn
+        print('Wrote', outfn)
 
     def sdss_plot(self, outfn, wcsfn, wcsext=0):
         return self.overlay_plot('sdss_image_for_wcs', outfn,
@@ -218,17 +223,17 @@ class Client(object):
         stat = result.get('status')
         if stat == 'success':
             result = self.send_request('jobs/%s/calibration' % job_id)
-            #print 'Calibration:', result
+            print('Calibration:', result)
             result = self.send_request('jobs/%s/tags' % job_id)
-            #print 'Tags:', result
+            print('Tags:', result)
             result = self.send_request('jobs/%s/machine_tags' % job_id)
-            #print 'Machine Tags:', result
+            print('Machine Tags:', result)
             result = self.send_request('jobs/%s/objects_in_field' % job_id)
-            #print 'Objects in field:', result
+            print('Objects in field:', result)
             result = self.send_request('jobs/%s/annotations' % job_id)
-            #print 'Annotations:', result
+            print('Annotations:', result)
             result = self.send_request('jobs/%s/info' % job_id)
-            #print 'Calibration:', result
+            print('Calibration:', result)
 
         return stat
 
@@ -255,7 +260,7 @@ class Client(object):
         return result
 
 if __name__ == '__main__':
-    print "Running with args %s"%sys.argv
+    print("Running with args %s"%sys.argv)
     import optparse
     parser = optparse.OptionParser()
     parser.add_option('--server', dest='server', default=Client.default_url,
@@ -263,6 +268,7 @@ if __name__ == '__main__':
     parser.add_option('--apikey', '-k', dest='apikey',
                       help='API key for Astrometry.net web service; if not given will check AN_API_KEY environment variable')
     parser.add_option('--upload', '-u', dest='upload', help='Upload a file')
+    parser.add_option('--upload-xy', dest='upload_xy', help='Upload a FITS x,y table as JSON')
     parser.add_option('--wait', '-w', dest='wait', action='store_true', help='After submitting, monitor job status')
     parser.add_option('--wcs', dest='wcs', help='Download resulting wcs.fits file, saving to given filename; implies --wait if --urlupload or --upload')
     parser.add_option('--newfits', dest='newfits', help='Download resulting new-image.fits file, saving to given filename; implies --wait if --urlupload or --upload')
@@ -323,8 +329,8 @@ if __name__ == '__main__':
         opt.apikey = os.environ.get('AN_API_KEY', None)
     if opt.apikey is None:
         parser.print_help()
-        print
-        #print 'You must either specify --apikey or set AN_API_KEY'
+        print()
+        print('You must either specify --apikey or set AN_API_KEY')
         sys.exit(-1)
 
     args = {}
@@ -332,7 +338,7 @@ if __name__ == '__main__':
     c = Client(**args)
     c.login(opt.apikey)
 
-    if opt.upload or opt.upload_url:
+    if opt.upload or opt.upload_url or opt.upload_xy:
         if opt.wcs or opt.kmz or opt.newfits or opt.annotate:
             opt.wait = True
 
@@ -364,13 +370,18 @@ if __name__ == '__main__':
 
         if opt.upload:
             upres = c.upload(opt.upload, **kwargs)
+        if opt.upload_xy:
+            from astrometry.util.fits import fits_table
+            T = fits_table(opt.upload_xy)
+            kwargs.update(x=[float(x) for x in T.x], y=[float(y) for y in T.y])
+            upres = c.upload(**kwargs)
         if opt.upload_url:
             upres = c.url_upload(opt.upload_url, **kwargs)
 
         stat = upres['status']
         if stat != 'success':
-            #print 'Upload failed: status', stat
-            print upres
+            print('Upload failed: status', stat)
+            print(upres)
             sys.exit(-1)
 
         opt.sub_id = upres['subid']
@@ -378,26 +389,26 @@ if __name__ == '__main__':
     if opt.wait:
         if opt.solved_id is None:
             if opt.sub_id is None:
-                print "Can't --wait without a submission id or job id!"
+                print("Can't --wait without a submission id or job id!")
                 sys.exit(-1)
 
             while True:
                 stat = c.sub_status(opt.sub_id, justdict=True)
-                #print 'Got status:', stat
+                print('Got status:', stat)
                 jobs = stat.get('jobs', [])
                 if len(jobs):
                     for j in jobs:
                         if j is not None:
                             break
                     if j is not None:
-                        #print 'Selecting job id', j
+                        print('Selecting job id', j)
                         opt.solved_id = j
                         break
                 time.sleep(5)
 
         while True:
             stat = c.job_status(opt.solved_id, justdict=True)
-            #print 'Got job status:', stat
+            print('Got job status:', stat)
             if stat.get('status','') in ['success']:
                 success = (stat['status'] == 'success')
                 break
@@ -418,13 +429,13 @@ if __name__ == '__main__':
             retrieveurls.append((url, opt.newfits))
 
         for url,fn in retrieveurls:
-            #print 'Retrieving file from', url, 'to', fn
+            print('Retrieving file from', url, 'to', fn)
             f = urlopen(url)
             txt = f.read()
             w = open(fn, 'wb')
             w.write(txt)
             w.close()
-            #print 'Wrote to', fn
+            print('Wrote to', fn)
 
         if opt.annotate:
             result = c.annotate_data(opt.solved_id)
@@ -432,7 +443,7 @@ if __name__ == '__main__':
                 f.write(python2json(result))
 
     if opt.wait:
-        # beahviour as in old implementation
+        # behaviour as in old implementation
         opt.sub_id = None
 
     if opt.sdss_wcs:
@@ -443,19 +454,19 @@ if __name__ == '__main__':
         c.galex_plot(outfn, wcsfn)
 
     if opt.sub_id:
-        print c.sub_status(opt.sub_id)
+        print(c.sub_status(opt.sub_id))
     if opt.job_id:
-        print c.job_status(opt.job_id)
+        print(c.job_status(opt.job_id))
 
     if opt.jobs_by_tag:
         tag = opt.jobs_by_tag
-        print c.jobs_by_tag(tag, None)
+        print(c.jobs_by_tag(tag, None))
     if opt.jobs_by_exact_tag:
         tag = opt.jobs_by_exact_tag
-        print c.jobs_by_tag(tag, 'yes')
+        print(c.jobs_by_tag(tag, 'yes'))
 
     if opt.myjobs:
         jobs = c.myjobs()
-        print jobs
+        print(jobs)
 
 
