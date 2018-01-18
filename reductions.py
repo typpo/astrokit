@@ -37,8 +37,6 @@ def run_reductions(analysis):
         reduction = Reduction.objects.get(analysis=analysis)
     except Reduction.DoesNotExist:
         reduction = Reduction(analysis=analysis)
-        reduction.color_index_1 = analysis.image_filter
-        reduction.color_index_2 = analysis.image_filter
 
     supporting_calculations(analysis, reduction)
 

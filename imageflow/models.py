@@ -26,7 +26,7 @@ class ImageAnalysis(models.Model):
 
     user = models.ForeignKey(User)
 
-    light_curve = models.ForeignKey(LightCurve, null=True)
+    lightcurve = models.ForeignKey(LightCurve, null=True)
 
     astrometry_job = models.ForeignKey(AstrometrySubmissionJob)
 
@@ -132,11 +132,11 @@ class Reduction(models.Model):
     # Data fields
     reduced_stars = JSONField()
     color_index_1 = models.ForeignKey(ImageFilter,
-                                      null=True,
-                                      related_name='reduction_color_index_1_set')
+                                      related_name='reduction_color_index_1_set',
+                                      default=ImageFilter.DEFAULT)
     color_index_2 = models.ForeignKey(ImageFilter,
-                                      null=True,
-                                      related_name='reduction_color_index_2_set')
+                                      related_name='reduction_color_index_2_set',
+                                      default=ImageFilter.DEFAULT_2)
 
     second_order_extinction = models.FloatField(default=0)
     tf = models.FloatField(null=True)
@@ -172,6 +172,8 @@ class UserUploadedImage(models.Model):
     image_url = models.URLField(max_length=512)
     astrometry_submission_id = models.CharField(max_length=512)
     created_at = models.DateTimeField(auto_now=True)
+
+    lightcurve = models.ForeignKey(LightCurve, null=True)
 
     # Analysis result isn't filled until the job is actually processed.
     # analysis_result = models.ForeignKey(ImageAnalysis, null=True)

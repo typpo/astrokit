@@ -1,5 +1,3 @@
-import time
-
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
@@ -11,7 +9,7 @@ from django.utils.dateparse import parse_datetime
 from astrometry.util import create_new_lightcurve
 
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
-from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
+from imageflow.models import ImageAnalysis, ImageFilter, Reduction
 
 def index(request):
     return render_to_response('index.html', context_instance=RequestContext(request))
@@ -19,13 +17,14 @@ def index(request):
 def upload_image(request):
     if request.user.is_authenticated():
         if request.method == 'POST':
-            img_datas = [request.FILES[key].read() for key in request.FILES]
-            lightcurve = create_new_lightcurve('Light Curve %d' % (time.time()), img_datas)
+            imgs = [request.FILES[key] for key in request.FILES]
+            lightcurve = create_new_lightcurve(request.user, imgs)
 
             # Redirect to submission viewing page.
             return JsonResponse({
                 'details': 'success',
-                'redirect_url': reverse('astrometry', kwargs={'subid': submissions[0].subid}),
+                # 'redirect_url': reverse('astrometry', kwargs={'subid': submissions[0].subid}),
+                'redirect_url': reverse('lightcurve', kwargs={'id': lightcurve.id}),
             })
 
         return render_to_response('upload_image.html', {},

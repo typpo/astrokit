@@ -93,8 +93,11 @@ class SubmissionHandler():
 
     def process_completed_submission(self, job):
         submission = self.submission
-        user = UserUploadedImage.objects.get(astrometry_submission_id=submission.subid).user
-        result = ImageAnalysis.objects.create(astrometry_job=job, user=user)
+        user_upload = UserUploadedImage.objects.get(astrometry_submission_id=submission.subid)
+        user = user_upload.user
+        result = ImageAnalysis.objects.create(astrometry_job=job,
+                                              lightcurve=user_upload.lightcurve,
+                                              user=user)
 
         logger.info('-> Submission %d, Job %d is complete' % (submission.subid, job.jobid))
 

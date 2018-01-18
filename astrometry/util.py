@@ -10,19 +10,28 @@ from django.conf import settings
 
 from astrometry.astrometry_client import Client
 from astrometry.models import AstrometrySubmission
+from imageflow.models import UserUploadedImage
 from lightcurve.models import LightCurve
 import imageflow.s3_util as s3_util
 
-def create_new_lightcurve(name, img_datas):
-    for img_data in img_datas:
+def create_new_lightcurve(user, imgs):
+    date = datetime.datetime.today().strftime('%Y-%m-%d')
+    lc = LightCurve(user=user, name='%s %s' % (user.username, date))
+    lc.save()
+
+    for img in imgs:
         submissions = []
 
-        url = s3_util.upload_to_s3(img_data, 'raw', img.name)
-        submission = process_astrometry_online(url, testing=testing)
-        UserUploadedImage(user=request.user,
+        url = s3_util.upload_to_s3(img.read(), 'raw', img.name)
+        print 'uploaded to s3 url', url
+        submission = process_astrometry_online(url)
+        UserUploadedImage(user=user,
                           image_url=url,
-                          astrometry_submission_id=submission.subid).save()
+                          astrometry_submission_id=submission.subid,
+                          lightcurve=lc).save()
         submissions.append(submission)
+
+    return lc
 
 def process_astrometry_online(url):
     '''
