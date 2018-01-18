@@ -23,8 +23,7 @@ def upload_image(request):
             # Redirect to submission viewing page.
             return JsonResponse({
                 'details': 'success',
-                # 'redirect_url': reverse('astrometry', kwargs={'subid': submissions[0].subid}),
-                'redirect_url': reverse('lightcurve', kwargs={'id': lightcurve.id}),
+                'redirect_url': reverse('edit_lightcurve', kwargs={'lightcurve_id': lightcurve.id}),
             })
 
         return render_to_response('upload_image.html', {},
