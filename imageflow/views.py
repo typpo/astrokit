@@ -29,7 +29,7 @@ def upload_image(request):
                 if not testing:
                     url = s3_util.upload_to_s3(img_data, 'raw', img.name)
                 else:
-                    url = "http://placehold.it/300x300"
+                    url = 'http://placehold.it/300x300'
                 submission = process_astrometry_online(url, testing=testing)
                 UserUploadedImage(user=request.user,
                                   image_url=url,
@@ -39,8 +39,8 @@ def upload_image(request):
             # Redirect to submission viewing page.
             return JsonResponse({
                 'details': 'success',
-                'redirect_url': reverse(
-                    'astrometry', kwargs={'subid': submissions[0].subid})})
+                'redirect_url': reverse('astrometry', kwargs={'subid': submissions[0].subid}),
+            })
 
         return render_to_response('upload_image.html', {},
                 context_instance=RequestContext(request))
