@@ -8,8 +8,9 @@ import time
 
 from django.conf import settings
 
-from astrometry.models import AstrometrySubmission
 from astrometry.astrometry_client import Client
+from astrometry.models import AstrometrySubmission
+from lightcurve.models import LightCurve
 import imageflow.s3_util as s3_util
 
 def create_new_lightcurve(name, img_datas):
