@@ -27,6 +27,7 @@ def create_new_lightcurve(user, imgs):
         submission = process_astrometry_online(url)
         UserUploadedImage(user=user,
                           image_url=url,
+                          original_filename=img.name,
                           astrometry_submission_id=submission.subid,
                           lightcurve=lc).save()
         submissions.append(submission)

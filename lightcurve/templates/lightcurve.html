@@ -1,0 +1,21 @@
+<h1>{{lightcurve.name}}</h1>
+<div class="well">
+  {{ images | length }} images in your light curve:
+  <div>
+    {% for image in images %}
+      Filename: {{image.original_filename}}<br>
+      Uploaded at: {{image.created_at}}<br>
+      <a href="{{image.image_url}}">Image</a><br>
+      <a href="http://nova.astrometry.net/status/{{image.astrometry_submission_id}}">Astrometry.net</a>
+    {% endfor %}
+  </div>
+</div>
+<div class="well">
+  {{ analyses | length }} analyses in your light curve:
+
+  <div>
+    {% for analysis in analyses %}
+      {{analysis}}
+    {% endfor %}
+  </div>
+</div>

@@ -171,6 +171,7 @@ class UserUploadedImage(models.Model):
     user = models.ForeignKey(User)
     image_url = models.URLField(max_length=512)
     astrometry_submission_id = models.CharField(max_length=512)
+    original_filename = models.CharField(max_length=512)
     created_at = models.DateTimeField(auto_now=True)
 
     lightcurve = models.ForeignKey(LightCurve, null=True)
