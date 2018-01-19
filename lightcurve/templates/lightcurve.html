@@ -1,3 +1,6 @@
+{% extends 'layout-analysis.html' %}
+
+{% block content-interior %}
 <h1>{{lightcurve.name}}</h1>
 <div class="well">
   {{ images | length }} images in your light curve:
@@ -19,3 +22,4 @@
     {% endfor %}
   </div>
 </div>
+{% endblock %}
