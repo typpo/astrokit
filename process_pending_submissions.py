@@ -308,6 +308,12 @@ class SubmissionHandler():
         logger.info('-> Uploaded catalog magnitudes for submission %d' % \
                 (submission.subid))
 
+def process_single_submission(subid):
+    # TODO(ian): Finish implementation
+    sub = AstrometrySubmission.objects.get(subid=subid)
+    handler = SubmissionHandler(client, sub, None)
+    handler.run()
+
 def process_pending_submissions(args):
     # Set up astrometry.net client.
     client = Client()
