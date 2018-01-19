@@ -1,12 +1,17 @@
 Dropzone.autoDiscover = false;
 $(function() {
 
+  var redirectUrl = null;
   var myDropzone = new Dropzone(
     '#dropzone-upload',
   {
     uploadMultiple: true,
     addRemoveLinks: true,
     maxFiles: 150,
+    // TODO(ian): Limit the number of parallel uploads. Dropzone will make a
+    // new upload request for each upload, so we need to figure out how to put
+    // ALL the uploads into a single light curve.
+    parallelUploads: 150,
     dictDefaultMessage: '',
     autoProcessQueue: false,
     previewsContainer: '.upload-files .row',
@@ -31,9 +36,22 @@ $(function() {
     <div data-dz-errormessage></div>
     `,
     success: function(file, response) {
-      window.location = response['redirect_url']
-    }
-  })
+      redirectUrl = response['redirect_url']
+    },
+    init: function() {
+      this.on('queuecomplete', function () {
+        // this.options.autoProcessQueue = false;
+        if (!redirectUrl) {
+          alert('Something went wrong and we cannot redirect to your light curve :(');
+          return;
+        }
+        window.location = redirectUrl;
+      });
+      this.on('processing', function() {
+        this.options.autoProcessQueue = true;
+      });
+    },
+  });
 
   $('.process_queue').on('click', function(){
     myDropzone.processQueue();
