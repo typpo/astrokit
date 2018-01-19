@@ -1,25 +1,41 @@
 {% extends 'layout-analysis.html' %}
 
 {% block content-interior %}
-<h1>{{lightcurve.name}}</h1>
-<div class="well">
+<h1>Light Curve <u>{{lightcurve.name}}</u></h1>
+<div>
   {{ images | length }} images in your light curve:
-  <div>
-    {% for image in images %}
-      Filename: {{image.original_filename}}<br>
-      Uploaded at: {{image.created_at}}<br>
-      <a href="{{image.image_url}}">Image</a><br>
-      <a href="http://nova.astrometry.net/status/{{image.astrometry_submission_id}}">Astrometry.net</a>
-    {% endfor %}
-  </div>
-</div>
-<div class="well">
-  {{ analyses | length }} analyses in your light curve:
+  {% for image in images %}
+  <div class="well">
+    Filename: {{image.original_filename}}<br>
+    Uploaded at: {{image.created_at}}<br>
 
-  <div>
-    {% for analysis in analyses %}
-      {{analysis}}
-    {% endfor %}
+    Status:
+    {% if not image.analysis.astrometry_original_display_url %}
+      <span style="color:red">Unverified</span>
+    {% elif not image.analysis.reduction or image.analysis.reduction.status != 'COMPLETE' %}
+      <span style="color:orange">Astrometry, Photometry Verified</span>
+    {% else %}
+      <span style="color:green">Reduction calculated</span>
+    {% endif %}
+
+    <div>
+      {% if image.analysis.astrometry_original_display_url %}
+        <img src="{{image.analysis.astrometry_original_display_url}}" />
+      {% else %}
+        <img src="https://dummyimage.com/350x200/000/fff.png&text=Create+Analysis+to+view+image" />
+      {% endif %}
+    </div>
+
+    <div>
+      {% if image.analysis %}
+        <a href="#" class="btn btn-primary">View Analysis</a>
+      {% else %}
+        <a href="#" class="btn btn-primary">Create Analysis</a>
+      {% endif %}
+      <a download href="{{image.image_url}}" class="btn btn-default">Download Original</a>
+      <a href="http://nova.astrometry.net/status/{{image.astrometry_submission_id}}" class="btn btn-default">Astrometry.net</a>
+    </div>
   </div>
+  {% endfor %}
 </div>
 {% endblock %}
