@@ -3,10 +3,12 @@
 {% block content-interior %}
 <h1>Light Curve <u>{{lightcurve.name}}</u></h1>
 <div>
-  {{ images | length }} images in your light curve:
+  <p>
+    There are {{ images | length }} images in your light curve:
+  </p>
   {% for image in images %}
   <div class="well">
-    Filename: {{image.original_filename}}<br>
+    Filename: <strong>{{image.original_filename}}</strong><br>
     Uploaded at: {{image.created_at}}<br>
 
     Status:
