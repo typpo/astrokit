@@ -30,9 +30,9 @@
 
     <div>
       {% if image.analysis %}
-        <a href="#" class="btn btn-primary">View Analysis</a>
+        <a href="/submission/{{image.astrometry_submission_id}}" class="btn btn-primary">View Analysis</a>
       {% else %}
-        <a href="#" class="btn btn-primary">Create Analysis</a>
+        <a href="/submission/{{image.astrometry_submission_id}}" class="btn btn-primary">Create Analysis</a>
       {% endif %}
       <a download href="{{image.image_url}}" class="btn btn-default">Download Original</a>
       <a href="http://nova.astrometry.net/status/{{image.astrometry_submission_id}}" class="btn btn-default">Astrometry.net</a>
