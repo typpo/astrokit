@@ -1,7 +1,7 @@
-{% extends 'layout-analysis.html' %}
+{% extends 'layout-internal.html' %}
 
 {% block content-interior %}
-<h1>Light Curve <u>{{lightcurve.name}}</u></h1>
+<h1>Light Curve <span style="color:#286090">{{lightcurve.name}}</span></h1>
 <div>
   <p>
     This light curve contains {{ images | length }} images:
