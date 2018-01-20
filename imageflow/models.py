@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 # shim for databases without native json support.
 from jsonfield import JSONField
 
-from astrometry.models import AstrometrySubmissionJob
+from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from lightcurve.models import LightCurve
 from photometry.models import ImageFilter
 
@@ -19,11 +19,11 @@ class UserUploadedImage(models.Model):
     """
     user = models.ForeignKey(User)
     image_url = models.URLField(max_length=512)
-    astrometry_submission_id = models.CharField(max_length=512)
     original_filename = models.CharField(max_length=512)
     created_at = models.DateTimeField(auto_now=True)
 
     lightcurve = models.ForeignKey(LightCurve, null=True)
+    submission = models.ForeignKey(AstrometrySubmission, null=True)
 
 class ImageAnalysis(models.Model):
     PENDING = 'PENDING'

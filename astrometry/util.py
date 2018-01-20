@@ -20,17 +20,12 @@ def create_new_lightcurve(user, imgs):
     lc.save()
 
     for img in imgs:
-        submissions = []
-
         url = s3_util.upload_to_s3(img.read(), 'raw', img.name)
-        print 'uploaded to s3 url', url
-        submission = process_astrometry_online(url)
+        print 'Uploaded %s to s3 url: %s' % (img.name, url)
         UserUploadedImage(user=user,
                           image_url=url,
                           original_filename=img.name,
-                          astrometry_submission_id=submission.subid,
                           lightcurve=lc).save()
-        submissions.append(submission)
 
     return lc
 
