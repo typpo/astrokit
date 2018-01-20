@@ -18,7 +18,10 @@ h1 span {
 <h1>Light Curve <span>{{lightcurve.name}}</span></h1>
 <div>
   <p>
-    This light curve contains {{ images | length }} images:
+    <span id="num-images-processed">0</span> of {{ images | length }} images have been processed.
+  </p>
+  <p>
+    <button style="display:none" class="btn btn-success js-reload js-new-results">Load new results</button>
   </p>
   {% for image in images %}
   <div id="image-{{forloop.counter0}}" class="well">
@@ -37,12 +40,14 @@ h1 span {
       <span style="color:red"><strong>Submission failed</strong></span>
     {% elif image.submission and image.submission.status == 'FAILED_TO_PROCESS' %}
       <span style="color:red"><strong>Processing failed</strong></span>
+    {% elif not image.submission %}
+      <span style="color:orange">Pending analysis</span>
+    {% elif image.submission and image.submission.status == 'PENDING' %}
+      <span style="color:orange">Receiving analysis</span>
     {% elif image.analysis.reduction %}
       <span style="color:green">Calculated reductions</span>
     {% elif image.analysis %}
       <span style="color:blue">Astrometry, photometry ready</span>
-    {% elif image.submission %}
-      <span style="color:orange">Pending analysis</span>
     {% else %}
       <span style="color:purple">Uploaded, pending submission</span>
     {% endif %}
@@ -73,6 +78,9 @@ h1 span {
 {% csrf_token %}
 
 {% block scripts %}
+  <script>
+    window.lightcurve_id = {{lightcurve.id}};
+  </script>
   <script src="{% static "imageflow/js/submission_util.js" %}" type="text/javascript"></script>
   <script src="{% static "lightcurve/js/lightcurve.js" %}" type="text/javascript"></script>
 {% endblock %}

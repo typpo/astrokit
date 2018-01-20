@@ -171,9 +171,9 @@ class UserUploadedImage(models.Model):
     original_filename = models.CharField(max_length=512)
     created_at = models.DateTimeField(auto_now=True)
 
-    lightcurve = models.ForeignKey(LightCurve, null=True)
-    submission = models.ForeignKey(AstrometrySubmission, null=True)
-    analysis = models.ForeignKey(ImageAnalysis, null=True)
+    lightcurve = models.ForeignKey(LightCurve, blank=True, null=True)
+    submission = models.ForeignKey(AstrometrySubmission, blank=True, null=True)
+    analysis = models.ForeignKey(ImageAnalysis, blank=True, null=True)
 
 admin.site.register(ImageAnalysis)
 admin.site.register(Reduction)
