@@ -1,3 +1,5 @@
+// TODO(ian): Move this file to a generic location.
+
 function setupListener(apiPath, $control, $success, $failure) {
   $control.on('change', function() {
     var val = $(this).val();

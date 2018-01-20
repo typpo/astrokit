@@ -18,8 +18,9 @@ sys.path.insert(0, os.getcwd())
 django.setup()
 
 import imageflow.s3_util as s3_util
-from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.astrometry_client import Client
+from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
+from astrometry.process import process_astrometry_online
 from imageflow.models import ImageAnalysis, UserUploadedImage
 
 import point_source_extraction
@@ -55,6 +56,8 @@ class SubmissionHandler():
         logger.info('Submission has processing jobs: %s' % (job_ids))
         num_success = 0
         for job_id in job_ids:
+            if not job_id:
+                continue
             info = client.send_request('jobs/%d/info' % (job_id))
 
             status = info['status']
@@ -93,16 +96,16 @@ class SubmissionHandler():
 
     def process_completed_submission(self, job):
         submission = self.submission
-        user_upload = UserUploadedImage.objects.get(astrometry_submission_id=submission.subid)
-        user = user_upload.user
-        result = ImageAnalysis.objects.create(astrometry_job=job,
+        user_upload = UserUploadedImage.objects.get(submission=submission)
+        analysis = ImageAnalysis.objects.create(astrometry_job=job,
                                               lightcurve=user_upload.lightcurve,
-                                              user=user)
+                                              user=user_upload.user)
+        user_upload.analysis = analysis
 
         logger.info('-> Submission %d, Job %d is complete' % (submission.subid, job.jobid))
 
         # Save results to S3.
-        self.save_submission_results(job, result)
+        self.save_submission_results(job, analysis)
 
         # Update submission.
         submission.succeeded_at = timezone.now()
@@ -110,8 +113,8 @@ class SubmissionHandler():
         if not args.dry_run:
             submission.save()
 
-        result.status = ImageAnalysis.COMPLETE
-        result.save()
+        analysis.status = ImageAnalysis.COMPLETE
+        analysis.save()
 
     def save_submission_results(self, job, result):
         submission = self.submission
@@ -308,13 +311,9 @@ class SubmissionHandler():
         logger.info('-> Uploaded catalog magnitudes for submission %d' % \
                 (submission.subid))
 
-def process_single_submission(subid):
-    # TODO(ian): Finish implementation
-    sub = AstrometrySubmission.objects.get(subid=subid)
-    handler = SubmissionHandler(client, sub, None)
-    handler.run()
-
 def process_pending_submissions(args):
+    '''Turns submitted Astrometry jobs into ImageAnalyses
+    '''
     # Set up astrometry.net client.
     client = Client()
     client.login(settings.ASTROKIT_ASTROMETRY_KEY)
@@ -325,6 +324,17 @@ def process_pending_submissions(args):
         handler = SubmissionHandler(client, submission, args)
         handler.run()
 
+def process_pending_images(args):
+    '''Takes uploaded images and sends them to astrometry.net service.
+    '''
+
+    images = UserUploadedImage.objects.all().filter(submission=None)
+    for image in images:
+        if hasattr(image, 'submission') and image.submission:
+            continue
+        image.submission = process_astrometry_online(image.image_url)
+        image.save()
+
 def get_args():
     parser = argparse.ArgumentParser('Process outstanding jobs')
     parser.add_argument('--dry_run', help='don\'t actually do anything', action='store_true')
@@ -332,5 +342,5 @@ def get_args():
 
 if __name__ == '__main__':
     args = get_args()
+    process_pending_images(args)
     process_pending_submissions(args)
-    process_pending_reductions()

@@ -1,43 +1,70 @@
 {% extends 'layout-internal.html' %}
+{% load staticfiles %}
+
+{% block styles %}
+<style>
+h1 span {
+  color:#286090;
+}
+
+.user-image {
+  max-width: 300px;
+  max-height: 300px;
+}
+</style>
+{% endblock %}
 
 {% block content-interior %}
-<h1>Light Curve <span style="color:#286090">{{lightcurve.name}}</span></h1>
+<h1>Light Curve <span>{{lightcurve.name}}</span></h1>
 <div>
   <p>
     This light curve contains {{ images | length }} images:
   </p>
   {% for image in images %}
-  <div class="well">
+  <div id="image-{{forloop.counter0}}" class="well">
     Filename: <strong>{{image.original_filename}}</strong><br>
     Uploaded at: {{image.created_at}}<br>
 
     Status:
-    {% if not image.analysis.astrometry_original_display_url %}
-      <span style="color:red">Unverified</span>
-    {% elif not image.analysis.reduction or image.analysis.reduction.status != 'COMPLETE' %}
-      <span style="color:orange">Astrometry, Photometry Verified</span>
+    {% if image.analysis.reduction %}
+      <span style="color:green">Calculated reductions</span>
+    {% elif image.analysis %}
+      <span style="color:blue">Astrometry, photometry ready</span>
+    {% elif image.submission.status == 'FAILED_TO_SUBMIT' %}
+      <span style="color:red"><strong>Submission failed</strong></span>
+    {% elif image.submission.status == 'FAILED_TO_PROCESS' %}
+      <span style="color:red"><strong>Processing failed</strong></span>
+    {% elif image.submission %}
+      <span style="color:orange">Pending analysis</span>
     {% else %}
-      <span style="color:green">Reduction calculated</span>
+      <span style="color:purple">Uploaded, pending submission</span>
     {% endif %}
 
     <div>
       {% if image.analysis.astrometry_original_display_url %}
-        <img src="{{image.analysis.astrometry_original_display_url}}" />
-      {% else %}
-        <img src="https://dummyimage.com/350x200/000/fff.png&text=Create+Analysis+to+view+image" />
+        <a href="{{image.analysis.astrometry_original_display_url}}">
+          <img src="{{image.analysis.astrometry_original_display_url}}" class="user-image" />
+        </a>
       {% endif %}
     </div>
 
     <div>
       {% if image.analysis %}
-        <a href="/submission/{{image.astrometry_submission_id}}" class="btn btn-primary">View Analysis</a>
-      {% else %}
-        <a href="/submission/{{image.astrometry_submission_id}}" class="btn btn-primary">Create Analysis</a>
+        <a href="/submission/{{image.submission.subid}}" class="btn btn-primary">Review Analysis</a>
       {% endif %}
       <a download href="{{image.image_url}}" class="btn btn-default">Download Original</a>
-      <a href="http://nova.astrometry.net/status/{{image.astrometry_submission_id}}" class="btn btn-default">Astrometry.net</a>
+      {% if image.submission %}
+        <a href="http://nova.astrometry.net/status/{{image.submission.subid}}" class="btn btn-default">Astrometry.net</a>
+      {% endif %}
     </div>
   </div>
   {% endfor %}
 </div>
+{% endblock %}
+
+{% csrf_token %}
+
+{% block scripts %}
+  <script src="{% static "imageflow/js/submission_util.js" %}" type="text/javascript"></script>
+  <script src="{% static "lightcurve/js/lightcurve.js" %}" type="text/javascript"></script>
 {% endblock %}
