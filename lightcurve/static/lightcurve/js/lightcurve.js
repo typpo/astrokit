@@ -4,7 +4,7 @@ function checkStatus() {
     $('#num-images-processed').text(data.numProcessed);
     if (data.complete && !firstCheck) {
       $('.js-new-results').show();
-    } else {
+    } else if (!data.complete) {
       setTimeout(checkStatus, 2000);
     }
     firstCheck = false;
