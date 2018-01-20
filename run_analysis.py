@@ -112,9 +112,7 @@ class SubmissionHandler():
         submission.status = AstrometrySubmission.COMPLETE
         if not args.dry_run:
             submission.save()
-
-        analysis.status = ImageAnalysis.COMPLETE
-        analysis.save()
+            analysis.save()
 
     def save_submission_results(self, job, result):
         submission = self.submission

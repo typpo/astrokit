@@ -56,8 +56,10 @@ h1 span {
     </div>
 
     <div>
-      {% if image.analysis %}
+      {% if image.submission and image.submission.status == 'COMPLETE' %}
         <a href="/submission/{{image.submission.subid}}" class="btn btn-primary">Review Analysis</a>
+      {% elif image.submission %}
+        <a href="/submission/{{image.submission.subid}}" class="btn btn-primary">Wait for Analysis</a>
       {% endif %}
       {% if image.submission %}
         <a href="http://nova.astrometry.net/status/{{image.submission.subid}}" class="btn btn-default">View on Astrometry.net</a>
