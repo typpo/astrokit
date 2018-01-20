@@ -29,9 +29,7 @@ h1 span {
     Uploaded: {{image.created_at}}<br>
 
     Status:
-    {% if image.analysis.reduction %}
-      <span style="color:green">Calculated reductions</span>
-    {% elif image.analysis and image.analysis.status == 'PENDING'  %}
+    {% if image.analysis and image.analysis.status == 'PENDING'  %}
       <span style="color:red"><strong>Analysis pending</strong></span>
     {% elif image.analysis and image.analysis.status == 'FAILED'  %}
       <span style="color:red"><strong>Analysis failed</strong></span>
@@ -39,6 +37,8 @@ h1 span {
       <span style="color:red"><strong>Submission failed</strong></span>
     {% elif image.submission and image.submission.status == 'FAILED_TO_PROCESS' %}
       <span style="color:red"><strong>Processing failed</strong></span>
+    {% elif image.analysis.reduction %}
+      <span style="color:green">Calculated reductions</span>
     {% elif image.analysis %}
       <span style="color:blue">Astrometry, photometry ready</span>
     {% elif image.submission %}
