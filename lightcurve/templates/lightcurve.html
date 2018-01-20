@@ -22,8 +22,11 @@ h1 span {
   </p>
   {% for image in images %}
   <div id="image-{{forloop.counter0}}" class="well">
-    Filename: <strong>{{image.original_filename}}</strong><br>
-    Uploaded at: {{image.created_at}}<br>
+    Filename:
+    <a download href="{{image.image_url}}">
+      {{image.original_filename}}
+    </a><br>
+    Uploaded: {{image.created_at}}<br>
 
     Status:
     {% if image.analysis.reduction %}
@@ -41,9 +44,9 @@ h1 span {
     {% endif %}
 
     <div>
-      {% if image.analysis.astrometry_original_display_url %}
-        <a href="{{image.analysis.astrometry_original_display_url}}">
-          <img src="{{image.analysis.astrometry_original_display_url}}" class="user-image" />
+      {% if image.analysis.original_display_url %}
+        <a href="{{image.analysis.original_display_url}}">
+          <img src="{{image.analysis.original_display_url}}" class="user-image" />
         </a>
       {% endif %}
     </div>
@@ -52,9 +55,8 @@ h1 span {
       {% if image.analysis %}
         <a href="/submission/{{image.submission.subid}}" class="btn btn-primary">Review Analysis</a>
       {% endif %}
-      <a download href="{{image.image_url}}" class="btn btn-default">Download Original</a>
       {% if image.submission %}
-        <a href="http://nova.astrometry.net/status/{{image.submission.subid}}" class="btn btn-default">Astrometry.net</a>
+        <a href="http://nova.astrometry.net/status/{{image.submission.subid}}" class="btn btn-default">View on Astrometry.net</a>
       {% endif %}
     </div>
   </div>
