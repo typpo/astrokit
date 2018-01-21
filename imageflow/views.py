@@ -264,14 +264,13 @@ def reduction(request, subid):
         'result': result.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
     }
-    try:
+    if hasattr(result, 'reduction') and result.reduction:
         template_args.update({
             'reduction': result.reduction.get_summary_obj(),
         })
         return render_to_response('reduction.html', template_args,
                 context_instance=RequestContext(request))
-    except Reduction.DoesNotExist:
-        # TODO(ian): Run reduction if necessary.
+    else:
         template_args.update({
             'no_reduction': True
         })
