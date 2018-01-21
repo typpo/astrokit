@@ -40,6 +40,8 @@ h1 span {
       <span style="color:red"><strong>Submission failed</strong></span>
     {% elif image.submission and image.submission.status == 'FAILED_TO_PROCESS' %}
       <span style="color:red"><strong>Processing failed</strong></span>
+    {% elif image.submission and image.submission.status == 'SUBMITTED' %}
+      <span style="color:orange">Solving astrometry</span>
     {% elif not image.submission %}
       <span style="color:orange">Pending analysis</span>
     {% elif image.submission and image.submission.status == 'PENDING' %}
