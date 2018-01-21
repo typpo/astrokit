@@ -79,8 +79,8 @@ class ImageAnalysis(models.Model):
                 'latitude': self.image_latitude,
                 'longitude': self.image_longitude,
                 'elevation': self.image_elevation,
-                'image_band': self.image_filter.band if self.image_filter else '',
-                'photometric_system': self.image_filter.system if self.image_filter else '',
+                'image_band': self.image_filter.band,
+                'photometric_system': self.image_filter.system,
             },
             'urls': {
                 'astrometry_original_display_url': self.astrometry_original_display_url,
