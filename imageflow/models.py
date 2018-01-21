@@ -32,7 +32,7 @@ class ImageAnalysis(models.Model):
 
     # Meta data.
     image_datetime = models.DateTimeField(null=True)
-    image_filter = models.ForeignKey(ImageFilter, null=True)
+    image_filter = models.ForeignKey(ImageFilter, default=ImageFilter.DEFAULT)
     image_latitude = models.FloatField(default=0)
     image_longitude = models.FloatField(default=0)
     image_elevation = models.FloatField(default=0)
