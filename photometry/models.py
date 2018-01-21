@@ -6,10 +6,10 @@ from django.db import models
 
 class ImageFilterManager(models.Manager):
     def get_default(self):
-        return self.get(band='B')
+        return self.get(band='B').pk
 
     def get_default_2(self):
-        return self.get(band='V')
+        return self.get(band='V').pk
 
 
 class ImageFilter(models.Model):

@@ -49,7 +49,7 @@ Run migrations:  `./manage.py migrate`
 
 And create an admin user:  `./manage.py createsuperuser`
 
-Create ImageFilter default objects:  `./scripts/setup_image_filters_db.py`
+Create ImageFilter default objects:  `./manage.py loaddata image_filter`
 
 Install frontend dependencies (only needed once, or when package.json changes):
 ```
