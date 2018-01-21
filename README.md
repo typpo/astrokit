@@ -10,7 +10,7 @@ astrometry, photometry, and light curve results derived from their images.
 
 ## Python dependencies
 
-Install virtualenv (`sudo apt-get install python-virtualenv` on Debian/Ubuntu). 
+Install virtualenv (`sudo apt-get install python-virtualenv` on Debian/Ubuntu).
 
 Create a virtualenv in the astrokit directory: `virtualenv venv`.
 
@@ -31,7 +31,7 @@ Compile sass files using gulp: `cd webassets && gulp build`
 Postgres is optional but used in production:
 
     sudo apt-get install postgresql postgresql-server-dev-9.4
-    
+
 ## Optional: IRAF setup
 
 Download IRAF: http://iraf.noao.edu/ (README: ftp://iraf.noao.edu/iraf/v216/README)
@@ -42,14 +42,14 @@ Put these statically linked binaries in your path:
 
 ftp://iraf.noao.edu/pub/fitz/xgterm.STATIC
 ftp://iraf.noao.edu/pub/fitz/ximtool.STATIC
-    
+
 # Before you run the server
 
 Run migrations:  `./manage.py migrate`
 
 And create an admin user:  `./manage.py createsuperuser`
 
-Create ImageFilter default objects:  `./setup/setup_image_filters_db.py`
+Create ImageFilter default objects:  `./scripts/setup_image_filters_db.py`
 
 Install frontend dependencies (only needed once, or when package.json changes):
 ```

@@ -32,7 +32,7 @@ class ImageAnalysis(models.Model):
 
     # Meta data.
     image_datetime = models.DateTimeField(null=True)
-    image_filter = models.ForeignKey(ImageFilter, default=ImageFilter.DEFAULT)
+    image_filter = models.ForeignKey(ImageFilter, default=ImageFilter.objects.get_default())
     image_latitude = models.FloatField(default=0)
     image_longitude = models.FloatField(default=0)
     image_elevation = models.FloatField(default=0)
@@ -133,10 +133,10 @@ class Reduction(models.Model):
     reduced_stars = JSONField()
     color_index_1 = models.ForeignKey(ImageFilter,
                                       related_name='reduction_color_index_1_set',
-                                      default=ImageFilter.DEFAULT)
+                                      default=ImageFilter.objects.get_default())
     color_index_2 = models.ForeignKey(ImageFilter,
                                       related_name='reduction_color_index_2_set',
-                                      default=ImageFilter.DEFAULT_2)
+                                      default=ImageFilter.objects.get_default_2())
 
     second_order_extinction = models.FloatField(default=0)
     tf = models.FloatField(null=True)

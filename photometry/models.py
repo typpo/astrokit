@@ -4,13 +4,16 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models
 
-class ImageFilter(models.Model):
-    """
-    Model for image filter
-    """
+class ImageFilterManager(models.Manager):
+    def get_default(self):
+        return self.get(band='B')
 
-    DEFAULT=0
-    DEFAULT_2=1
+    def get_default_2(self):
+        return self.get(band='V')
+
+
+class ImageFilter(models.Model):
+    objects = ImageFilterManager()
 
     band = models.CharField(max_length=512, unique=True)
     system = models.CharField(max_length=512)

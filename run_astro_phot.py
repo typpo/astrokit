@@ -113,6 +113,7 @@ class SubmissionHandler():
         if not args.dry_run:
             submission.save()
             analysis.save()
+            user_upload.save()
 
     def save_submission_results(self, job, result):
         submission = self.submission
