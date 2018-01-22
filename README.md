@@ -45,11 +45,16 @@ ftp://iraf.noao.edu/pub/fitz/ximtool.STATIC
 
 # Before you run the server
 
-Run migrations:  `./manage.py migrate`
+```
+# Create an admin user
+./manage.py createsuperuser
 
-And create an admin user:  `./manage.py createsuperuser`
+# Create ImageFilter default objects
+./manage.py loaddata image_filter
 
-Create ImageFilter default objects:  `./manage.py loaddata image_filter`
+# Run migrations
+./manage.py migrate
+```
 
 Install frontend dependencies (only needed once, or when package.json changes):
 ```
