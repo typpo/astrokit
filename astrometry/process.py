@@ -8,7 +8,7 @@ def process_astrometry_online(url):
     Uses astrometry.net to fetch astrometry info.
     '''
 
-    client = Client()
+    client = Client('http://35.202.61.141/api/')
     client.login(settings.ASTROKIT_ASTROMETRY_KEY)
     result = client.url_upload(url)
     success = result['status'] == 'success'

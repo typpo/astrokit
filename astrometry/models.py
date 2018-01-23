@@ -27,7 +27,7 @@ class AstrometrySubmission(models.Model):
     succeeded_at = models.DateTimeField(blank=True, null=True)
 
     def get_astrometry_net_url(self):
-        return 'http://nova.astrometry.net/user_images/%d' % self.subid
+        return 'http://35.202.61.141/user_images/%d' % self.subid
 
     def is_done(self):
         return self.status != self.SUBMITTED

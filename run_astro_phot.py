@@ -121,13 +121,13 @@ class SubmissionHandler():
         logger.info('-> Uploading results for submission %d' % (submission.subid))
 
         # FIXME(ian): This is not correct.
-        original_display_url = 'http://nova.astrometry.net/image/%d' \
+        original_display_url = 'http://35.202.61.141/image/%d' \
                 % (job.jobid)
-        annotated_display_url = 'http://nova.astrometry.net/annotated_display/%d' \
+        annotated_display_url = 'http://35.202.61.141/annotated_display/%d' \
                 % (job.jobid)
-        new_image_fits_url = 'http://nova.astrometry.net/new_fits_file/%d' \
+        new_image_fits_url = 'http://35.202.61.141/new_fits_file/%d' \
                 % (job.jobid)
-        corr_url = 'http://nova.astrometry.net/corr_file/%d' \
+        corr_url = 'http://35.202.61.141/corr_file/%d' \
                 % (job.jobid)
 
         # Timestamp is added to name automatically.
@@ -184,6 +184,7 @@ class SubmissionHandler():
 
     def process_metadata(self, raw_fits_data, result):
         fitsobj = point_source_extraction.get_fits_from_raw(raw_fits_data)
+
         dateobs = fitsobj[0].header.get('DATE-OBS')
         if not dateobs:
             return None
@@ -202,6 +203,7 @@ class SubmissionHandler():
         logger.info('-> Processing fits image for submission %d' % (submission.subid))
 
         fitsobj = point_source_extraction.get_fits_from_raw(raw_fits_data)
+
         data = point_source_extraction.extract_image_data_from_fits(fitsobj)
         sources = point_source_extraction.compute(data)
 
@@ -314,7 +316,7 @@ def process_pending_submissions(args):
     '''Turns submitted Astrometry jobs into ImageAnalyses
     '''
     # Set up astrometry.net client.
-    client = Client()
+    client = Client('http://35.202.61.141/api/')
     client.login(settings.ASTROKIT_ASTROMETRY_KEY)
 
     pending_submissions = AstrometrySubmission.objects.all().filter(
