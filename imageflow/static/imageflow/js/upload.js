@@ -39,6 +39,7 @@ $(function() {
       redirectUrl = response['redirect_url']
     },
     init: function() {
+      // TODO(ian): Disable the upload button.
       this.on('queuecomplete', function () {
         // this.options.autoProcessQueue = false;
         if (!redirectUrl) {
