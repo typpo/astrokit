@@ -109,7 +109,7 @@ class SubmissionHandler():
 
         # Update submission.
         submission.succeeded_at = timezone.now()
-        submission.status = AstrometrySubmission.COMPLETE
+        submission.status = AstrometrySubmission.REVIEW_PENDING
         if not args.dry_run:
             submission.save()
             analysis.save()

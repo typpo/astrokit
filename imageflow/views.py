@@ -35,9 +35,9 @@ def astrometry(request, subid):
     # TODO(ian): Look up submission and view status.
     # TODO(ian): Handle failed Analysis Result.
     try:
-        result = ImageAnalysis.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=ImageAnalysis.COMPLETE)
+        result = ImageAnalysis.objects.exclude( \
+                status=ImageAnalysis.PENDING).get( \
+                astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))

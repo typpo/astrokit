@@ -14,11 +14,17 @@ from photometry.models import ImageFilter
 
 class ImageAnalysis(models.Model):
     PENDING = 'PENDING'
-    COMPLETE = 'COMPLETE'
+    REVIEW_PENDING = 'REVIEW_PENDING'
+    REVIEW_COMPLETE = 'REVIEW_COMPLETE'
+    REDUCTION_COMPLETE = 'REDUCTION_COMPLETE'
+    ADDED_TO_LIGHT_CURVE = 'ADDED_TO_LIGHT_CURVE'
     FAILED = 'FAILED'
     STATUSES = (
         (PENDING, 'Pending'),
-        (COMPLETE, 'Complete'),
+        (REVIEW_PENDING, 'Review pending'),
+        (REVIEW_PENDING, 'Review complete'),
+        (REDUCTION_COMPLETE, "Reduction complete"),
+        (ADDED_TO_LIGHT_CURVE, "Added to light curve"),
         (FAILED, 'Failed'),
     )
     status = models.CharField(
