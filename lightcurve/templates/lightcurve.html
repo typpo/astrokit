@@ -32,24 +32,26 @@ h1 span {
     Uploaded: {{image.created_at}}<br>
 
     Status:
-    {% if image.analysis and image.analysis.status == 'PENDING'  %}
-      <span style="color:red"><strong>Analysis pending</strong></span>
-    {% elif image.analysis and image.analysis.status == 'FAILED'  %}
-      <span style="color:red"><strong>Analysis failed</strong></span>
-    {% elif image.submission and image.submission.status == 'FAILED_TO_SUBMIT' %}
-      <span style="color:red"><strong>Submission failed</strong></span>
-    {% elif image.submission and image.submission.status == 'FAILED_TO_PROCESS' %}
-      <span style="color:red"><strong>Processing failed</strong></span>
-    {% elif image.submission and image.submission.status == 'SUBMITTED' %}
-      <span style="color:orange">Solving astrometry</span>
-    {% elif not image.submission %}
-      <span style="color:orange">Pending analysis</span>
-    {% elif image.submission and image.submission.status == 'PENDING' %}
-      <span style="color:orange">Receiving analysis</span>
-    {% elif image.analysis.reduction %}
-      <span style="color:green">Calculated reductions</span>
-    {% elif image.analysis %}
-      <span style="color:blue">Astrometry, photometry ready</span>
+    {% if image.analysis %}
+      {% if image.analysis.status == 'PENDING'  %}
+        <span style="color:red"><strong>Analysis pending</strong></span>
+      {% elif image.analysis.status == 'REVIEW_PENDING'  %}
+        <span style="color:red"><strong>Astrometry & photometry completed, review pending</strong></span>
+      {% elif image.analysis.status == 'REVIEW_COMPLETE'  %}
+        <span style="color:red"><strong>Review completed, run reduction</strong></span>
+      {% elif image.analysis.status == 'REDUCTION_COMPLETE'  %}
+        <span style="color:red"><strong>Reduction completed, add to light curve</strong></span>
+      {% elif image.analysis.status == 'ADDED_TO_LIGHTCURVE'  %}
+        <span style="color:red"><strong>Added to light curve</strong></span>
+      {% endif %}
+    {% elif image.submission %}
+      {% if image.submission.status == 'FAILED_TO_SUBMIT' %}
+        <span style="color:red"><strong>Submission failed</strong></span>
+      {% elif image.submission.status == 'FAILED_TO_PROCESS' %}
+        <span style="color:red"><strong>Processing failed</strong></span>
+      {% elif image.submission.status == 'SUBMITTED' %}
+        <span style="color:orange">Solving astrometry</span>
+      {% endif %}
     {% else %}
       <span style="color:purple">Uploaded, pending submission</span>
     {% endif %}
