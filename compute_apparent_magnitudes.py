@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import json
 import logging
 import math
 import os
@@ -8,7 +9,7 @@ import shelve
 import simplejson as json
 
 from cStringIO import StringIO
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 import numpy as np
 
@@ -40,8 +41,10 @@ def urat1_lookup(ra, dec):
     return results
 
 def urat1_postprocess(obj):
-    obj['delta_BV'] = obj['Bmag'] - obj['Vmag']
-    obj['delta_gr'] = obj['gmag'] - obj['rmag']
+    if 'Bmag' in obj and 'Vmag' in obj:
+        obj['delta_BV'] = obj['Bmag'] - obj['Vmag']
+    if 'gmag' in obj and 'rmag' in obj:
+        obj['delta_gr'] = obj['gmag'] - obj['rmag']
     return obj
 
 def choose_reference_stars_from_file(corr_fits_path, point_source_json_path):
@@ -146,7 +149,7 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
         if len(results) < 1:
             continue
         if len(results) > 1:
-            print 'Warning: multiple matches for a single point coordinate.'
+            logger.warn('Warning: multiple matches for a single point coordinate.')
 
         result = results[0]
         desig = result[desig_field].data[0]
@@ -156,7 +159,11 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
             'index_dec': dec,
         }
         for field in fields:
-            obj[field] = Decimal(str(result[field].data[0]))
+            strvalue = str(result[field].data[0])
+            try:
+                obj[field] = Decimal(strvalue)
+            except InvalidOperation:
+                logger.warn('Encountered bad field for %s: %s = %s' % (json.dumps(obj), field, strvalue))
         if mag_i:
             obj['instrumental_mag'] = mag_i
             obj['field_x'] = comparison_star['field_x'],
