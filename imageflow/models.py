@@ -111,8 +111,15 @@ class ImageAnalysis(models.Model):
         }
 
     def __str__(self):
-        return 'Sub %d Job %d, Band %s @ %s' % \
-                (self.astrometry_job.submission.subid, \
+        image = self.useruploadedimage_set.first()
+        if image:
+            image_name = image.original_filename
+        else:
+            image_name = 'Unknown image'
+        return '%s: %s - Sub %d Job %d, Band %s @ %s' % \
+                (image_name,
+                 self.status,
+                 self.astrometry_job.submission.subid, \
                  self.astrometry_job.jobid, \
                  str(self.image_filter), \
                  str(self.image_datetime))
