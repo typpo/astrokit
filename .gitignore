@@ -1,4 +1,5 @@
 venv
+db.sqlite3
 
 webassets/css
 
