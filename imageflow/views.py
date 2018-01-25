@@ -51,9 +51,8 @@ def astrometry(request, subid):
 
 def set_datetime(request, subid):
     try:
-        result = ImageAnalysis.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=ImageAnalysis.COMPLETE)
+        result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                      .get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         return JsonResponse({
             'success': False,
@@ -114,9 +113,8 @@ def set_color_index_2(request, subid):
 
 def resolve_band(request, subid):
     try:
-        analysis = ImageAnalysis.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=ImageAnalysis.COMPLETE)
+        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                        .get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         raise Error('Could not find corresponding ImageAnalysis')
 
@@ -142,9 +140,8 @@ def set_longitude(request, subid):
 
 def set_second_order_extinction(request, subid):
     try:
-        analysis = ImageAnalysis.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=ImageAnalysis.COMPLETE)
+        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                        .get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         return JsonResponse({
             'success': False,
@@ -155,9 +152,8 @@ def set_second_order_extinction(request, subid):
 
 def set_float(request, subid, attrname, on_reduction=False):
     try:
-        analysis = ImageAnalysis.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=ImageAnalysis.COMPLETE)
+        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                        .get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         return JsonResponse({
             'success': False,
@@ -186,9 +182,8 @@ def set_float(request, subid, attrname, on_reduction=False):
 def set_reduction_status(request, subid):
     # TODO(ian): Verify owner of reduction for all these ImageAnalysis fetches.
     try:
-        analysis = ImageAnalysis.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=ImageAnalysis.COMPLETE)
+        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                        .get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         return JsonResponse({
             'success': False,
@@ -203,9 +198,8 @@ def set_reduction_status(request, subid):
 
 def get_reduction_status(request, subid):
     try:
-        analysis = ImageAnalysis.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=ImageAnalysis.COMPLETE)
+        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                        .get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         return JsonResponse({
             'success': False,
@@ -220,9 +214,8 @@ def get_reduction_status(request, subid):
 def point_sources(request, subid):
     # TODO(ian): Dedup this with above code.
     try:
-        result = ImageAnalysis.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=ImageAnalysis.COMPLETE)
+        result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                      .get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
@@ -236,9 +229,8 @@ def point_sources(request, subid):
 def reference_stars(request, subid):
     # TODO(ian): Dedup this with above code.
     try:
-        result = ImageAnalysis.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=ImageAnalysis.COMPLETE)
+        result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                      .get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
@@ -253,9 +245,8 @@ def reference_stars(request, subid):
 def reduction(request, subid):
     # TODO(ian): Dedup this with above code.
     try:
-        result = ImageAnalysis.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=ImageAnalysis.COMPLETE)
+        result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                      .get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
@@ -283,9 +274,8 @@ def add_to_light_curve(request, subid):
 def light_curve(request, subid):
     # TODO(ian): Dedup this with above code.
     try:
-        result = ImageAnalysis.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=ImageAnalysis.COMPLETE)
+        result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                      .get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
@@ -298,9 +288,8 @@ def light_curve(request, subid):
 
 def api_get_submission_results(request, subid):
     try:
-        result = ImageAnalysis.objects.get( \
-                astrometry_job__submission__subid=subid, \
-                status=ImageAnalysis.COMPLETE)
+        result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                      .get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         return JsonResponse({
             'success': False,
