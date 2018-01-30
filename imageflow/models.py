@@ -142,7 +142,7 @@ class Reduction(models.Model):
     )
     status = models.CharField(
             max_length=50, choices=STATUSES, default=CREATED)
-    analysis = models.OneToOneField(ImageAnalysis, related_name='analysis')
+    analysis = models.OneToOneField(ImageAnalysis, related_name='reduction')
 
     # Data fields
     reduced_stars = JSONField()
