@@ -21,6 +21,50 @@ h1 span {
 {% block content-interior %}
 <h1>Light Curve <span>{{lightcurve.name}}</span></h1>
 <div>
+  <h3>Enter global obeservation facts</h3>
+  <p>You can modify for each image later</p>
+  <h4>Coordinates</h4>
+  <div class="well">
+    <div id="set-latlng-success" class="alert alert-success" style="display:none">
+      Coordinates successfully updated.
+    </div>
+    <div id="set-latlng-success" class="alert alert-danger" style="display:none">
+      Something went wrong - failed to update your setting.
+    </div>
+    Latitude <input id="set-latitude" class="form-control" style="width: 30em" type="text" value="{{result.meta.longitude}}">
+    <br>
+    Longitude <input id="set-longitude" class="form-control" style="width: 30em" type="text" value="{{result.meta.latitude}}">
+  </div>
+
+  <h4>Elevation</h4>
+  <div class="well">
+    <div id="set-elevation-success" class="alert alert-success" style="display:none">
+      Elevation successfully updated.
+    </div>
+    <div id="set-elevation-success" class="alert alert-danger" style="display:none">
+      Something went wrong - failed to update your setting.
+    </div>
+    <p>
+      Above sea level, in meters
+    </p>
+    <input id="set-elevation" class="form-control" style="width: 30em" type="text" value="{{result.meta.elevation}}">
+  </div>
+
+  <h4>Second-order extinction k"<sub><em>f</em></sub></h4>
+  <div class="well">
+    <div id="second-order-extinction-success" class="alert alert-success" style="display:none">
+      k'' successfully updated.
+    </div>
+    <div id="second-order-extinction-success" class="alert alert-danger" style="display:none">
+      Something went wrong - failed to update your setting.
+    </div>
+    <p>
+      Second-order extinction is nearly constant and usually only significant for B-V color index measurements. Set to 0 if you do not want to include a term for second-order extinction.
+    </p>
+    <input type="text" class="form-control" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
+  </div>
+
+  <h3>Images</h3>
   <p>
     <span id="num-images-processed">0</span> of {{ images | length }} images have been processed.
   </p>
