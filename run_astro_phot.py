@@ -97,9 +97,10 @@ class SubmissionHandler():
     def process_completed_submission(self, job):
         submission = self.submission
         user_upload = UserUploadedImage.objects.get(submission=submission)
+        # TODO(ian): Update ImageAnalysis if it already exists.
         analysis = ImageAnalysis.objects.create(astrometry_job=job,
-                                              lightcurve=user_upload.lightcurve,
-                                              user=user_upload.user)
+                                                lightcurve=user_upload.lightcurve,
+                                                user=user_upload.user)
         user_upload.analysis = analysis
 
         logger.info('-> Submission %d, Job %d is complete' % (submission.subid, job.jobid))
