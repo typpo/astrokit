@@ -28,6 +28,7 @@
 <div class="well" style="overflow: auto; max-height: 400px">
   <table class="table table-striped table-hover">
     <tr>
+      <th><span class="header-tooltip" data-toggle="tooltip" title="Each star in this image has a unique ID">ID</span></th>
       <th>Designation</th>
       <th>Field X</th>
       <th>Field Y</th>
@@ -37,6 +38,7 @@
     </tr>
     {% for star in result.data.catalog_reference_stars %}
       <tr>
+        <td>{{star.id}}</td>
         <td>
           <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
         </td>
@@ -57,6 +59,7 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
 <div class="well" style="overflow: auto; max-height: 400px">
   <table class="table table-striped table-hover">
     <tr>
+      <th><span class="header-tooltip" data-toggle="tooltip" title="Each star in this image has a unique ID">ID</span></th>
       <th>Designation</th>
       <th>Instrumental magnitude</th>
       <th><span class="header-tooltip" data-toggle="tooltip" title="442 nm">B (Johnson)</span></th>
@@ -72,6 +75,7 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
     </tr>
     {% for star in result.data.catalog_reference_stars %}
       <tr>
+        <td>{{star.id}}</td>
         <td>
           <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
         </td>

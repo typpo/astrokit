@@ -4,6 +4,15 @@
 
 {% block heading %}Submission - Point Sources{% endblock %}
 
+{% block styles %}
+<style>
+.header-tooltip {
+  color: #337ab7;
+  cursor: help;
+}
+</style>
+{% endblock %}
+
 {% block content-interior %}
 <ol class="breadcrumb">
   <li><a href="#">Astrometry</a></li>
@@ -18,7 +27,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>ID</th>
+        <th><span class="header-tooltip" data-toggle="tooltip" title="Each star in this image has a unique ID">ID</span></th>
         <th>Field X</th>
         <th>Field Y</th>
         <th>Flux</th>
