@@ -98,6 +98,7 @@ def choose_reference_stars(corr_fits_data, point_source_json):
         # mag_instrumental = -2.5 * log10(flux)
         mag_instrumental = point['mag_instrumental']
 
+        # Pick the nearest reference star to this point.
         nearest = list(tree.nearest((pse_x, pse_y), num_results=1, objects=True))[0].object
 
         dist = math.sqrt((pse_x - Decimal(nearest['field_x']))**2 + (pse_y - Decimal(nearest['field_y']))**2)
@@ -108,7 +109,7 @@ def choose_reference_stars(corr_fits_data, point_source_json):
         distances.append(dist)
 
         reference_objects.append({
-            'id': nearest['id'],
+            'id': point['id'],
             'field_x': pse_x,
             'field_y': pse_y,
             'index_ra': nearest['index_ra'],
