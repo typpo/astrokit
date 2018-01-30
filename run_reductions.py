@@ -69,7 +69,7 @@ def run_reductions(analysis):
                 print 'Skipping a star pair (%d, %d) due to incomplete data' % (i, j)
                 continue
 
-            term1 = star['instrumental_mag'] - comparison_star['instrumental_mag']
+            term1 = star['mag_instrumental'] - comparison_star['mag_instrumental']
             ci_target = star[ci1_key] - star[ci2_key]
             ci_comparison = comparison_star[ci1_key] - comparison_star[ci2_key]
             ci_diff = (ci_target - ci_comparison)

@@ -24,7 +24,7 @@ def compute_tf_for_analysis(analysis, reduction, save_graph=False):
             print 'Rejecting star because it does not have the required standard magnitudes:', star
             continue
 
-        apparent_mags.append(star['instrumental_mag'])
+        apparent_mags.append(star['mag_instrumental'])
         standard_mags.append(star[filter_key])
         colors_1.append(star[ci1_key])
         colors_2.append(star[ci2_key])

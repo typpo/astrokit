@@ -65,26 +65,27 @@ def plot(sources, data, path):
 def save_fits(sources, path):
     col_x = fits.Column(name='field_x', format='E', array=sources['xcentroid'])
     col_y = fits.Column(name='field_y', format='E', array=sources['ycentroid'])
-    est_flux = fits.Column(name='est_flux', format='E', array=sources['flux'])
-    est_mag = fits.Column(name='est_mag', format='E', array=sources['mag'])
+    flux = fits.Column(name='flux', format='E', array=sources['flux'])
+    mag_instrumental = fits.Column(name='mag_instrumental', format='E', array=sources['mag'])
 
-    cols = fits.ColDefs([col_x, col_y, est_flux, est_mag])
+    cols = fits.ColDefs([col_x, col_y, flux, mag_instrumental])
     tbhdu = fits.BinTableHDU.from_columns(cols)
     tbhdu.writeto(path, clobber=True)
 
 def format_for_json_export(sources):
     field_x = sources['xcentroid']
     field_y = sources['ycentroid']
-    est_flux = sources['flux']
-    est_mag = sources['mag']
+    flux = sources['flux']
+    mag_instrumental = sources['mag']
 
     out = []
     for i in xrange(len(field_x)):
         out.append({
+            'id': i + 1,
             'field_x': field_x[i],
             'field_y': field_y[i],
-            'est_flux': est_flux[i],
-            'est_mag': est_mag[i],
+            'flux': flux[i],
+            'mag_instrumental': mag_instrumental[i],
         })
     return out
 

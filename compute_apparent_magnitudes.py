@@ -95,8 +95,8 @@ def choose_reference_stars(corr_fits_data, point_source_json):
         pse_x = point['field_x']
         pse_y = point['field_y']
 
-        # est_mag = -2.5 * log10(est_flux)
-        mag_instrumental = point['est_mag']
+        # mag_instrumental = -2.5 * log10(flux)
+        mag_instrumental = point['mag_instrumental']
 
         nearest = list(tree.nearest((pse_x, pse_y), num_results=1, objects=True))[0].object
 
@@ -112,7 +112,7 @@ def choose_reference_stars(corr_fits_data, point_source_json):
             'field_y': pse_y,
             'index_ra': nearest['index_ra'],
             'index_dec': nearest['index_dec'],
-            'mag_i': point['est_mag'],   # Instrumental magnitude
+            'mag_instrumental': point['mag_instrumental'],   # Instrumental magnitude
         })
 
     logger.info('distance count: %d' % len(distances))
@@ -135,7 +135,7 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
     using provided function.
 
     Returns: a list of {designation, rmag, and optionally
-    instrumental_mag, field_x, field_y} objects.
+    mag_instrumental, field_x, field_y} objects.
     '''
     logger.info('Running catalog lookups %s...' % desig_field)
     ret = []
@@ -143,7 +143,7 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
         ra = comparison_star['index_ra']
         dec = comparison_star['index_dec']
 
-        mag_i = comparison_star.get('mag_i')
+        mag_i = comparison_star.get('mag_instrumental')
 
         results = lookup_fn(ra, dec)
         if len(results) < 1:
@@ -165,7 +165,7 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
             except InvalidOperation:
                 logger.warn('Encountered bad field for %s: %s = %s' % (json.dumps(obj), field, strvalue))
         if mag_i:
-            obj['instrumental_mag'] = mag_i
+            obj['mag_instrumental'] = mag_i
             obj['field_x'] = comparison_star['field_x'],
             obj['field_y'] = comparison_star['field_y'],
             # TODO(ian): compute standard mag - instrumental mag (for the right band)
@@ -190,8 +190,8 @@ def compute_apparent_magnitudes(reference_objects):
         for comparison in comparisons:
             #instrumental_target_mag = -2.5 * math.log10(target['observed_flux'])
             #instrumental_comparison_mag = -2.5 * math.log10(comparison['observed_flux'])
-            instrumental_target_mag = float(target['instrumental_mag'])
-            instrumental_comparison_mag = float(comparison['instrumental_mag'])
+            instrumental_target_mag = float(target['mag_instrumental'])
+            instrumental_comparison_mag = float(comparison['mag_instrumental'])
 
             # Compute basic standard magnitude formula from Brian Warner.
             target_mag = (instrumental_target_mag - instrumental_comparison_mag) + comparison['rmag']
