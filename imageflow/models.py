@@ -62,9 +62,14 @@ class ImageAnalysis(models.Model):
     psf_hist_url = models.CharField(max_length=1024)
     psf_residual_image_url = models.CharField(max_length=1024)
 
-    # Reference stars and magnitudes.
+    # Reference stars and magnitudes:
+
+    # Stars that are matched to an RA, DEC by astrometry service.
     image_reference_stars = JSONField()
     image_reference_stars_json_url = models.CharField(max_length=1024)
+
+    # Of these stars with RA, DEC, these are the stars that were matched to
+    # catalog.
     catalog_reference_stars = JSONField()
     catalog_reference_stars_json_url = models.CharField(max_length=1024)
 
