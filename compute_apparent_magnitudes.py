@@ -91,7 +91,7 @@ def choose_reference_stars(corr_fits_data, point_source_json):
     distances = []
     reference_objects = []
     for point in pse_points:
-        # These are Decimal typed.
+        # Point source coordinates. These are Decimal typed.
         pse_x = point['field_x']
         pse_y = point['field_y']
 
@@ -154,6 +154,7 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
         result = results[0]
         desig = result[desig_field].data[0]
         obj = {
+            'id': comparison_star['id'],
             'designation': desig,
             'index_ra': ra,
             'index_dec': dec,
