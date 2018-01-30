@@ -68,13 +68,15 @@ class ImageAnalysis(models.Model):
     catalog_reference_stars = JSONField()
     catalog_reference_stars_json_url = models.CharField(max_length=1024)
 
-    def create_reduction_if_not_exists(self):
-        if not hasattr(self, 'reduction'):
-            self.reduction = Reduction(analysis=self)
-            self.reduction.status = Reduction.CREATED
-            self.reduction.color_index_1 = self.image_filter
-            self.reduction.color_index_2 = self.image_filter
-            self.reduction.save()
+    def get_reduction_or_create(self):
+        reduction, created = Reduction.objects.get_or_create(analysis=self)
+
+        if created:
+            reduction.status = Reduction.CREATED
+            reduction.color_index_1 = self.image_filter
+            reduction.color_index_2 = self.image_filter
+            reduction.save()
+        return reduction
 
     def get_summary_obj(self):
         return {

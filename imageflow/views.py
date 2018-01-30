@@ -93,7 +93,7 @@ def set_filter_band(request, subid):
 
 def set_color_index_1(request, subid):
     analysis, filter_band = resolve_band(request, subid)
-    analysis.create_reduction_if_not_exists()
+    analysis.get_reduction_or_create()
     analysis.reduction.color_index_1 = filter_band
     analysis.reduction.save()
     return JsonResponse({
@@ -103,7 +103,7 @@ def set_color_index_1(request, subid):
 
 def set_color_index_2(request, subid):
     analysis, filter_band = resolve_band(request, subid)
-    analysis.create_reduction_if_not_exists()
+    analysis.get_reduction_or_create()
     analysis.reduction.color_index_2 = filter_band
     analysis.reduction.save()
     return JsonResponse({
@@ -147,7 +147,7 @@ def set_second_order_extinction(request, subid):
             'success': False,
             'msg': 'Could not find corresponding ImageAnalysis',
         })
-    analysis.create_reduction_if_not_exists()
+    analysis.get_reduction_or_create()
     return set_float(request, subid, 'second_order_extinction', on_reduction=True)
 
 def set_float(request, subid, attrname, on_reduction=False):
@@ -189,8 +189,9 @@ def set_reduction_status(request, subid):
             'success': False,
             'msg': 'Could not find corresponding ImageAnalysis',
         })
-    analysis.create_reduction_if_not_exists()
-    analysis.reduction.status = Reduction.PENDING
+    reduction = analysis.get_reduction_or_create()
+    reduction.status = Reduction.PENDING
+    reduction.save()
     return JsonResponse({
         'success': True,
         'message': 'Reduction status set to pending',
@@ -205,10 +206,10 @@ def get_reduction_status(request, subid):
             'success': False,
             'msg': 'Could not find corresponding ImageAnalysis',
         })
-    analysis.create_reduction_if_not_exists()
+    reduction = analysis.get_reduction_or_create()
     return JsonResponse({
         'success': True,
-        'status': analysis.reduction.status,
+        'status': reduction.status,
     })
 
 def point_sources(request, subid):
