@@ -108,11 +108,12 @@ def choose_reference_stars(corr_fits_data, point_source_json):
         distances.append(dist)
 
         reference_objects.append({
+            'id': nearest['id'],
             'field_x': pse_x,
             'field_y': pse_y,
             'index_ra': nearest['index_ra'],
             'index_dec': nearest['index_dec'],
-            'mag_instrumental': point['mag_instrumental'],   # Instrumental magnitude
+            'mag_instrumental': point['mag_instrumental'],
         })
 
     logger.info('distance count: %d' % len(distances))
@@ -143,8 +144,6 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
         ra = comparison_star['index_ra']
         dec = comparison_star['index_dec']
 
-        mag_i = comparison_star.get('mag_instrumental')
-
         results = lookup_fn(ra, dec)
         if len(results) < 1:
             continue
@@ -164,6 +163,8 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
                 obj[field] = Decimal(strvalue)
             except InvalidOperation:
                 logger.warn('Encountered bad field for %s: %s = %s' % (json.dumps(obj), field, strvalue))
+
+        mag_i = comparison_star.get('mag_instrumental')
         if mag_i:
             obj['mag_instrumental'] = mag_i
             obj['field_x'] = comparison_star['field_x'],
