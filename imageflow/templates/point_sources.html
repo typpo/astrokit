@@ -27,6 +27,7 @@
   <table class="table table-striped">
     <thead>
       <tr>
+        <th>ID</th>
         <th>Field X</th>
         <th>Field Y</th>
         <th>Flux</th>
@@ -36,6 +37,7 @@
     <tbody>
       {% for point_source in result.data.coords %}
         <tr>
+          <td>{{point_source.id}}</td>
           <td>{{point_source.field_x}}</td>
           <td>{{point_source.field_y}}</td>
           <td>{{point_source.flux}}</td>
