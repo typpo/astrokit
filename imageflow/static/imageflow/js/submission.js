@@ -8,33 +8,59 @@ function plotImage(canvas, imageUrl) {
     ctx.drawImage(img, 0, 0, img.width, img.height,
                        0, 0, canvas.width, canvas.height);
 
-    // Then plot stars from the catalog.
-    plotCatalogStars(canvas, window.catalogReferenceStars);
+    // Then plot stars from the data source.
+    if (window.catalogData) {
+      plotStars(canvas, window.catalogData, {
+        color: 'red',
+        radius: 5,
+        text: function(star) {
+          return star.designation;
+        }
+      });
+    }
+    if (window.pointSourceData) {
+      plotStars(canvas, window.pointSourceData, {
+        color: 'green',
+        radius: 3,
+        text: window.catalogData ?
+          function(star) { return null; } : function(star) { return star.id },
+      });
+    }
   };
   img.src = imageUrl;
 }
 
-function plotCatalogStars(canvas, referenceStars) {
-  for (var i=0; i < referenceStars.length; i++) {
-    var star = referenceStars[i];
+function plotStars(canvas, stars, rawOpts) {
+  var opts = Object.assign({
+    color: 'yellow',
+    radius: 5,
+    text: function(star) { return star.id },
+  }, rawOpts);
+  for (var i=0; i < stars.length; i++) {
+    var star = stars[i];
 
     // Plot catalog stars over an image.
     var ctx = canvas.getContext('2d');
     ctx.beginPath();
     // Circle - defined by x, y, radius, ...
-    ctx.arc(star.field_x, star.field_y, 5, 0, Math.PI * 2);
-    ctx.strokeStyle = 'yellow';
+    ctx.arc(star.field_x, star.field_y, opts.radius, 0, Math.PI * 2);
+    ctx.strokeStyle = opts.color;
     ctx.lineWidth = 3;
     ctx.stroke();
 
     // Label
-    ctx.font = '16px Arial';
+    var text = opts.text(star);
+    if (!text) {
+      continue;
+    }
+
+    ctx.font = '14px Arial';
     ctx.strokeStyle= 'black';
     ctx.lineWidth = 2;
-    var labelWidth = ctx.measureText(star.designation).width;
-    ctx.strokeText(star.designation, star.field_x - (labelWidth / 2), star.field_y - 8);
+    var labelWidth = ctx.measureText(text).width;
+    ctx.strokeText(text, star.field_x - (labelWidth / 2), star.field_y - 8);
     ctx.fillStyle = 'yellow';
-    ctx.fillText(star.designation, star.field_x - (labelWidth / 2), star.field_y - 8);
+    ctx.fillText(text, star.field_x - (labelWidth / 2), star.field_y - 8);
   }
 }
 
@@ -52,7 +78,7 @@ function setupCanvasListeners(canvas) {
 }
 
 $(function() {
-  var canvas = document.getElementById('reference-star-plot');
+  var canvas = document.getElementById('star-plot');
   setupCanvasListeners(canvas);
   plotImage(canvas, window.originalImageUrl);
 
