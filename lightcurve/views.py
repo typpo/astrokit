@@ -18,6 +18,16 @@ def edit_lightcurve(request, lightcurve_id):
     return render_to_response('lightcurve.html', context,
             context_instance=RequestContext(request))
 
+def save_observation_default(request, lightcurve_id):
+    print('judy')
+    lc = LightCurve.objects.get(id=lightcurve_id)
+    images = lc.useruploadedimage_set.all()
+    for image in images:
+        image.meta.latitude= float(request.POST.get('lat'))
+        image.meta.longitude = float(request.POST.get('lng'))
+        image.meta.elevation = float(request.POST.get('elevation'))
+        image.get_reduction_or_create().data.second_order_extinction = float(request.POST.get('extinction'))
+
 def get_status(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
     images = lc.useruploadedimage_set.all()

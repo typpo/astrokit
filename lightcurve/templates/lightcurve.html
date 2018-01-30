@@ -31,9 +31,9 @@ h1 span {
     <div id="set-latlng-success" class="alert alert-danger" style="display:none">
       Something went wrong - failed to update your setting.
     </div>
-    Latitude <input id="set-latitude" class="form-control" style="width: 30em" type="text" value="{{result.meta.longitude}}">
+    Latitude <input id="set-latitude" class="form-control" style="width: 30em" type="text" value="{{result.meta.latitude}}">
     <br>
-    Longitude <input id="set-longitude" class="form-control" style="width: 30em" type="text" value="{{result.meta.latitude}}">
+    Longitude <input id="set-longitude" class="form-control" style="width: 30em" type="text" value="{{result.meta.longitude}}">
   </div>
 
   <h4>Elevation</h4>
@@ -64,7 +64,7 @@ h1 span {
     <input type="text" class="form-control" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
   </div>
   <div class="button-row">
-    <a href="/submission/{{image.submission.subid}}" class="btn btn-primary">Save setting</a>
+    <div id="save-observation-default" class="btn btn-primary">Save setting</div>
   </div>
 
   <h3>Images</h3>
