@@ -45,7 +45,7 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
         </div>
         <select id="select-color-index-1" class="form-control">
           {% for filter in image_filters %}
-            <option value="{{filter.band}}" {% if filter.band == reduction.data.color_index_1_band %}selected{% endif %}>
+            <option value="{{filter.band}}" {% if filter.band == result.meta.image_band %}selected{% endif %}>
               {{filter.band}} ({{filter.system}})
             </option>
           {% endfor %}
