@@ -12,12 +12,17 @@ function checkStatus() {
 }
 
 function saveObservationDefault() {
-  $.post('/lightcurve/' + window.lightcurve_id + '/save_observation_default',
-      {'lat': $('#set-latitude').val(),
-       'lng': $('#set-longitude').val(),
-       'elevation': $('#set-elevation').val(),
-       'extinction': $('#second-order-extinction').val()},
-      function(data) {
+  $.post('/lightcurve/' + window.lightcurve_id + '/save_observation_default', {
+    'lat': $('#set-latitude').val(),
+    'lng': $('#set-longitude').val(),
+    'elevation': $('#set-elevation').val(),
+    'extinction': $('#second-order-extinction').val()
+  }, function(data) {
+    if (data.success) {
+      alert('Settings applied to all images.');
+    } else {
+      alert('Something went wrong. Settings were not applied to all images.');
+    }
   });
 }
 
@@ -26,6 +31,7 @@ $(function() {
 
   $('#save-observation-default').on('click', function() {
     saveObservationDefault();
+    return false;
   });
 
   $('.js-reload').on('click', function() {

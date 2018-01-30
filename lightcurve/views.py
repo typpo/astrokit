@@ -19,14 +19,32 @@ def edit_lightcurve(request, lightcurve_id):
             context_instance=RequestContext(request))
 
 def save_observation_default(request, lightcurve_id):
-    print('judy')
     lc = LightCurve.objects.get(id=lightcurve_id)
-    images = lc.useruploadedimage_set.all()
+    images = lc.imageanalysis_set.all()
+
+    lat = request.POST.get('lat')
+    lng = request.POST.get('lng')
+    elevation = request.POST.get('elevation')
+    extinction = request.POST.get('extinction')
+
+    print lat, lng, elevation, extinction
+
     for image in images:
-        image.meta.latitude= float(request.POST.get('lat'))
-        image.meta.longitude = float(request.POST.get('lng'))
-        image.meta.elevation = float(request.POST.get('elevation'))
-        image.get_reduction_or_create().data.second_order_extinction = float(request.POST.get('extinction'))
+        if lat:
+            image.image_latitude= float(lat)
+        if lng:
+            image.image_longitude = float(lng)
+        if elevation:
+            image.image_elevation = float(elevation)
+        if extinction:
+            reduction = image.get_reduction_or_create()
+            reduction.second_order_extinction = float(extinction)
+            reduction.save()
+        image.save()
+
+    return JsonResponse({
+        'success': True,
+    })
 
 def get_status(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)

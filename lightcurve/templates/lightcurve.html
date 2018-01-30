@@ -21,7 +21,7 @@ h1 span {
 {% block content-interior %}
 <h1>Light Curve <span>{{lightcurve.name}}</span></h1>
 <div>
-  <h3>Enter global obeservation facts</h3>
+  <h3>Observation Metadata</h3>
   <p>You can modify for each image later</p>
   <h4>Coordinates</h4>
   <div class="well">
@@ -64,7 +64,7 @@ h1 span {
     <input type="text" class="form-control" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
   </div>
   <div class="button-row">
-    <div id="save-observation-default" class="btn btn-primary">Save setting</div>
+    <div id="save-observation-default" class="btn btn-primary">Apply to all images</div>
   </div>
 
   <h3>Images</h3>
