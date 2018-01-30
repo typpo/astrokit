@@ -73,7 +73,7 @@ class ImageAnalysis(models.Model):
     catalog_reference_stars = JSONField()
     catalog_reference_stars_json_url = models.CharField(max_length=1024)
 
-    def get_reduction_or_create(self):
+    def get_or_create_reduction(self):
         reduction, created = Reduction.objects.get_or_create(analysis=self)
 
         if created:
