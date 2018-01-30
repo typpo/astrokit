@@ -154,6 +154,7 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
         result = results[0]
         desig = result[desig_field].data[0]
         obj = {
+            'id': comparison_star['id'],
             'designation': desig,
             'index_ra': ra,
             'index_dec': dec,

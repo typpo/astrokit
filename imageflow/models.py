@@ -80,6 +80,7 @@ class ImageAnalysis(models.Model):
 
     def get_summary_obj(self):
         return {
+            'id': self.id,
             'jobid': self.astrometry_job.jobid,
             'subid': self.astrometry_job.submission.subid,
             'meta': {
