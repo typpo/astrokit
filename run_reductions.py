@@ -16,7 +16,7 @@ django.setup()
 import airmass
 import transformation_coefficient as tf
 
-from imageflow.models import Reduction, ImageFilter
+from imageflow.models import Reduction, ImageAnalysis, ImageFilter
 
 def supporting_calculations(analysis, reduction):
     '''Compute airmass and transformation coefficient.
@@ -40,35 +40,55 @@ def run_reductions(analysis):
 
     supporting_calculations(analysis, reduction)
 
+    # Get the URAT1 keys for each CI band. eg. 'Bmag', 'jmag'
+    filter_key = analysis.image_filter.urat1_key
+    ci1_key = reduction.color_index_1.urat1_key
+    ci2_key = reduction.color_index_2.urat1_key
+
     # Now put it all together.
     for i in xrange(len(reduction.reduced_stars)):
         # TODO(ian): Eliminate the outer loop. We only need to do this for the
         # unknown. Computing standard mag for each catalog star will help us
         # know our % error, though.
         star = reduction.reduced_stars[i]
+        if filter_key not in star:
+            print 'Skipping star %d because it does not have filter key %s' % (i, filter_key)
+            continue
+
         # Mt = (mt - mc) - k"f Xt (CIt - CIc) + Tf (CIt - CIc) + Mc
         estimates = []
         for j in xrange(len(reduction.reduced_stars)):
             if i == j:
                 continue
+
             comparison_star = reduction.reduced_stars[j]
+
+            if not (ci1_key in star and ci2_key in star and \
+                    ci2_key in comparison_star and ci2_key in comparison_star and \
+                    filter_key in comparison_star):
+                print 'Skipping a star pair (%d, %d) due to incomplete data' % (i, j)
+                continue
+
             term1 = star['instrumental_mag'] - comparison_star['instrumental_mag']
-            ci_target = star[reduction.color_index_1.urat1_key] - star[reduction.color_index_2.urat1_key]
-            ci_comparison = comparison_star[reduction.color_index_1.urat1_key] - comparison_star[reduction.color_index_2.urat1_key]
+            ci_target = star[ci1_key] - star[ci2_key]
+            ci_comparison = comparison_star[ci1_key] - comparison_star[ci2_key]
             ci_diff = (ci_target - ci_comparison)
             term2 = reduction.second_order_extinction * comparison_star['airmass'] * ci_diff
             term3 = reduction.tf * ci_diff
-            combined = term1 - term2 + term3 + comparison_star[analysis.image_filter.urat1_key]
+            combined = term1 - term2 + term3 + comparison_star[filter_key]
             estimates.append(combined)
 
         star['mag_standard'] = np.mean(estimates)
 
         # Set mag_catalog to the URAT1 magnitude in this band.
-        star['mag_catalog'] = star[analysis.image_filter.urat1_key]
+        star['mag_catalog'] = star[filter_key]
         star['mag_error'] = star['mag_standard'] - star['mag_catalog']
 
     reduction.status = Reduction.COMPLETE
     reduction.save()
+
+    reduction.analysis.status = ImageAnalysis.REDUCTION_COMPLETE
+    reduction.analysis.save()
 
 def process_pending_reductions():
     pending = Reduction.objects.all().filter(

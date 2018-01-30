@@ -15,10 +15,19 @@ def compute_tf_for_analysis(analysis, reduction, save_graph=False):
     colors_1 = []
     colors_2 = []
     for star in analysis.catalog_reference_stars:
+        # Get the URAT1 keys for each filter and CI band. eg. 'Bmag', 'jmag'
+        filter_key = analysis.image_filter.urat1_key
+        ci1_key = reduction.color_index_1.urat1_key
+        ci2_key = reduction.color_index_2.urat1_key
+
+        if not (filter_key in star and ci1_key in star and ci2_key in star):
+            print 'Rejecting star because it does not have the required standard magnitudes:', star
+            continue
+
         apparent_mags.append(star['instrumental_mag'])
-        standard_mags.append(star[analysis.image_filter.urat1_key])
-        colors_1.append(star[reduction.color_index_1.urat1_key])
-        colors_2.append(star[reduction.color_index_2.urat1_key])
+        standard_mags.append(star[filter_key])
+        colors_1.append(star[ci1_key])
+        colors_2.append(star[ci2_key])
 
     tf, (xs, ys, A, c) = compute_tf(apparent_mags, standard_mags, colors_1, colors_2)
 
