@@ -13,7 +13,40 @@
   <li><a href="#">Light Curve</a></li>
 </ol>
 
-<h3>Point-spread function analysis</h3>
+<h3>Point source coordinates</h3>
+<a href="{{result.urls.coords_json_url}}">Coordinates JSON</a>
+&middot;
+<a href="{{result.urls.coords_fits_url}}">Coordinates FITS</a>
+<div class="well">
+  <img src="{{result.urls.coords_plot_url}}" />
+  <a href="{{result.urls.coords_plot_url}}" download>Download</a>
+</div>
+
+<h3>Instrumental photometry</h3>
+<div class="well" style="overflow: auto; max-height: 400px">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Field X</th>
+        <th>Field Y</th>
+        <th>Flux</th>
+        <th>Instrumental magnitude</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for point_source in result.data.coords %}
+        <tr>
+          <td>{{point_source.field_x}}</td>
+          <td>{{point_source.field_y}}</td>
+          <td>{{point_source.flux}}</td>
+          <td>{{point_source.mag_instrumental}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<h3>Point-spread function</h3>
 
 <h4>Fluxes for each point source</h4>
 <div class="well">

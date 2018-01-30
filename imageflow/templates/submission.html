@@ -85,37 +85,10 @@ Elevation above sea level, in meters.
   <input id="set-elevation" class="form-control" style="width: 30em" type="text" value="{{result.meta.elevation}}">
 </div>
 
-<h3>Point source coordinates</h3>
-<a href="{{result.urls.coords_json_url}}">Coordinates JSON</a>
-&middot;
-<a href="{{result.urls.coords_fits_url}}">Coordinates FITS</a>
+<h3>Annotated image</h3>
 <div class="well">
-  <img src="{{result.urls.coords_plot_url}}" />
-  <a href="{{result.urls.coords_plot_url}}" download>Download</a>
-</div>
-
-<h3>Instrumental photometry</h3>
-<div class="well" style="overflow: auto; max-height: 400px">
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Field X</th>
-        <th>Field Y</th>
-        <th>Estimated flux</th>
-        <th>Estimated magnitude</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for point_source in result.data.coords %}
-        <tr>
-          <td>{{point_source.field_x}}</td>
-          <td>{{point_source.field_y}}</td>
-          <td>{{point_source.flux}}</td>
-          <td>{{point_source.mag_instrumental}}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <img src="{{result.urls.astrometry_annotated_display_url}}" />
+  <a href="{{result.urls.astrometry_annotated_display_url}}" download>Download</a>
 </div>
 
 <div style="text-align: right">
