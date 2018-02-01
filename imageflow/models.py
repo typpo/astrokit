@@ -119,6 +119,7 @@ class ImageAnalysis(models.Model):
             'data': {
                 'coords': self.coords,
                 'catalog_reference_stars': self.catalog_reference_stars,
+                'unknown_stars': self.image_unknown_stars,
             },
         }
 

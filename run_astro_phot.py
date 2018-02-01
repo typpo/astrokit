@@ -302,9 +302,9 @@ class SubmissionHandler():
         name = '%d_%d_image_unknown_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            result.image_unknown_stars = ref_stars
+            result.image_unknown_stars = unknown_stars
             result.image_unknown_stars_json_url = \
-                    s3_util.upload_to_s3(json.dumps(ref_stars, indent=2, use_decimal=True), \
+                    s3_util.upload_to_s3(json.dumps(unknown_stars, indent=2, use_decimal=True), \
                                          upload_key_prefix, name)
 
         logger.info('-> Uploaded unknown stars for submission %d' % \

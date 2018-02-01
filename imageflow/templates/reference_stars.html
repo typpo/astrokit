@@ -23,8 +23,9 @@
 </ol>
 
 <h3>Reference Stars</h3>
-
-<h4>Reference stars (URAT1)</h4>
+<p>
+{{result.data.catalog_reference_stars | length}} catalog stars recognized out of {{result.data.coords | length}} point sources total.
+</p>
 <div class="well" style="overflow: auto; max-height: 400px">
   <table class="table table-striped table-hover">
     <tr>
@@ -52,7 +53,7 @@
   </table>
 </div>
 
-<h4>Catalog photometry</h4>
+<h4>Reference photometry</h4>
 <p>
 From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a target="_blank" href="http://www.astro.caltech.edu/~jmc/2mass/v3/transformations/">2MASS</a> catalogs.  For comparison of photometric systems see this <a target="_blank" href="https://en.wikipedia.org/wiki/Photometric_system#Filters_used">reference</a>.
 </p>
@@ -112,9 +113,30 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
 </div>
 
 <h3>Unknown point sources</h3>
-
+<p>
+{{result.data.unknown_stars | length}} point sources that were not matched to reference stars.
+</p>
 <div class="well" style="overflow: auto; max-height: 400px">
-  todo
+  <table class="table table-striped table-hover">
+    <tr>
+      <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
+      <th>Designation</th>
+      <th>Field X</th>
+      <th>Field Y</th>
+      <th>Instrumental magnitude</th>
+    </tr>
+    {% for star in result.data.unknown_stars %}
+      <tr>
+        <td>{{star.id}}</td>
+        <td>
+          <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
+        </td>
+        <td>{{star.field_x}}</td>
+        <td>{{star.field_y}}</td>
+        <td>{{star.mag_instrumental}}</td>
+      </tr>
+    {% endfor %}
+  </table>
 </div>
 
 <div style="text-align: right">
