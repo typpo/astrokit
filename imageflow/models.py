@@ -68,6 +68,10 @@ class ImageAnalysis(models.Model):
     image_reference_stars = JSONField()
     image_reference_stars_json_url = models.CharField(max_length=1024)
 
+    # Stars that weren't matched.
+    image_unknown_stars = JSONField()
+    image_unknown_stars_json_url = models.CharField(max_length=1024)
+
     # Of these stars with RA, DEC, these are the stars that were matched to
     # catalog.
     catalog_reference_stars = JSONField()

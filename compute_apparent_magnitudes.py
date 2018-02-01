@@ -90,6 +90,7 @@ def choose_reference_stars(corr_fits_data, point_source_json):
     # Keep track of distance between nearest match.
     distances = []
     reference_objects = []
+    unknown_objects = []
     for point in pse_points:
         # Point source coordinates. These are Decimal typed.
         pse_x = point['field_x']
@@ -105,6 +106,12 @@ def choose_reference_stars(corr_fits_data, point_source_json):
         if dist > MAX_RTREE_DISTANCE:
             #logger.error('Rejecting a point source because its distance to nearest corr object is %f, greater than %f' % \
             #             (dist, MAX_RTREE_DISTANCE))
+            unknown_objects.append({
+                'id': point['id'],
+                'field_x': pse_x,
+                'field_y': pse_y,
+                'mag_instrumental': point['mag_instrumental'],
+            })
             continue
         distances.append(dist)
 
@@ -122,7 +129,7 @@ def choose_reference_stars(corr_fits_data, point_source_json):
     logger.info('distance std: %f' % np.std(distances))
     logger.info('distance min: %f' % min(distances))
     logger.info('distance max: %f' % max(distances))
-    return reference_objects
+    return reference_objects, unknown_objects
 
 def get_standard_magnitudes_urat1(reference_objects):
     return get_standard_magnitudes(reference_objects,
@@ -238,5 +245,5 @@ def get_args():
 
 if __name__ == '__main__':
     args = get_args()
-    reference_objects = choose_reference_stars_from_file(args.corr_fits, args.point_source_json)
+    reference_objects, unknown_objects = choose_reference_stars_from_file(args.corr_fits, args.point_source_json)
     compute_apparent_magnitudes(reference_objects)

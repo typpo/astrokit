@@ -285,7 +285,7 @@ class SubmissionHandler():
 
         # Compute reference stars and their apparent magnitudes.
         # TODO(ian): Produce a graphic that marks the reference stars.
-        ref_stars = \
+        ref_stars, unknown_stars = \
                 compute_apparent_magnitudes.choose_reference_stars(correlations, coords)
 
         name = '%d_%d_image_reference_stars.json' % (submission.subid, job.jobid)
@@ -297,6 +297,17 @@ class SubmissionHandler():
                                          upload_key_prefix, name)
 
         logger.info('-> Uploaded reference stars for submission %d' % \
+                (submission.subid))
+
+        name = '%d_%d_image_unknown_stars.json' % (submission.subid, job.jobid)
+        logger.info('  -> Uploading %s...' % name)
+        if not args.dry_run:
+            result.image_unknown_stars = ref_stars
+            result.image_unknown_stars_json_url = \
+                    s3_util.upload_to_s3(json.dumps(ref_stars, indent=2, use_decimal=True), \
+                                         upload_key_prefix, name)
+
+        logger.info('-> Uploaded unknown stars for submission %d' % \
                 (submission.subid))
 
         # Get reference star standard magnitudes.
