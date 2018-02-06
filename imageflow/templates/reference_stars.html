@@ -121,7 +121,6 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
   <table class="table table-striped table-hover">
     <tr>
       <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
-      <th>Designation</th>
       <th>Field X</th>
       <th>Field Y</th>
       <th>Instrumental magnitude</th>
@@ -129,9 +128,6 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
     {% for star in result.data.unknown_stars %}
       <tr>
         <td>{{star.id}}</td>
-        <td>
-          <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
-        </td>
         <td>{{star.field_x|floatformat:2}}</td>
         <td>{{star.field_y|floatformat:2}}</td>
         <td>{{star.mag_instrumental|floatformat:3}}</td>
