@@ -39,10 +39,10 @@
       {% for point_source in result.data.coords %}
         <tr>
           <td>{{point_source.id}}</td>
-          <td>{{point_source.field_x}}</td>
-          <td>{{point_source.field_y}}</td>
-          <td>{{point_source.flux}}</td>
-          <td>{{point_source.mag_instrumental}}</td>
+          <td>{{point_source.field_x|floatformat:2}}</td>
+          <td>{{point_source.field_y|floatformat:2}}</td>
+          <td>{{point_source.flux|floatformat:3}}</td>
+          <td>{{point_source.mag_instrumental|floatformat:3}}</td>
         </tr>
       {% endfor %}
     </tbody>
