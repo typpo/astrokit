@@ -246,19 +246,24 @@ def reference_stars(request, subid):
 def reduction(request, subid):
     # TODO(ian): Dedup this with above code.
     try:
-        result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
                                       .get(astrometry_job__submission__subid=subid)
     except ObjectDoesNotExist:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
+    # Other images in this light curve.
+    image_companions = analysis.lightcurve.useruploadedimage_set.all()
+
     template_args = {
-        'result': result.get_summary_obj(),
+        'result': analysis.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
+
+        'image_companions': image_companions,
     }
-    if hasattr(result, 'reduction') and result.reduction:
+    if hasattr(analysis, 'reduction') and analysis.reduction:
         template_args.update({
-            'reduction': result.reduction.get_summary_obj(),
+            'reduction': analysis.reduction.get_summary_obj(),
         })
         return render_to_response('reduction.html', template_args,
                 context_instance=RequestContext(request))

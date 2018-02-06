@@ -54,6 +54,12 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
         </select>
       </div>
     </label>
+    <div>
+      <label>Select an image</label>
+      {% for image in image_companions %}
+        {{image.original_filename}}
+      {% endfor %}
+    </div>
   </form>
 </div>
 
