@@ -50,6 +50,10 @@
 </div>
 
 <h3>Point source coordinates</h3>
+<p>
+{{result.data.coords | length}} point sources detected via
+<a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
+</p>
 <a href="{{result.urls.coords_json_url}}">Coordinates JSON</a>
 &middot;
 <a href="{{result.urls.coords_fits_url}}">Coordinates FITS</a>
@@ -67,6 +71,12 @@
   <div>
     <canvas id="star-plot" style="cursor: crosshair" />
   </div>
+</div>
+
+<h4>Target Selection</h4>
+<div class="well">
+  <p>Enter the ID number of your target point source:</p>
+  <input id="target-id" type="number" min="0" max="{{result.data.coords | length}}" class="form-control" />
 </div>
 
 <h3>Point-spread function</h3>
