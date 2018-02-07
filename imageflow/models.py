@@ -62,6 +62,9 @@ class ImageAnalysis(models.Model):
     psf_hist_url = models.CharField(max_length=1024)
     psf_residual_image_url = models.CharField(max_length=1024)
 
+    # ID of point source target.
+    target_id = models.IntegerField()
+
     # Reference stars and magnitudes:
 
     # Stars that are matched to an RA, DEC by astrometry service.
@@ -106,6 +109,7 @@ class ImageAnalysis(models.Model):
                 'image_band': self.image_filter.band,
                 'photometric_system': self.image_filter.system,
                 'uploaded_image': self.get_uploaded_image_or_none(),
+                'target_id': self.target_id,
             },
             'urls': {
                 'astrometry_original_display_url': self.astrometry_original_display_url,

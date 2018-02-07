@@ -3,6 +3,8 @@
 function setupListener(apiPath, $control, $success, $failure) {
   $control.on('change', function() {
     var val = $(this).val();
+    $success.toggle(false);
+    $failure.toggle(false);
 
     document.body.style.cursor = 'wait';
     $.post('/submission/' + window.subid + '/' + apiPath, {val: val}, function(data) {
