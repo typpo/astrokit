@@ -46,6 +46,23 @@ def save_observation_default(request, lightcurve_id):
         'success': True,
     })
 
+def add_image_toggle(request, lightcurve_id):
+    analysis_id = request.POST.get('analysisId')
+
+    lc = LightCurve.objects.get(id=lightcurve_id)
+    image = lc.imageanalysis_set.get(id=analysis_id)
+
+    if image.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE:
+        image.status = ImageAnalysis.REDUCTION_COMPLETE
+    elif image.status == ImageAnalysis.REDUCTION_COMPLETE:
+        image.status = ImageAnalysis.ADDED_TO_LIGHT_CURVE
+    image.save()
+
+    return JsonResponse({
+        'added': image.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE,
+        'success': True,
+    })
+
 def get_status(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
     images = lc.useruploadedimage_set.all()

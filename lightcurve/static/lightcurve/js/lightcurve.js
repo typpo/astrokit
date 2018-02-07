@@ -26,11 +26,36 @@ function saveObservationDefault() {
   });
 }
 
+function addToLightcurveToggle(toggleButton) {
+  $.post('/lightcurve/' + window.lightcurve_id + '/add_image_toggle', {
+    'analysisId' : $(toggleButton).data('analysis-id')
+  }, function(data) {
+    if (data.success) {
+      $(toggleButton).toggleClass('btn-success');
+      $(toggleButton).toggleClass('btn-default');
+      if (data.added) {
+        $(toggleButton).text("Included in lightcurve");
+        alert('added to lightcurve');
+      } else {
+        $(toggleButton).text("Add to lightcurve");
+        alert('removed from lightcurve');
+      }
+    } else {
+      alert('Something went wrong. Changes were not applied to this image.');
+    }
+  });
+}
+
 $(function() {
   checkStatus();
 
   $('#save-observation-default').on('click', function() {
     saveObservationDefault();
+    return false;
+  });
+
+  $('.add-to-lightcurve-toggle').on('click', function() {
+    addToLightcurveToggle(this);
     return false;
   });
 
