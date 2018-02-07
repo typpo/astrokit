@@ -2,7 +2,7 @@
 {% load staticfiles %}
 {% load jsonify %}
 
-{% block heading %}Submission - Summary{% endblock %}
+{% block heading %}Summary{% endblock %}
 
 {% block content-interior %}
 <ol class="breadcrumb">
@@ -14,7 +14,7 @@
 </ol>
 
 <p>
-Submission #{{result.subid}} &middot; Analysis #{{result.id}}
+Submission #{{result.subid}} &middot; Analysis #{{result.id}} &middot; {{result.meta.uploaded_image.original_filename}}
 </p>
 
 <h3>Original image</h3>

@@ -28,23 +28,35 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
 
 <h4>Step 1: Select color index</h4>
 <div class="well">
+  <div id="select-color-index-success" class="alert alert-success" style="display:none">
+    Color index successfully updated.
+  </div>
+  <div id="select-color-index-success" class="alert alert-danger" style="display:none">
+    Something went wrong - failed to update your setting.
+  </div>
   <form class="form-inline">
-    <label>
-      <div>
-        <div id="select-color-index-success" class="alert alert-success" style="display:none">
-          Color index successfully updated.
-        </div>
-        <div id="select-color-index-success" class="alert alert-danger" style="display:none">
-          Something went wrong - failed to update your setting.
-        </div>
-        <select id="select-color-index-1" class="form-control">
-          {% for filter in image_filters %}
-            <option value="{{filter.band}}" {% if filter.band == result.meta.image_band %}selected{% endif %}>
-              {{filter.band}} ({{filter.system}})
-            </option>
+    <div class="form-group">
+      <label>Image 1
+          <select class="form-control" disabled>
+            <option value="">{{result.meta.uploaded_image.original_filename}}</option>
+          </select>
+          <select id="select-color-index-1" class="form-control" disabled>
+            {% for filter in image_filters %}
+              <option value="{{filter.band}}" {% if filter.band == result.meta.image_band %}selected{% endif %}>
+                {{filter.band}} ({{filter.system}})
+              </option>
+            {% endfor %}
+          </select>
+      </label>
+    </div>
+    <br>-<br>
+    <div class="form-group">
+      <label>Image 2
+        <select id="select-image-companion" class="form-control">
+          {% for image in image_companions %}
+            <option value="{{image.id}}">{{image.original_filename}}</option>
           {% endfor %}
         </select>
-        -
         <select id="select-color-index-2" class="form-control">
           {% for filter in image_filters %}
             <option value="{{filter.band}}" {% if filter.band == reduction.data.color_index_2_band %}selected{% endif %}>
@@ -52,13 +64,7 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
             </option>
           {% endfor %}
         </select>
-      </div>
-    </label>
-    <div>
-      <label>Select an image</label>
-      {% for image in image_companions %}
-        {{image.original_filename}}
-      {% endfor %}
+      </label>
     </div>
   </form>
 </div>

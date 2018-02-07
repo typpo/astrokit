@@ -77,6 +77,12 @@ class ImageAnalysis(models.Model):
     catalog_reference_stars = JSONField()
     catalog_reference_stars_json_url = models.CharField(max_length=1024)
 
+    def get_uploaded_image_or_none(self):
+        try:
+            return UserUploadedImage.objects.get(analysis=self)
+        except UserUploadedImage.DoesNotExist:
+            return None
+
     def get_or_create_reduction(self):
         reduction, created = Reduction.objects.get_or_create(analysis=self)
 
@@ -99,6 +105,7 @@ class ImageAnalysis(models.Model):
                 'elevation': self.image_elevation,
                 'image_band': self.image_filter.band,
                 'photometric_system': self.image_filter.system,
+                'uploaded_image': self.get_uploaded_image_or_none(),
             },
             'urls': {
                 'astrometry_original_display_url': self.astrometry_original_display_url,
