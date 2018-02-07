@@ -82,6 +82,19 @@ def set_datetime(request, subid):
         'msg': 'Resolved input to %s' % parsed_dt.isoformat()
     })
 
+def set_target_point_source(request, subid):
+    try:
+        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                        .get(astrometry_job__submission__subid=subid)
+    except ObjectDoesNotExist:
+        raise Error('Could not find corresponding ImageAnalysis')
+
+    analysis.target_id = request.POST.get('val')
+    analysis.save()
+    return JsonResponse({
+        'success': True,
+    })
+
 def set_filter_band(request, subid):
     analysis, filter_band = resolve_band(request, subid)
     analysis.image_filter = filter_band
