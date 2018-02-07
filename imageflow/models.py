@@ -145,6 +145,20 @@ class ImageAnalysis(models.Model):
                  str(self.image_datetime))
 
 
+class UserUploadedImage(models.Model):
+    """
+    Model for user uploaded images
+    """
+    user = models.ForeignKey(User)
+    image_url = models.URLField(max_length=512)
+    original_filename = models.CharField(max_length=512)
+    created_at = models.DateTimeField(auto_now=True)
+
+    lightcurve = models.ForeignKey(LightCurve, blank=True, null=True)
+    submission = models.ForeignKey(AstrometrySubmission, blank=True, null=True)
+    analysis = models.ForeignKey(ImageAnalysis, blank=True, null=True)
+
+
 class Reduction(models.Model):
     CREATED = 'CREATED'
     PENDING = 'PENDING'
@@ -171,6 +185,8 @@ class Reduction(models.Model):
                                       related_name='reduction_color_index_2_set',
                                       default=ImageFilter.objects.get_default_2())
 
+    image_companion = models.ForeignKey(UserUploadedImage, null=True, blank=True)
+
     second_order_extinction = models.FloatField(default=0)
     tf = models.FloatField(null=True)
     tf_graph_url = models.CharField(max_length=1024, null=True)
@@ -194,19 +210,6 @@ class Reduction(models.Model):
 
     def __str__(self):
         return 'Reduction for Analysis %s' % (str(self.analysis))
-
-class UserUploadedImage(models.Model):
-    """
-    Model for user uploaded images
-    """
-    user = models.ForeignKey(User)
-    image_url = models.URLField(max_length=512)
-    original_filename = models.CharField(max_length=512)
-    created_at = models.DateTimeField(auto_now=True)
-
-    lightcurve = models.ForeignKey(LightCurve, blank=True, null=True)
-    submission = models.ForeignKey(AstrometrySubmission, blank=True, null=True)
-    analysis = models.ForeignKey(ImageAnalysis, blank=True, null=True)
 
 admin.site.register(ImageAnalysis)
 admin.site.register(Reduction)

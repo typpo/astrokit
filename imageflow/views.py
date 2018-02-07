@@ -9,7 +9,7 @@ from django.utils.dateparse import parse_datetime
 from astrometry.util import create_new_lightcurve
 
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
-from imageflow.models import ImageAnalysis, ImageFilter, Reduction
+from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
 
 def index(request):
     return render_to_response('index.html', context_instance=RequestContext(request))
@@ -109,6 +109,22 @@ def set_color_index_2(request, subid):
     return JsonResponse({
         'success': True,
         'msg': 'Resolved input to %s' % str(filter_band)
+    })
+
+def set_image_companion(request, subid):
+    try:
+        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
+                                        .get(astrometry_job__submission__subid=subid)
+    except ObjectDoesNotExist:
+        raise Error('Could not find corresponding ImageAnalysis')
+    analysis.get_or_create_reduction()
+
+    imageid = request.POST.get('val')
+    analysis.reduction.image_companion = UserUploadedImage.objects.get(pk=imageid)
+    analysis.reduction.save()
+    return JsonResponse({
+        'success': True,
+        'msg': 'Resolved input'
     })
 
 def resolve_band(request, subid):
