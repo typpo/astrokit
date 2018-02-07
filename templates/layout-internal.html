@@ -18,6 +18,7 @@
       {% if request.user.is_authenticated %}
          | <a href="{% url "my-image-list" %}">My Uploads</a>
          | <a href="#">My Light Curves</a>
+         | <a href="{% url "lightcurve_listing" %}">Light Curves Listing</a>
          | <a href="{% url "upload_image" %}">Upload Images</a>
       {% endif %}
       <div class="pull-right">

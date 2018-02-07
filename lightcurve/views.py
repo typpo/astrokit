@@ -73,3 +73,23 @@ def get_status(request, lightcurve_id):
         'numProcessed': num_processed,
         'complete': num_processed == len(images),
     })
+
+def lightcurve_listing(request):
+    # SWITCH BACK WHEN FINALIZED
+    # lc = LightCurve.objects.filter(user=request.user.id)
+    lc_list = LightCurve.objects.filter(user=6)
+    context_list = []
+
+    for lc in lc_list:
+        images = UserUploadedImage.objects.filter(lightcurve=lc)
+        print("LC: ")
+        print(vars(lc))
+        print("IMAGES: ")
+        print(vars(images))
+        context_list.append({
+            'lightcurve': lc,
+            'images': images,
+        })
+
+    return render_to_response('lightcurve-listing.html', {"contexts": context_list},
+            context_instance=RequestContext(request))
