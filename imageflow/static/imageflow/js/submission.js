@@ -79,8 +79,10 @@ function setupCanvasListeners(canvas) {
 
 $(function() {
   var canvas = document.getElementById('star-plot');
-  setupCanvasListeners(canvas);
-  plotImage(canvas, window.originalImageUrl);
+  if (canvas) {
+    setupCanvasListeners(canvas);
+    plotImage(canvas, window.originalImageUrl);
+  }
 
   // Initialize tooltips.
   $('[data-toggle="tooltip"]').tooltip()
