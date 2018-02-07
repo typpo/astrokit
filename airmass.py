@@ -6,7 +6,7 @@ from astropy.coordinates import SkyCoord, EarthLocation, AltAz
 
 def annotate_with_airmass(analysis, reduction):
     annotated_stars = []
-    for star in analysis.catalog_reference_stars:
+    for star in analysis.annotated_point_sources:
         ra = star['index_ra']
         dec = star['index_dec']
         computed_airmass = compute_airmass_for_point(analysis.image_latitude,

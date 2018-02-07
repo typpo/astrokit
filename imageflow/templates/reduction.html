@@ -213,6 +213,9 @@ In which:<br>
   <a href="/submission/reduction/{{result.subid}}" class="btn btn-lg btn-primary">Review</a>
 </div>
 {% endblock %}
+
+{% csrf_token %}
+
 {% block scripts %}
   <script>
     window.subid = {{result.subid | jsonify }};

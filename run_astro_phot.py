@@ -311,7 +311,6 @@ class SubmissionHandler():
                 (submission.subid))
 
         # Get reference star standard magnitudes.
-        # TODO(ian): Produce a graphic that marks the reference stars.
         standard_mags = compute_apparent_magnitudes.get_standard_magnitudes_urat1(ref_stars)
         name = '%d_%d_catalog_reference_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
@@ -321,7 +320,17 @@ class SubmissionHandler():
                     s3_util.upload_to_s3(json.dumps(standard_mags, indent=2, use_decimal=True), \
                                          upload_key_prefix, name)
 
-        logger.info('-> Uploaded catalog magnitudes for submission %d' % \
+        # Combine into single annotated point sources object.
+        all_points = compute_apparent_magnitudes.get_standard_magnitudes_urat1(ref_stars)
+        name = '%d_%d_annotated_point_sources.json' % (submission.subid, job.jobid)
+        logger.info('  -> Uploading %s...' % name)
+        if not args.dry_run:
+            result.annotated_point_sources = all_points
+            result.annotated_point_sources_json_url = \
+                    s3_util.upload_to_s3(json.dumps(all_points, indent=2, use_decimal=True), \
+                                         upload_key_prefix, name)
+
+        logger.info('-> Uploaded annotated point sources for submission %d' % \
                 (submission.subid))
 
 def process_pending_submissions(args):
