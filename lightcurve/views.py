@@ -75,17 +75,11 @@ def get_status(request, lightcurve_id):
     })
 
 def lightcurve_listing(request):
-    # SWITCH BACK WHEN FINALIZED
-    # lc = LightCurve.objects.filter(user=request.user.id)
-    lc_list = LightCurve.objects.filter(user=6)
+    lc = LightCurve.objects.filter(user=request.user.id)
     context_list = []
 
     for lc in lc_list:
         images = UserUploadedImage.objects.filter(lightcurve=lc)
-        print("LC: ")
-        print(vars(lc))
-        print("IMAGES: ")
-        print(vars(images))
         context_list.append({
             'lightcurve': lc,
             'images': images,
