@@ -63,7 +63,7 @@ class ImageAnalysis(models.Model):
     psf_residual_image_url = models.CharField(max_length=1024)
 
     # ID of point source target.
-    target_id = models.IntegerField()
+    target_id = models.IntegerField(default=0)
 
     # Reference stars and magnitudes:
 
@@ -165,6 +165,9 @@ class UserUploadedImage(models.Model):
     lightcurve = models.ForeignKey(LightCurve, blank=True, null=True)
     submission = models.ForeignKey(AstrometrySubmission, blank=True, null=True)
     analysis = models.ForeignKey(ImageAnalysis, blank=True, null=True)
+
+    def __str__(self):
+        return '%s submission #%d' % (self.original_filename, self.submission.subid)
 
 
 class Reduction(models.Model):

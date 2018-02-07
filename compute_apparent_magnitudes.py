@@ -14,6 +14,8 @@ from decimal import Decimal, InvalidOperation
 import numpy as np
 
 from astropy.io import fits
+from astropy.wcs import WCS
+from astropy.wcs.utils import pixel_to_skycoord
 from astroquery.vizier import Vizier
 from rtree import index as rTreeIndex
 
@@ -47,12 +49,13 @@ def urat1_postprocess(obj):
         obj['delta_gr'] = obj['gmag'] - obj['rmag']
     return obj
 
-def choose_reference_stars_from_file(corr_fits_path, point_source_json_path):
-    point_source_json = open(point_source_json_path, 'r').read()
+def choose_reference_stars_from_file(image_fits_path, corr_fits_path, point_source_json_path):
+    image_fits_data = open(image_fits_path, 'rb').read()
     corr_fits_data = open(corr_fits_path, 'rb').read()
-    return choose_reference_stars(corr_fits_data, point_source_json)
+    point_source_json = open(point_source_json_path, 'r').read()
+    return choose_reference_stars(image_fits_data, corr_fits_data, point_source_json)
 
-def choose_reference_stars(corr_fits_data, point_source_json):
+def choose_reference_stars(image_fits_data, corr_fits_data, point_source_json):
     '''
     Joins stars found in point source extraction/flux computation step with
     stars from the astrometry step with known J2000 ra, dec.
@@ -71,8 +74,10 @@ def choose_reference_stars(corr_fits_data, point_source_json):
     # Then corr file.
     # corr.fits from astrometry.net. See https://groups.google.com/forum/#!topic/astrometry/Lk1LuhwBBNU
     # See also: https://groups.google.com/forum/#!topic/astrometry/UtpBHvjBXbM
-    im = fits.open(StringIO(corr_fits_data))
-    data = im[1].data
+    im = fits.open(StringIO(image_fits_data))
+    corr = fits.open(StringIO(corr_fits_data))
+    wcs = WCS(im[0].header)
+    data = corr[1].data
 
     # And build a lookup tree out of the astrometry corr data.
     tree = rTreeIndex.Index()
@@ -106,10 +111,16 @@ def choose_reference_stars(corr_fits_data, point_source_json):
         if dist > MAX_RTREE_DISTANCE:
             #logger.error('Rejecting a point source because its distance to nearest corr object is %f, greater than %f' % \
             #             (dist, MAX_RTREE_DISTANCE))
+            # TODO(ian): Must determine RA/DEC of this object using transformation.
+            # See http://www1.phys.vt.edu/~jhs/SIP/astrometry.html for technique
+            # See http://docs.astropy.org/en/stable/wcs/ and pixel_to_skycoord/wcs_pix2world for library
+            radec = pixel_to_skycoord(float(pse_x), float(pse_y), wcs)
             unknown_objects.append({
                 'id': point['id'],
                 'field_x': pse_x,
                 'field_y': pse_y,
+                'index_ra': radec.ra.deg,
+                'index_dec': radec.dec.deg,
                 'mag_instrumental': point['mag_instrumental'],
             })
             continue
@@ -239,6 +250,9 @@ def compute_apparent_magnitudes(reference_objects):
 
 def get_args():
     parser = argparse.ArgumentParser('Extract point sources from image.')
+    parser.add_argument('--fits',
+                        help='Image fits file.',
+                        required=True)
     parser.add_argument('--corr_fits',
                         help='fits astrometry output with J2000 ra and dec.',
                         required=True)
@@ -249,5 +263,6 @@ def get_args():
 
 if __name__ == '__main__':
     args = get_args()
-    reference_objects, unknown_objects = choose_reference_stars_from_file(args.corr_fits, args.point_source_json)
+    reference_objects, unknown_objects = \
+            choose_reference_stars_from_file(args.fits, args.corr_fits, args.point_source_json)
     compute_apparent_magnitudes(reference_objects)
