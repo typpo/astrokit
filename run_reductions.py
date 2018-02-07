@@ -70,6 +70,7 @@ def run_reductions(analysis):
                 continue
 
             term1 = star['mag_instrumental'] - comparison_star['mag_instrumental']
+            # FIXME(ian): CI calculation is not correct. Need to use companion image analysis.
             ci_target = star[ci1_key] - star[ci2_key]
             ci_comparison = comparison_star[ci1_key] - comparison_star[ci2_key]
             ci_diff = (ci_target - ci_comparison)
