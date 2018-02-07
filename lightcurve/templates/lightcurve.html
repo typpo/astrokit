@@ -125,9 +125,9 @@ h1 span {
         <a href="http://35.202.61.141/status/{{image.submission.subid}}" class="btn btn-default">View Astrometry job</a>
       {% endif %}
       {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
-        <div class="btn btn-default add-to-lightcurve-toggle" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
+        <div class="btn btn-default js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
       {% elif image.analysis and image.analysis.status == 'ADDED_TO_LIGHT_CURVE' %}
-        <div class="btn btn-success add-to-lightcurve-toggle" data-analysis-id="{{image.analysis.id}}">Included in lightcurve</div>
+        <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Remove from lightcurve</div>
       {% elif image.submission %}
         <div class="btn btn-default disabled">Add to lightcurve</div>
       {% endif %}

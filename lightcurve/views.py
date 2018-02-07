@@ -47,7 +47,7 @@ def save_observation_default(request, lightcurve_id):
     })
 
 def add_image_toggle(request, lightcurve_id):
-    analysis_id = request.POST.get('analysisId')
+    analysis_id = request.POST.get('analysis_id')
 
     lc = LightCurve.objects.get(id=lightcurve_id)
     image = lc.imageanalysis_set.get(id=analysis_id)
