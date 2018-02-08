@@ -123,6 +123,8 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
       <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
       <th>Field X</th>
       <th>Field Y</th>
+      <th>RA (J2000)</th>
+      <th>Dec (J2000)</th>
       <th>Instrumental magnitude</th>
     </tr>
     {% for star in result.data.unknown_stars %}
@@ -130,6 +132,8 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
         <td>{{star.id}}</td>
         <td>{{star.field_x|floatformat:2}}</td>
         <td>{{star.field_y|floatformat:2}}</td>
+        <td>{{star.index_ra|floatformat:5}}</td>
+        <td>{{star.index_dec|floatformat:5}}</td>
         <td>{{star.mag_instrumental|floatformat:3}}</td>
       </tr>
     {% endfor %}

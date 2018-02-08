@@ -197,7 +197,6 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
     return ret
 
 def merge_known_with_unknown(known, unknown):
-    # FIXME(ian): Determine index_ra and index_dec for unknowns.
     return sorted(known + unknown, key=lambda x: x['id'])
 
 def compute_apparent_magnitudes(reference_objects):
