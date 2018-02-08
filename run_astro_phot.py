@@ -18,6 +18,7 @@ sys.path.insert(0, os.getcwd())
 django.setup()
 
 import imageflow.s3_util as s3_util
+import astrometry.astrometry_original_image_client
 from astrometry.astrometry_client import Client
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.process import process_astrometry_online
@@ -124,9 +125,7 @@ class SubmissionHandler():
 
         logger.info('-> Uploading results for submission %d' % (submission.subid))
 
-        # FIXME(ian): This is not correct.
-        original_display_url = 'http://35.202.61.141/image/%d' \
-                % (job.jobid)
+        original_display_url = astrometry_original_image_client.get_url(submission.subid)
         annotated_display_url = 'http://35.202.61.141/annotated_display/%d' \
                 % (job.jobid)
         new_image_fits_url = 'http://35.202.61.141/new_fits_file/%d' \
