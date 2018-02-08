@@ -323,7 +323,7 @@ class SubmissionHandler():
                                          upload_key_prefix, name)
 
         # Combine into single annotated point sources object.
-        all_points = compute_apparent_magnitudes.merge_known_with_unknown(ref_stars, unknown_stars)
+        all_points = compute_apparent_magnitudes.merge_known_with_unknown(standard_mags, unknown_stars)
         name = '%d_%d_annotated_point_sources.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
