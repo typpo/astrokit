@@ -97,7 +97,6 @@ class SubmissionHandler():
     def process_completed_submission(self, job):
         submission = self.submission
         user_upload = UserUploadedImage.objects.get(submission=submission)
-        # TODO(ian): Update ImageAnalysis if it already exists.
         if user_upload.analysis:
             analysis = user_upload.analysis
         else:
