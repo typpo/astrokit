@@ -98,10 +98,13 @@ class SubmissionHandler():
         submission = self.submission
         user_upload = UserUploadedImage.objects.get(submission=submission)
         # TODO(ian): Update ImageAnalysis if it already exists.
-        analysis = ImageAnalysis.objects.create(astrometry_job=job,
-                                                lightcurve=user_upload.lightcurve,
-                                                user=user_upload.user)
-        user_upload.analysis = analysis
+        if user_upload.analysis:
+            analysis = user_upload.analysis
+        else:
+            analysis = ImageAnalysis.objects.create(astrometry_job=job,
+                                                    lightcurve=user_upload.lightcurve,
+                                                    user=user_upload.user)
+            user_upload.analysis = analysis
 
         logger.info('-> Submission %d, Job %d is complete' % (submission.subid, job.jobid))
 
@@ -321,7 +324,7 @@ class SubmissionHandler():
                                          upload_key_prefix, name)
 
         # Combine into single annotated point sources object.
-        all_points = compute_apparent_magnitudes.get_standard_magnitudes_urat1(ref_stars)
+        all_points = compute_apparent_magnitudes.merge_known_with_unknown(ref_stars, unknown_stars)
         name = '%d_%d_annotated_point_sources.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
