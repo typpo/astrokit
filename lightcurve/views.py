@@ -75,7 +75,7 @@ def get_status(request, lightcurve_id):
     })
 
 def lightcurve_listing(request):
-    lc = LightCurve.objects.filter(user=request.user.id)
+    lc_list = LightCurve.objects.filter(user=6)
     context_list = []
 
     for lc in lc_list:

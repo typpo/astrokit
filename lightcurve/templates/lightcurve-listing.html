@@ -27,6 +27,11 @@ article {
   vertical-align: middle;
 }
 
+article a {
+  margin: 6px 3px;
+  margin-top: 0px;
+}
+
 .upload {
   margin-top: -20px;
 }
@@ -39,7 +44,7 @@ article {
 <div>
   {% for context in contexts %}
     <div class="well">
-      <h4>Light Curve #{{context.lightcurve.id}}: <small>{{context.lightcurve.name}}</small></h4>
+      <h4><a href="/lightcurve/{{context.lightcurve.id}}/edit">Light Curve #{{context.lightcurve.id}}: </a><small>{{context.lightcurve.name}}</small></h4>
 
       {%if context.images%}
         {% for image in context.images %}
@@ -54,9 +59,8 @@ article {
               {% endif %}
             </div>
             <article>
-              <a href="http://35.202.61.141/status/{{image.submission.subid}}">
-                <strong>Job #{{image.submission.subid}}</strong>
-              </a><br>
+              <strong><a href="http://35.202.61.141/status/{{image.submission.subid}}">Job #{{image.submission.subid}}</a></strong>
+              <br>
               Filename:
               <a download href="{{image.image_url}}">
                 {{image.original_filename}}
