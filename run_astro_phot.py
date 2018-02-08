@@ -25,7 +25,7 @@ from astrometry.process import process_astrometry_online
 from imageflow.models import ImageAnalysis, UserUploadedImage
 
 import point_source_extraction
-import compute_apparent_magnitudes
+import photometry
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -288,7 +288,7 @@ class SubmissionHandler():
         # Compute reference stars and their apparent magnitudes.
         # TODO(ian): Produce a graphic that marks the reference stars.
         ref_stars, unknown_stars = \
-                compute_apparent_magnitudes.choose_reference_stars(image_fits_data, correlations, coords)
+                photometry.choose_reference_stars(image_fits_data, correlations, coords)
 
         name = '%d_%d_image_reference_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
@@ -313,7 +313,7 @@ class SubmissionHandler():
                 (submission.subid))
 
         # Get reference star standard magnitudes.
-        standard_mags = compute_apparent_magnitudes.get_standard_magnitudes_urat1(ref_stars)
+        standard_mags = photometry.get_standard_magnitudes_urat1(ref_stars)
         name = '%d_%d_catalog_reference_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
@@ -323,7 +323,7 @@ class SubmissionHandler():
                                          upload_key_prefix, name)
 
         # Combine into single annotated point sources object.
-        all_points = compute_apparent_magnitudes.merge_known_with_unknown(standard_mags, unknown_stars)
+        all_points = photometry.merge_known_with_unknown(standard_mags, unknown_stars)
         name = '%d_%d_annotated_point_sources.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:

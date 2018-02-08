@@ -20,7 +20,7 @@ fi
     --coords_json ./coords.json \
     ./image.fits
 
-../compute_apparent_magnitudes.py \
+../photometry.py \
     --corr_fits ./corr.fits \
     --point_source_json ./coords.json
 
