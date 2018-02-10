@@ -200,27 +200,48 @@ class Reduction(models.Model):
     image_companion = models.ForeignKey(UserUploadedImage, null=True, blank=True)
 
     second_order_extinction = models.FloatField(default=0)
+
+    # Transformation coefficient calculation.
     tf = models.FloatField(null=True)
     tf_std = models.FloatField(null=True)
     tf_graph_url = models.CharField(max_length=1024, null=True)
     zpf = models.FloatField(null=True)
 
+    # Hidden transform calculation.
+    hidden_transform = models.FloatField(null=True)
+    hidden_transform_intercept = models.FloatField(null=True)
+    hidden_transform_std = models.FloatField(null=True)
+    hidden_transform_rval = models.FloatField(null=True)
+    hidden_transform_graph_url = models.CharField(max_length=1024, null=True)
+
     def get_summary_obj(self):
         return {
             'urls': {
                 'tf_graph': self.tf_graph_url,
+                'hidden_transform_graph': self.hidden_transform_graph_url,
             },
             'meta': {
                 'status': self.status,
+                'image_companion_id': self.image_companion.id,
             },
             'data': {
                 'color_index_1_band': self.color_index_1.band if self.color_index_1 else '',
                 'color_index_2_band': self.color_index_2.band if self.color_index_1 else '',
-                'second_order_extinction': self.second_order_extinction,
+
                 'reduced_stars': self.reduced_stars,
+
+                'second_order_extinction': self.second_order_extinction,
+
+                # Transformation coefficent
                 'tf': self.tf,
                 'tf_std': self.tf_std,
                 'zpf': self.zpf,
+
+                # Hidden transform
+                'hidden_transform': self.hidden_transform,
+                'hidden_transform_intercept': self.hidden_transform_intercept,
+                'hidden_transform_std': self.hidden_transform_std,
+                'hidden_transform_rval': self.hidden_transform_rval,
             }
         }
 

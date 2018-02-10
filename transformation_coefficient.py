@@ -10,7 +10,7 @@ from imageflow.s3_util import upload_to_s3
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def compute_tf_for_analysis(analysis, reduction, save_graph=False):
+def calculate(analysis, reduction, save_graph=False):
     apparent_mags = []
     standard_mags = []
     colors_1 = []
@@ -31,18 +31,27 @@ def compute_tf_for_analysis(analysis, reduction, save_graph=False):
         colors_2.append(star[ci2_key])
 
     (slope, intercept, r_value, p_value, std_err), xs, ys = \
-            compute_tf(apparent_mags, standard_mags, colors_1, colors_2)
+            calculate_tf(apparent_mags, standard_mags, colors_1, colors_2)
     tf = slope
     zpf = intercept
 
     tf_graph_url = None
     if save_graph:
+        band1 = reduction.color_index_1.band.upper()
+        band2 = reduction.color_index_2.band.upper()
+
+        # Clear any existing state
+        plt.clf()
+        plt.cla()
+        plt.close()
+
         plt.title(r'$%s = %s_0 + %f(%s-%s) + %f\ \ \ \ s.d. %f\ mag$' % \
-                    (reduction.color_index_1.band.upper(), reduction.color_index_1.band.lower(),
-                     tf, reduction.color_index_1.band.upper(), reduction.color_index_2.band.upper(),
-                     zpf, std_err))
+                    (band1, band1.lower(), tf, band1, band2, zpf, std_err))
         plt.plot(xs, ys, '+', label='Original data', markersize=10)
         plt.plot(xs, tf*xs + zpf, 'r', label='Fitted line')
+
+        plt.xlabel('%s-%s (catalog)' % (band1, band2))
+        plt.ylabel(r'$M-m_0$')
 
         img_graph = StringIO()
         plt.savefig(img_graph)
@@ -52,13 +61,9 @@ def compute_tf_for_analysis(analysis, reduction, save_graph=False):
 
     return tf, zpf, std_err, tf_graph_url
 
-def compute_tf(apparent_mags, standard_mags, colors_1, colors_2):
-    # Reference: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.linalg.lstsq.html
+def calculate_tf(apparent_mags, standard_mags, colors_1, colors_2):
     xs = np.array(colors_1) - np.array(colors_2)
     ys = np.array(standard_mags) - np.array(apparent_mags)
-    A = np.vstack([xs, np.ones(len(xs))]).T
-    #m, c = np.linalg.lstsq(A, ys)[0]
-
     return stats.linregress(xs, ys), xs, ys
 
 def upload_graph(analysis, reduction, img_graph):
@@ -74,7 +79,7 @@ def upload_graph(analysis, reduction, img_graph):
     return upload_to_s3(img_graph, upload_key_prefix, name)
 
 def test():
-    compute_tf([0, .5, 1, 1.5],
+    calculate_tf([0, .5, 1, 1.5],
                [0, 1, 2, 3],
                [1, 1, 1, 1],
                [-2, -1.2, -1.9, 1.1],
