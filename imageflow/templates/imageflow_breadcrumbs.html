@@ -1,5 +1,6 @@
 <ol class="breadcrumb">
   <li {% if active_crumb == 'lightcurve' %}class="active"{% endif %}><a href="/lightcurve/{{result.lightcurve_id}}/edit">Light Curve #{{result.lightcurve_id}}</a></li>
+  <li><a href="/submission/{{result.subid}}">Submission #{{result.subid}}</a></li>
   <li {% if active_crumb == 'astrometry' %}class="active"{% endif %}><a href="/submission/{{result.subid}}">Astrometry</a></li>
   <li {% if active_crumb == 'point_sources' %}class="active"{% endif %}><a href="/submission/point_sources/{{result.subid}}">Point Sources</a></li>
   <li {% if active_crumb == 'reference_stars' %}class="active"{% endif %}><a href="/submission/reference_stars/{{result.subid}}">Reference Stars</a></li>
