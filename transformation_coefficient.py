@@ -11,16 +11,16 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def calculate(analysis, reduction, save_graph=False):
+    # Get the URAT1 keys for each filter and CI band. eg. 'Bmag', 'jmag'
+    filter_key = analysis.image_filter.urat1_key
+    ci1_key = reduction.color_index_1.urat1_key
+    ci2_key = reduction.color_index_2.urat1_key
+
     apparent_mags = []
     standard_mags = []
     colors_1 = []
     colors_2 = []
     for star in analysis.catalog_reference_stars:
-        # Get the URAT1 keys for each filter and CI band. eg. 'Bmag', 'jmag'
-        filter_key = analysis.image_filter.urat1_key
-        ci1_key = reduction.color_index_1.urat1_key
-        ci2_key = reduction.color_index_2.urat1_key
-
         if not (filter_key in star and ci1_key in star and ci2_key in star):
             print 'Rejecting star because it does not have the required standard magnitudes:', star
             continue

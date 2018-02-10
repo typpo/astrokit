@@ -23,8 +23,10 @@ from reduction.util import find_star_by_designation
 def supporting_calculations(analysis, reduction):
     '''Compute airmass and transformation coefficient.
     '''
+    reduction.reduced_stars = analysis.annotated_point_sources[:]
+
     # Airmass
-    reduction.reduced_stars = airmass.annotate_with_airmass(analysis, reduction)
+    airmass.annotate_with_airmass(analysis, reduction)
 
     # Transformation coefficient
     tf_computed, zpf, tf_std, tf_graph_url = tf.calculate(analysis, reduction, save_graph=True)
@@ -41,6 +43,8 @@ def supporting_calculations(analysis, reduction):
     reduction.hidden_transform_std = ht_std
     reduction.hidden_transform_rval = ht_r
     reduction.hidden_transform_graph_url = ht_url
+
+    hidden_transform.annotate_color_index(reduction)
 
 def run_reductions(analysis):
     '''Run reductions on a given ImageAnalysis.

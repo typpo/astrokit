@@ -189,6 +189,8 @@ class Reduction(models.Model):
     analysis = models.OneToOneField(ImageAnalysis, related_name='reduction')
 
     # Data fields
+
+    # TODO(ian): rename to reduced_points, because it can contain unknown objects.
     reduced_stars = JSONField()
     color_index_1 = models.ForeignKey(ImageFilter,
                                       related_name='reduction_color_index_1_set',

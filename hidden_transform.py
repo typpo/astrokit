@@ -16,13 +16,14 @@ def calculate(analysis, reduction, save_graph=False):
     if not companion_image:
         raise Error('You must have a companion image to calculate the hidden transform')
 
+    # Get the URAT1 keys for each filter and CI band. eg. 'Bmag', 'jmag'
+    filter_key = analysis.image_filter.urat1_key
+    ci1_key = reduction.color_index_1.urat1_key
+    ci2_key = reduction.color_index_2.urat1_key
+
     standard_diffs = []
     instrumental_diffs = []
     for star in analysis.catalog_reference_stars:
-        # Get the URAT1 keys for each filter and CI band. eg. 'Bmag', 'jmag'
-        filter_key = analysis.image_filter.urat1_key
-        ci1_key = reduction.color_index_1.urat1_key
-        ci2_key = reduction.color_index_2.urat1_key
 
         star_in_companion_image = find_star_by_designation(companion_image.analysis, star['designation'])
         if not star_in_companion_image:
@@ -79,3 +80,26 @@ def upload_graph(analysis, reduction, img_graph):
     logger.info('  -> Uploading %s...' % name)
     return upload_to_s3(img_graph, upload_key_prefix, name)
 
+def annotate_color_index(reduction):
+    companion_image = reduction.image_companion
+    if not companion_image:
+        raise Error('You must have a companion image to calculate the hidden transform')
+
+    ci1_key = reduction.color_index_1.urat1_key
+    ci2_key = reduction.color_index_2.urat1_key
+
+    for point in reduction.reduced_stars:
+        if 'designation' not in point:
+            # FIXME(ian): For the target, we cannot fetch by designation, we have to fetch by id.
+            continue
+
+        point_in_companion_image = find_star_by_designation(companion_image.analysis, point['designation'])
+        if not point_in_companion_image:
+            print 'Rejecting point because could not find it in companion image:', point
+            continue
+
+        ci = point['mag_instrumental'] - point_in_companion_image['mag_instrumental']
+        point['color_index'] = reduction.hidden_transform * ci + reduction.hidden_transform_intercept
+
+        if ci1_key in point and ci2_key in point:
+            point['color_index_known'] = point[ci1_key] - point[ci2_key]
