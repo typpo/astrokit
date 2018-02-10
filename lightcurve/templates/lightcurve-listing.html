@@ -57,17 +57,17 @@ article a {
           <div class="well">
             <div class="image-container">
               {% if image.analysis.original_display_url %}
-                <a href="/submission/{{image.submission.subid}}">
+                <a href="/analysis/{{image.id}}">
                   <img src="{{image.analysis.original_display_url}}" class="user-image" />
                 </a>
               {% else %}
-                <a href="/submission/{{image.submission.subid}}" class="alert alert-warning">Image Not Loaded</a>
+                <a href="/analysis/{{image.id}}" class="alert alert-warning">Image Not Loaded</a>
               {% endif %}
             </div>
             <article>
               <strong>
-                <a href="/submission/{{image.submission.subid}}">
-                  Submission #{{image.submission.subid}}
+                <a href="/analysis/{{image.id}}">
+                  Analysis #{{image.id}}
                 </a>
               </strong>
               <br>

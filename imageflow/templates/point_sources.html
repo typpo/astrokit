@@ -33,7 +33,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for point_source in result.data.coords %}
+      {% for point_source in analysis.data.coords %}
         <tr>
           <td>{{point_source.id}}</td>
           <td>{{point_source.field_x|floatformat:2}}</td>
@@ -48,16 +48,16 @@
 
 <h3>Point source coordinates</h3>
 <p>
-{{result.data.coords | length}} point sources detected via
+{{analysis.data.coords | length}} point sources detected via
 <a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
 </p>
-<a href="{{result.urls.coords_json_url}}">Coordinates JSON</a>
+<a href="{{analysis.urls.coords_json_url}}">Coordinates JSON</a>
 &middot;
-<a href="{{result.urls.coords_fits_url}}">Coordinates FITS</a>
+<a href="{{analysis.urls.coords_fits_url}}">Coordinates FITS</a>
 {% comment %}
 <div class="well">
-  <img src="{{result.urls.coords_plot_url}}" />
-  <a href="{{result.urls.coords_plot_url}}" download>Download</a>
+  <img src="{{analysis.urls.coords_plot_url}}" />
+  <a href="{{analysis.urls.coords_plot_url}}" download>Download</a>
 </div>
 {% endcomment %}
 
@@ -83,51 +83,51 @@
          class="form-control"
          type="number"
          min="0"
-         max="{{result.data.coords | length}}"
-         value="{{result.meta.target_id}}"/>
+         max="{{analysis.data.coords | length}}"
+         value="{{analysis.meta.target_id}}"/>
 </div>
 
 <h3>Point-spread function</h3>
 
 <h4>Fluxes for each point source</h4>
 <div class="well">
-  <img src="{{result.urls.psf_bar_url}}" />
-  <a href="{{result.urls.psf_bar_url}}" download>Download</a>
+  <img src="{{analysis.urls.psf_bar_url}}" />
+  <a href="{{analysis.urls.psf_bar_url}}" download>Download</a>
 </div>
 
 <h4>Histogram of flux distribution</h4>
 <div class="well">
-  <img src="{{result.urls.psf_hist_url}}" />
-  <a href="{{result.urls.psf_hist_url}}" download>Download</a>
+  <img src="{{analysis.urls.psf_hist_url}}" />
+  <a href="{{analysis.urls.psf_hist_url}}" download>Download</a>
 </div>
 
 <h4>Computed flux (astrokit) vs astrometry.net coarse flux estimation.</h4>
 <div class="well">
-  <img src="{{result.urls.psf_scatter_url}}" />
-  <a href="{{result.urls.psf_scatter_url}}" download>Download</a>
+  <img src="{{analysis.urls.psf_scatter_url}}" />
+  <a href="{{analysis.urls.psf_scatter_url}}" download>Download</a>
 </div>
 
 <h4>Residual image</h4>
 <div class="well">
-  <img src="{{result.urls.psf_residual_image_url}}" />
-  <a href="{{result.urls.psf_residual_image_url}}" download>Download</a>
+  <img src="{{analysis.urls.psf_residual_image_url}}" />
+  <a href="{{analysis.urls.psf_residual_image_url}}" download>Download</a>
 </div>
 
 <div style="text-align: right">
   <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
-  <a href="/submission/reference_stars/{{result.subid}}"
+  <a href="/analysis/reference_stars/{{analysis.id}}"
      class="btn btn-lg btn-primary">View reference stars</a>
 </div>
 {% endblock %}
 
 {% block scripts %}
   <script>
-    window.subid = {{result.subid | jsonify }};
-    window.originalImageUrl = {{result.urls.original_display_url | jsonify}};
-    window.pointSourceData = {{ result.data.coords | jsonify }};
+    window.analysisId = {{analysis.id | jsonify }};
+    window.originalImageUrl = {{analysis.urls.original_display_url | jsonify}};
+    window.pointSourceData = {{ analysis.data.coords | jsonify }};
   </script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <script src="{% static "imageflow/js/submission.js" %}" type="text/javascript"></script>
-  <script src="{% static "imageflow/js/submission_util.js" %}" type="text/javascript"></script>
-  <script src="{% static "imageflow/js/submission_point_source.js" %}" type="text/javascript"></script>
+  <script src="{% static "imageflow/js/shared.js" %}" type="text/javascript"></script>
+  <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>
+  <script src="{% static "imageflow/js/point_sources.js" %}" type="text/javascript"></script>
 {% endblock %}

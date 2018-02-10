@@ -7,10 +7,13 @@
 			<div class="panel panel-default">
 			  <div class="panel-heading">Uploaded by: {{ object.user.username }}</div>
 			  <div class="panel-body">
-          <a href="/submission/{{ object.astrometry_submission_id }}">
-            <img src="https://i.imgur.com/MXIBmLm.png" style="width: 100px; height: auto">
-            Submission {{ object.astrometry_submission_id }}
-          </a>
+          {% if image.analysis.original_display_url %}
+            <a href="/analysis/{{image.id}}">
+              <img src="{{object.analysis.original_display_url}}" class="user-image" />
+            </a>
+          {% else %}
+            <a href="/analysis/{{object.id}}" class="alert alert-warning">Image Not Loaded</a>
+          {% endif %}
 			  </div>
 			</div>
 
@@ -29,8 +32,6 @@
 	</div>
 </main>
 {% endblock content %}
-
-
 
 {% block styles %}
 	<style type="text/css">
