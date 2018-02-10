@@ -1,5 +1,7 @@
 # astrokit
 
+[![Join the chat at https://gitter.im/astrokit/Lobby](https://badges.gitter.im/astrokit/Lobby.svg)](https://gitter.im/astrokit/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 AstroKit (http://www.astrokit.org/) provides web-based tools for asteroid
 characterization.  It's supported by [NASA](http://nspires.nasaprs.com/external/).
 
