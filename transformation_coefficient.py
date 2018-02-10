@@ -29,7 +29,7 @@ def compute_tf_for_analysis(analysis, reduction, save_graph=False):
         colors_1.append(star[ci1_key])
         colors_2.append(star[ci2_key])
 
-    tf, (xs, ys, A, c) = compute_tf(apparent_mags, standard_mags, colors_1, colors_2)
+    tf, (xs, ys, A, zpf) = compute_tf(apparent_mags, standard_mags, colors_1, colors_2)
 
     tf_graph_url = None
     if save_graph:
@@ -45,7 +45,7 @@ def compute_tf_for_analysis(analysis, reduction, save_graph=False):
         tf_graph_url = upload_graph(analysis, reduction, img_graph.getvalue())
         logger.info('  -> Uploaded to %s' % tf_graph_url)
 
-    return tf, tf_graph_url
+    return tf, zpf, tf_graph_url
 
 def compute_tf(apparent_mags, standard_mags, colors_1, colors_2):
     # Reference: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.linalg.lstsq.html

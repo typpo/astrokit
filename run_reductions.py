@@ -25,8 +25,9 @@ def supporting_calculations(analysis, reduction):
     reduction.reduced_stars = airmass.annotate_with_airmass(analysis, reduction)
 
     # Transformation coefficient
-    computed_tf, tf_graph_url = tf.compute_tf_for_analysis(analysis, reduction, save_graph=True)
+    computed_tf, computed_zpf, tf_graph_url = tf.compute_tf_for_analysis(analysis, reduction, save_graph=True)
     reduction.tf = computed_tf
+    reduction.zpf = computed_zpf
     reduction.tf_graph_url = tf_graph_url
 
 def get_matching_star(analysis, match_star):

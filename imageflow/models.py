@@ -202,6 +202,7 @@ class Reduction(models.Model):
     second_order_extinction = models.FloatField(default=0)
     tf = models.FloatField(null=True)
     tf_graph_url = models.CharField(max_length=1024, null=True)
+    zpf = models.FloatField(null=True)
 
     def get_summary_obj(self):
         return {
