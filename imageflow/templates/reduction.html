@@ -19,7 +19,7 @@
   {% include 'imageflow_breadcrumbs.html' %}
 {% endwith %}
 
-<h3>Reduction to Standard Magnitudes</h3>
+<h2>Reduction to Standard Magnitudes</h2>
 <p>
 Let's convert our raw instrumental magnitudes to standard magnitudes per the following equation:
 </p>
@@ -29,7 +29,7 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
 </blockquote>
 </p>
 
-<h4>Step 1: Select color index</h4>
+<h3>Step 1: Select color index</h3>
 <div class="well">
   <div id="select-color-index-success" class="alert alert-success" style="display:none">
     Color index successfully updated.
@@ -60,7 +60,7 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
         <select id="select-image-companion" class="form-control">
           <option value="0">None selected</option>
           {% for image in potential_image_companions %}
-            <option value="{{image.id}}" {% if reduction.meta.image_companion_id == image.id %}selected{% endif %}>{{image.original_filename}} - filter {{image.analysis.image_filter}}</option>
+            <option value="{{image.id}}" {% if reduction.meta.image_companion_id == image.id %}selected{% endif %}>#{{image.analysis.id}} {{image.original_filename | truncatechars:10}} - filter {{image.analysis.image_filter}} - target {{image.analysis.target_id}}</option>
           {% endfor %}
         </select>
         <select id="select-color-index-2" class="form-control">
@@ -81,7 +81,7 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
   </form>
 </div>
 
-<h4>Step 2: Enter second-order extinction k"<sub><em>f</em></sub></h4>
+<h3>Step 2: Enter second-order extinction k"<sub><em>f</em></sub></h3>
 <div class="well">
   <div id="second-order-extinction-success" class="alert alert-success" style="display:none">
     k'' successfully updated.
@@ -100,7 +100,7 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
   <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
 </div>
 
-<h4>Step 3: Compute transform coefficient T<sub><em>f</em></sub></h4>
+<h3>Step 3: Compute transform coefficient T<sub><em>f</em></sub></h3>
 <p>
 T<sub><em>f</em></sub> is a coefficient that converts your raw instrumental magnitude to a standard magnitude in color band <em>f</em>. It is solved for by the following equation:
 </p>
@@ -134,7 +134,7 @@ In which:<br>
   {% endif %}
 </div>
 
-<h4>Step 4: Compute airmass X<sub>t</sub></h4>
+<h3>Step 4: Compute airmass X<sub>t</sub></h3>
 
 <div class="well" style="overflow: auto; max-height: 400px">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
@@ -146,6 +146,9 @@ In which:<br>
     <p>
       Using date <strong>{{analysis.meta.datetime | date:'c'}}</strong> and altitude <strong>{{analysis.meta.elevation}} meters</strong>.
     </p>
+    <p>
+      Your target id: {{analysis.meta.target_id}}
+    </p>
     <table class="table table-striped table-hover">
       <tr>
         <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
@@ -155,7 +158,7 @@ In which:<br>
         <th>Airmass</th>
       </tr>
       {% for star in reduction.data.reduced_stars %}
-        <tr>
+        <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
           <td>{{star.id}}</td>
           <td>
             <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
@@ -169,7 +172,7 @@ In which:<br>
   {% endif %}
 </div>
 
-<h4>Step 5: Find the hidden transform</h4>
+<h3>Step 5: Find the hidden transform</h3>
 <div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask">
@@ -177,17 +180,23 @@ In which:<br>
       <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
     </p>
   {% else %}
-    Hidden transform = {{reduction.data.hidden_transform}}<br>
-    Standard error = {{reduction.data.hidden_transform_std}}<br>
-    rval = {{reduction.data.hidden_transform_rval}}
+    <p>
+      Hidden transform = {{reduction.data.hidden_transform}}<br>
+      Standard error = {{reduction.data.hidden_transform_std}}<br>
+      rval = {{reduction.data.hidden_transform_rval}}
+    </p>
     <img src="{{reduction.urls.hidden_transform_graph}}">
   {% endif %}
 </div>
 
 {% if not no_reduction and reduction.meta.status != 'CREATED' %}
+<h4>Sanity-checking the hidden transform</h4>
 <div class="well" style="overflow: auto; max-height: 400px">
     <p>
-      Using the formula derived above:
+      This table compares values generated using the formula derived above with known catalog values for your color index.
+    </p>
+    <p>
+      Your target id: {{analysis.meta.target_id}}
     </p>
     <table class="table table-striped table-hover">
       <tr>
@@ -199,7 +208,7 @@ In which:<br>
         <th><span class="header-tooltip" data-toggle="tooltip" title="From catalog">Color Index (known)</span></th>
       </tr>
       {% for star in reduction.data.reduced_stars %}
-        <tr>
+        <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
           <td>{{star.id}}</td>
           <td>
             <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
@@ -214,7 +223,7 @@ In which:<br>
 </div>
 {% endif %}
 
-<h4>Step 6: Compute the Color Index</h4>
+<h3>Step 6: Compute the Color Index</h3>
 <div class="well" style="overflow: auto; max-height: 400px">
 <p>
   CI<sub>t</sub>: Color index of the target object<br>
@@ -223,7 +232,7 @@ In which:<br>
 </div>
 
 
-<h4>Step 7: Apply the formula to get M<sub><em>t</em></sub></h4>
+<h3>Step 7: Apply the formula to get M<sub><em>t</em></sub></h3>
 
 <div class="well" style="overflow: auto; max-height: 400px">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
@@ -252,7 +261,7 @@ In which:<br>
         <th>Diff</th>
       </tr>
       {% for star in reduction.data.reduced_stars %}
-        <tr>
+        <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
           <td>{{star.id}}</td>
           <td>
             <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>

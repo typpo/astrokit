@@ -29,6 +29,11 @@ ol.breadcrumb > li.active a {
   color: #444;
 }
 
+tr.highlight {
+  background-color: yellow !important;
+  font-weight: bold;
+}
+
 .container-analysis {
   width: 100%;
 }

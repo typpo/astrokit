@@ -18,7 +18,6 @@ import transformation_coefficient as tf
 import hidden_transform as hidden_transform
 
 from imageflow.models import Reduction, ImageAnalysis, ImageFilter
-from reduction.util import find_star_by_designation
 
 def supporting_calculations(analysis, reduction):
     '''Compute airmass and transformation coefficient.
@@ -44,7 +43,7 @@ def supporting_calculations(analysis, reduction):
     reduction.hidden_transform_rval = ht_r
     reduction.hidden_transform_graph_url = ht_url
 
-    hidden_transform.annotate_color_index(reduction)
+    hidden_transform.annotate_color_index(analysis, reduction)
 
 def run_reductions(analysis):
     '''Run reductions on a given ImageAnalysis.
@@ -66,18 +65,6 @@ def run_reductions(analysis):
         if filter_key not in star:
             print 'Skipping star %d because it does not have filter key %s' % (i, filter_key)
             continue
-
-        # Look up this same star in the companion image of this analysis. Used
-        # for color index.
-        companion_image = analysis.reduction.image_companion
-        if companion_image:
-            star_in_companion_image = find_star_by_designation(companion_image.analysis, star['designation'])
-            if not star_in_companion_image:
-                print 'Skipping star %d because could not locate same star %s in companion image' % (i, star['designation'])
-                continue
-        else:
-            # TODO(ian): handle this
-            pass
 
         # Mt = (mt - mc) - k"f Xt (CIt - CIc) + Tf (CIt - CIc) + Mc
         estimates = []

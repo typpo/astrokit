@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 from imageflow.s3_util import upload_to_s3
-from reduction.util import find_star_by_designation
+from reduction.util import find_star_by_designation, find_point_by_id
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,7 +25,9 @@ def calculate(analysis, reduction, save_graph=False):
     instrumental_diffs = []
     for star in analysis.catalog_reference_stars:
 
-        star_in_companion_image = find_star_by_designation(companion_image.analysis, star['designation'])
+        star_in_companion_image = \
+                find_star_by_designation(companion_image.analysis.catalog_reference_stars,
+                                         star['designation'])
         if not star_in_companion_image:
             print 'Rejecting star because could not find it in companion image:', star
             continue
@@ -80,7 +82,7 @@ def upload_graph(analysis, reduction, img_graph):
     logger.info('  -> Uploading %s...' % name)
     return upload_to_s3(img_graph, upload_key_prefix, name)
 
-def annotate_color_index(reduction):
+def annotate_color_index(analysis, reduction):
     companion_image = reduction.image_companion
     if not companion_image:
         raise Error('You must have a companion image to calculate the hidden transform')
@@ -88,12 +90,15 @@ def annotate_color_index(reduction):
     ci1_key = reduction.color_index_1.urat1_key
     ci2_key = reduction.color_index_2.urat1_key
 
+    # Compute for all known stars.
     for point in reduction.reduced_stars:
         if 'designation' not in point:
             # FIXME(ian): For the target, we cannot fetch by designation, we have to fetch by id.
             continue
 
-        point_in_companion_image = find_star_by_designation(companion_image.analysis, point['designation'])
+        point_in_companion_image = \
+                find_star_by_designation(companion_image.analysis.catalog_reference_stars,
+                                         point['designation'])
         if not point_in_companion_image:
             print 'Rejecting point because could not find it in companion image:', point
             continue
@@ -103,3 +108,11 @@ def annotate_color_index(reduction):
 
         if ci1_key in point and ci2_key in point:
             point['color_index_known'] = point[ci1_key] - point[ci2_key]
+
+    # Now compute for target.
+    target_in_companion_image = \
+            find_point_by_id(companion_image.analysis.annotated_point_sources,
+                             companion_image.analysis.target_id)
+    target = find_point_by_id(reduction.reduced_stars, analysis.target_id)
+    ci = target['mag_instrumental'] - target_in_companion_image['mag_instrumental']
+    target['color_index'] = reduction.hidden_transform * ci + reduction.hidden_transform_intercept
