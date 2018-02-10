@@ -11,7 +11,8 @@ h4 {
   display: inline-block;
 }
 
-.user-image {
+img.user-image {
+  display: inline;
   max-width: 100px;
   max-height: 100px;
 }
@@ -25,6 +26,9 @@ h4 {
 article {
   display: inline-block;
   vertical-align: middle;
+  width: 75%;
+  word-wrap    : break-word;
+  overflow-wrap: break-word;
 }
 
 article a {
@@ -40,8 +44,13 @@ article a {
 {% endblock %}
 
 {% block content-interior %}
-<h1>Light Curve Listing</h1>
+{% if request_all %}
+  <h1>All Light Curves</h1>
+{% else %}
+  <h1>Light Curve by {{request.user}}</h1>
+{% endif %}
 <div>
+
   {% for context in contexts %}
     <div class="well">
       <h4><a href="/lightcurve/{{context.lightcurve.id}}/edit">Light Curve #{{context.lightcurve.id}}: </a><small>{{context.lightcurve.name}}</small></h4>
@@ -62,7 +71,7 @@ article a {
               <strong><a href="http://35.202.61.141/status/{{image.submission.subid}}">Job #{{image.submission.subid}}</a></strong>
               <br>
               Filename:
-              <a download href="{{image.image_url}}">
+              <a download href="{{image.image_url}}"  class="filename">
                 {{image.original_filename}}
               </a><br>
               Uploaded: {{image.created_at}}<br>
@@ -84,7 +93,7 @@ article a {
 
 {% block scripts %}
   <script>
-    window.lightcurve_id = {{lightcurve.id}};
+    window.lightcurve_id = {{context.lightcurve.id}};
   </script>
   <script src="{% static "imageflow/js/submission_util.js" %}" type="text/javascript"></script>
   <script src="{% static "lightcurve/js/lightcurve.js" %}" type="text/javascript"></script>

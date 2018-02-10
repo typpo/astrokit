@@ -75,7 +75,7 @@ def get_status(request, lightcurve_id):
     })
 
 def lightcurve_listing(request):
-    lc_list = LightCurve.objects.filter(user=6)
+    lc_list = LightCurve.objects.filter(user=request.user.id) #request.user.id
     context_list = []
 
     for lc in lc_list:
@@ -86,4 +86,18 @@ def lightcurve_listing(request):
         })
 
     return render_to_response('lightcurve-listing.html', {"contexts": context_list},
+            context_instance=RequestContext(request))
+
+def all_lightcurve(request):
+    lc_list = LightCurve.objects.all()
+    context_list = []
+
+    for lc in lc_list:
+        images = UserUploadedImage.objects.filter(lightcurve=lc)
+        context_list.append({
+            'lightcurve': lc,
+            'images': images,
+        })
+
+    return render_to_response('lightcurve-listing.html', {"contexts": context_list, "request_all": True},
             context_instance=RequestContext(request))
