@@ -235,7 +235,7 @@ def point_sources(request, pk):
                 context_instance=RequestContext(request))
 
     template_args = {
-        'analysis': result.get_summary_obj(),
+        'analysis': analysis.get_summary_obj(),
     }
     return render_to_response('point_sources.html', template_args,
             context_instance=RequestContext(request))
@@ -248,7 +248,7 @@ def reference_stars(request, pk):
                 context_instance=RequestContext(request))
 
     template_args = {
-        'analysis': result.get_summary_obj(),
+        'analysis': analysis.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
     }
     return render_to_response('reference_stars.html', template_args,
@@ -284,16 +284,8 @@ def reduction(request, pk):
                 context_instance=RequestContext(request))
 
 def api_get_analysis_results(request, subid):
-    try:
-        result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                      .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'message': 'Result not found.',
-        })
-
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
     return JsonResponse({
         'success': True,
-        'result': result.get_summary_obj(),
+        'analysis': analysis.get_summary_obj(),
     })
