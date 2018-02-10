@@ -63,7 +63,7 @@ article a {
               <br>
               Filename:
               <a download href="{{image.image_url}}">
-                {{image.original_filename}}
+                {{image.original_filename | truncatechars:50}}
               </a><br>
               Uploaded: {{image.created_at}}<br>
             </article>
