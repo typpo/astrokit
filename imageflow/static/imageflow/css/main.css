@@ -24,6 +24,11 @@ body {
   margin-bottom: 15px;
 }
 
+ol.breadcrumb > li.active a {
+  text-decoration: none;
+  color: #444;
+}
+
 .container-analysis {
   width: 100%;
 }

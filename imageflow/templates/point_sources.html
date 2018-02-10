@@ -14,13 +14,10 @@
 {% endblock %}
 
 {% block content-interior %}
-<ol class="breadcrumb">
-  <li><a href="#">Astrometry</a></li>
-  <li class="active">Point Sources</li>
-  <li><a href="#">Reference Stars</a></li>
-  <li><a href="#">Reduction</a></li>
-  <li><a href="#">Light Curve</a></li>
-</ol>
+
+{% with active_crumb='point_sources' %}
+  {% include 'imageflow_breadcrumbs.html' %}
+{% endwith %}
 
 <h3>Instrumental photometry</h3>
 

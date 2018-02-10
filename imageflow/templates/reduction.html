@@ -14,13 +14,10 @@
 {% endblock %}
 
 {% block content-interior %}
-<ol class="breadcrumb">
-  <li><a href="#">Astrometry</a></li>
-  <li><a href="#">Point Sources</a></li>
-  <li><a href="#">Reference Stars</a></li>
-  <li>Reduction</li>
-  <li><a href="#">Light Curve</a></li>
-</ol>
+
+{% with active_crumb='reduction' %}
+  {% include 'imageflow_breadcrumbs.html' %}
+{% endwith %}
 
 <h3>Reduction to Standard Magnitudes</h3>
 <p>
