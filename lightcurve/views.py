@@ -74,7 +74,7 @@ def get_status(request, lightcurve_id):
         'complete': num_processed == len(images),
     })
 
-def lightcurve_listing(request):
+def my_lightcurve(request):
     lc_list = LightCurve.objects.filter(user=request.user.id) #request.user.id
     context_list = []
 
