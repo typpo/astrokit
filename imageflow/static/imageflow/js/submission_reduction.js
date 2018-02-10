@@ -1,6 +1,6 @@
 function setupRunReductions() {
   $('.js-run-reductions').on('click', function() {
-    $.post('/submission/' + window.subid + '/set_reduction_status', {
+    $.post('/analysis/' + window.analysisId + '/set_reduction_status', {
       status: 'PENDING'
     }, function(data) {
       $('.reductions-loader').show();
@@ -11,7 +11,7 @@ function setupRunReductions() {
 }
 
 function pollReductionStatus() {
-  $.post('/submission/' + window.subid + '/get_reduction_status', function(data) {
+  $.post('/analysis/' + window.analysisId + '/get_reduction_status', function(data) {
     if (data.status === 'COMPLETE') {
       $('.reductions-loader').hide();
       window.location.reload();

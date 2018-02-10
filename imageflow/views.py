@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponseRedirect
-from django.shortcuts import redirect, render_to_response
+from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.utils.dateparse import parse_datetime
 
@@ -31,29 +31,23 @@ def upload_image(request):
     else:
         return HttpResponseRedirect(reverse('login'))
 
-def astrometry(request, subid):
-    # TODO(ian): Look up submission and view status.
+def astrometry(request, pk):
     # TODO(ian): Handle failed Analysis Result.
-    try:
-        result = ImageAnalysis.objects.exclude( \
-                status=ImageAnalysis.PENDING).get( \
-                astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.PENDING:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
     template_args = {
-        'result': result.get_summary_obj(),
+        'analysis': analysis.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
     }
     return render_to_response('submission.html', template_args,
             context_instance=RequestContext(request))
 
-def set_datetime(request, subid):
-    try:
-        result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                      .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
+def set_datetime(request, pk):
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.PENDING:
         return JsonResponse({
             'success': False,
             'msg': 'Could not find corresponding ImageAnalysis',
@@ -74,20 +68,21 @@ def set_datetime(request, subid):
             'msg': 'Could not parse datetime',
         })
 
-    result.image_datetime = parsed_dt
-    result.save()
+    analysis.image_datetime = parsed_dt
+    analysis.save()
 
     return JsonResponse({
         'success': True,
         'msg': 'Resolved input to %s' % parsed_dt.isoformat()
     })
 
-def set_target_point_source(request, subid):
-    try:
-        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                        .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
-        raise Error('Could not find corresponding ImageAnalysis')
+def set_target_point_source(request, pk):
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.PENDING:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Could not find corresponding ImageAnalysis',
+        })
 
     analysis.target_id = request.POST.get('val')
     analysis.save()
@@ -95,8 +90,8 @@ def set_target_point_source(request, subid):
         'success': True,
     })
 
-def set_filter_band(request, subid):
-    analysis, filter_band = resolve_band(request, subid)
+def set_filter_band(request, pk):
+    analysis, filter_band = resolve_band(request, pk)
     analysis.image_filter = filter_band
     analysis.save()
     return JsonResponse({
@@ -104,8 +99,8 @@ def set_filter_band(request, subid):
         'msg': 'Resolved input to %s' % str(filter_band)
     })
 
-def set_color_index_1(request, subid):
-    analysis, filter_band = resolve_band(request, subid)
+def set_color_index_1(request, pk):
+    analysis, filter_band = resolve_band(request, pk)
     analysis.get_or_create_reduction()
     analysis.reduction.color_index_1 = filter_band
     analysis.reduction.save()
@@ -114,8 +109,8 @@ def set_color_index_1(request, subid):
         'msg': 'Resolved input to %s' % str(filter_band)
     })
 
-def set_color_index_2(request, subid):
-    analysis, filter_band = resolve_band(request, subid)
+def set_color_index_2(request, pk):
+    analysis, filter_band = resolve_band(request, pk)
     analysis.get_or_create_reduction()
     analysis.reduction.color_index_2 = filter_band
     analysis.reduction.save()
@@ -124,12 +119,13 @@ def set_color_index_2(request, subid):
         'msg': 'Resolved input to %s' % str(filter_band)
     })
 
-def set_image_companion(request, subid):
-    try:
-        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                        .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
-        raise Error('Could not find corresponding ImageAnalysis')
+def set_image_companion(request, pk):
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.PENDING:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Could not find corresponding ImageAnalysis',
+        })
     analysis.get_or_create_reduction()
 
     imageid = request.POST.get('val')
@@ -140,11 +136,9 @@ def set_image_companion(request, subid):
         'msg': 'Resolved input'
     })
 
-def resolve_band(request, subid):
-    try:
-        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                        .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
+def resolve_band(request, pk):
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.PENDING:
         raise Error('Could not find corresponding ImageAnalysis')
 
     band = request.POST.get('val')
@@ -158,32 +152,28 @@ def resolve_band(request, subid):
 
     return analysis, filter_band
 
-def set_elevation(request, subid):
-    return set_float(request, subid, 'image_elevation')
+def set_elevation(request, pk):
+    return set_float(request, pk, 'image_elevation')
 
-def set_latitude(request, subid):
-    return set_float(request, subid, 'image_latitude')
+def set_latitude(request, pk):
+    return set_float(request, pk, 'image_latitude')
 
-def set_longitude(request, subid):
-    return set_float(request, subid, 'image_longitude')
+def set_longitude(request, pk):
+    return set_float(request, pk, 'image_longitude')
 
-def set_second_order_extinction(request, subid):
-    try:
-        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                        .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
+def set_second_order_extinction(request, pk):
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.PENDING:
         return JsonResponse({
             'success': False,
             'msg': 'Could not find corresponding ImageAnalysis',
         })
     analysis.get_or_create_reduction()
-    return set_float(request, subid, 'second_order_extinction', on_reduction=True)
+    return set_float(request, pk, 'second_order_extinction', on_reduction=True)
 
-def set_float(request, subid, attrname, on_reduction=False):
-    try:
-        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                        .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
+def set_float(request, pk, attrname, on_reduction=False):
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.PENDING:
         return JsonResponse({
             'success': False,
             'msg': 'Could not find corresponding ImageAnalysis',
@@ -208,12 +198,10 @@ def set_float(request, subid, attrname, on_reduction=False):
         'success': True,
     })
 
-def set_reduction_status(request, subid):
+def set_reduction_status(request, pk):
     # TODO(ian): Verify owner of reduction for all these ImageAnalysis fetches.
-    try:
-        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                        .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.PENDING:
         return JsonResponse({
             'success': False,
             'msg': 'Could not find corresponding ImageAnalysis',
@@ -226,11 +214,9 @@ def set_reduction_status(request, subid):
         'message': 'Reduction status set to pending',
     })
 
-def get_reduction_status(request, subid):
-    try:
-        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                        .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
+def get_reduction_status(request, pk):
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.PENDING:
         return JsonResponse({
             'success': False,
             'msg': 'Could not find corresponding ImageAnalysis',
@@ -241,43 +227,37 @@ def get_reduction_status(request, subid):
         'status': reduction.status,
     })
 
-def point_sources(request, subid):
+def point_sources(request, pk):
     # TODO(ian): Dedup this with above code.
-    try:
-        result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                      .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.PENDING:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
     template_args = {
-        'result': result.get_summary_obj(),
+        'analysis': result.get_summary_obj(),
     }
     return render_to_response('point_sources.html', template_args,
             context_instance=RequestContext(request))
 
-def reference_stars(request, subid):
+def reference_stars(request, pk):
     # TODO(ian): Dedup this with above code.
-    try:
-        result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                      .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.PENDING:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
     template_args = {
-        'result': result.get_summary_obj(),
+        'analysis': result.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
     }
     return render_to_response('reference_stars.html', template_args,
             context_instance=RequestContext(request))
 
-def reduction(request, subid):
+def reduction(request, pk):
     # TODO(ian): Dedup this with above code.
-    try:
-        analysis = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                      .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.PENDING:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
@@ -285,7 +265,7 @@ def reduction(request, subid):
     potential_image_companions = analysis.lightcurve.useruploadedimage_set.all()
 
     template_args = {
-        'result': analysis.get_summary_obj(),
+        'analysis': analysis.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
 
         'potential_image_companions': potential_image_companions,
@@ -303,25 +283,7 @@ def reduction(request, subid):
         return render_to_response('reduction.html', template_args,
                 context_instance=RequestContext(request))
 
-def add_to_light_curve(request, subid):
-    return 'not yet implemented'
-
-def light_curve(request, subid):
-    # TODO(ian): Dedup this with above code.
-    try:
-        result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
-                                      .get(astrometry_job__submission__subid=subid)
-    except ObjectDoesNotExist:
-        return render_to_response('submission_pending.html', {},
-                context_instance=RequestContext(request))
-
-    template_args = {
-        'result': result.get_summary_obj(),
-    }
-    return render_to_response('light_curve.html', template_args,
-            context_instance=RequestContext(request))
-
-def api_get_submission_results(request, subid):
+def api_get_analysis_results(request, subid):
     try:
         result = ImageAnalysis.objects.exclude(status=ImageAnalysis.PENDING) \
                                       .get(astrometry_job__submission__subid=subid)

@@ -78,6 +78,7 @@ h1 span {
   </p>
   {% for image in images %}
   <div id="image-{{forloop.counter0}}" class="well">
+    Analysis #{{image.analysis.id}}<br>
     Filename:
     <a download href="{{image.image_url}}">
       {{image.original_filename}}
@@ -117,12 +118,12 @@ h1 span {
 
     <div class="button-row">
       {% if image.submission and image.submission.status == 'COMPLETE' %}
-        <a href="/submission/{{image.submission.subid}}" class="btn btn-primary">Review Analysis</a>
+        <a href="/analysis/{{image.id}}" class="btn btn-primary">Review Analysis</a>
       {% elif image.submission %}
-        <a href="/submission/{{image.submission.subid}}" class="btn btn-primary disabled">Analysis Pending</a>
+        <a href="/analysis/{{image.id}}" class="btn btn-primary disabled">Analysis Pending</a>
       {% endif %}
       {% if image.submission %}
-        <a href="http://35.202.61.141/status/{{image.submission.subid}}" class="btn btn-default">View Astrometry job</a>
+        <a href="http://35.202.61.141/status/{{image.id}}" class="btn btn-default">View Astrometry job</a>
       {% endif %}
       {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
         <div class="btn btn-default js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
