@@ -24,3 +24,14 @@ def create_new_lightcurve(user, imgs):
                           lightcurve=lc).save()
 
     return lc
+
+def add_new_lightcurve(imgs, lightcurve_id):
+    lc = LightCurve.objects.get(id=lightcurve_id)
+
+    for img in imgs:
+        url = s3_util.upload_to_s3(img.read(), 'raw', img.name)
+        print 'Added %s to s3 url: %s' % (img.name, url)
+        UserUploadedImage(image_url=url,
+                          original_filename=img.name,
+                          lightcurve=lc).save()
+    return lc

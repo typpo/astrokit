@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, url
 
 urlpatterns = patterns('imageflow.views',
+    url(r'^upload/(?P<lightcurve_id>[0-9]+)$', 'add_image', name='add_image'),
     url(r'^upload$', 'upload_image', name='upload_image'),
-    url(r'^upload/(?P<pk>[0-9]+)$', 'add_image', name='add_image'),
     url(r'^analysis/(?P<pk>[0-9]+)$', 'astrometry', name='astrometry'),
     url(r'^analysis/(?P<pk>[0-9]+)/set_datetime$', 'set_datetime', name='set_datetime'),
     url(r'^analysis/(?P<pk>[0-9]+)/set_filter_band$', 'set_filter_band', name='set_filter_band'),

@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.utils.dateparse import parse_datetime
 
-from astrometry.util import create_new_lightcurve
+from astrometry.util import create_new_lightcurve, add_new_lightcurve
 
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
@@ -27,6 +27,23 @@ def upload_image(request):
             })
 
         return render_to_response('upload_image.html', {},
+                context_instance=RequestContext(request))
+    else:
+        return HttpResponseRedirect(reverse('login'))
+
+def add_image(request, lightcurve_id):
+    if request.user.is_authenticated():
+        if request.method == 'POST':
+            imgs = [request.FILES[key] for key in request.FILES]
+            lightcurve = add_new_lightcurve(imgs, lightcurve_id)
+
+            # Redirect to submission viewing page.
+            return JsonResponse({
+                'details': 'success',
+                'redirect_url': reverse('edit_lightcurve', kwargs={'lightcurve_id': lightcurve_id}),
+            })
+
+        return render_to_response('upload_image.html', {"lightcurve_id": lightcurve_id},
                 context_instance=RequestContext(request))
     else:
         return HttpResponseRedirect(reverse('login'))
