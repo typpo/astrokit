@@ -201,6 +201,7 @@ class Reduction(models.Model):
 
     second_order_extinction = models.FloatField(default=0)
     tf = models.FloatField(null=True)
+    tf_std = models.FloatField(null=True)
     tf_graph_url = models.CharField(max_length=1024, null=True)
     zpf = models.FloatField(null=True)
 
@@ -218,6 +219,8 @@ class Reduction(models.Model):
                 'second_order_extinction': self.second_order_extinction,
                 'reduced_stars': self.reduced_stars,
                 'tf': self.tf,
+                'tf_std': self.tf_std,
+                'zpf': self.zpf,
             }
         }
 

@@ -126,7 +126,9 @@ In which:<br>
       <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
     </p>
   {% else %}
-    Slope = t<sub><em>f</em></sub> = {{reduction.data.tf}}
+    Slope = t<sub><em>f</em></sub> = {{reduction.data.tf}}<br>
+    Intercept = ZP<sub><em>f</em></sub> = {{reduction.data.zpf}}<br>
+    Standard error = {{reduction.data.tf_std}}
     <img src="{{reduction.urls.tf_graph}}">
   {% endif %}
 </div>

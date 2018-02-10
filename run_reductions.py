@@ -25,8 +25,11 @@ def supporting_calculations(analysis, reduction):
     reduction.reduced_stars = airmass.annotate_with_airmass(analysis, reduction)
 
     # Transformation coefficient
-    computed_tf, computed_zpf, tf_graph_url = tf.compute_tf_for_analysis(analysis, reduction, save_graph=True)
+    computed_tf, computed_zpf, tf_std, tf_graph_url = tf.compute_tf_for_analysis(analysis, reduction, save_graph=True)
     reduction.tf = computed_tf
+    # TODO(ian): Brian Warner says 0.015 stderr is higher than preferred, and
+    # range of color index should be > .6
+    reduction.tf_std = tf_std
     reduction.zpf = computed_zpf
     reduction.tf_graph_url = tf_graph_url
 
