@@ -15,39 +15,41 @@ django.setup()
 
 import airmass
 import transformation_coefficient as tf
+import hidden_transform as hidden_transform
 
 from imageflow.models import Reduction, ImageAnalysis, ImageFilter
+from reduction.util import find_star_by_designation
 
 def supporting_calculations(analysis, reduction):
     '''Compute airmass and transformation coefficient.
     '''
+    reduction.reduced_stars = analysis.annotated_point_sources[:]
+
     # Airmass
-    reduction.reduced_stars = airmass.annotate_with_airmass(analysis, reduction)
+    airmass.annotate_with_airmass(analysis, reduction)
 
     # Transformation coefficient
-    computed_tf, computed_zpf, tf_std, tf_graph_url = tf.compute_tf_for_analysis(analysis, reduction, save_graph=True)
-    reduction.tf = computed_tf
+    tf_computed, zpf, tf_std, tf_graph_url = tf.calculate(analysis, reduction, save_graph=True)
+    reduction.tf = tf_computed
     # TODO(ian): Brian Warner says 0.015 stderr is higher than preferred, and
     # range of color index should be > .6
     reduction.tf_std = tf_std
-    reduction.zpf = computed_zpf
+    reduction.zpf = zpf
     reduction.tf_graph_url = tf_graph_url
 
-def get_matching_star(analysis, match_star):
-    for star in analysis.catalog_reference_stars:
-        if star['designation'] == match_star['designation']:
-            return star
-    return None
+    ht, ht_intercept, ht_std, ht_r, ht_url = hidden_transform.calculate(analysis, reduction, save_graph=True)
+    reduction.hidden_transform = ht
+    reduction.hidden_transform_intercept = ht_intercept
+    reduction.hidden_transform_std = ht_std
+    reduction.hidden_transform_rval = ht_r
+    reduction.hidden_transform_graph_url = ht_url
 
+    hidden_transform.annotate_color_index(reduction)
 
 def run_reductions(analysis):
     '''Run reductions on a given ImageAnalysis.
     '''
-    try:
-        reduction = Reduction.objects.get(analysis=analysis)
-    except Reduction.DoesNotExist:
-        reduction = Reduction(analysis=analysis)
-
+    reduction = analysis.get_or_create_reduction()
     supporting_calculations(analysis, reduction)
 
     # Get the URAT1 keys for each CI band. eg. 'Bmag', 'jmag'
@@ -69,8 +71,7 @@ def run_reductions(analysis):
         # for color index.
         companion_image = analysis.reduction.image_companion
         if companion_image:
-            star_in_companion_image = \
-                    get_matching_star(companion_image.analysis, star)
+            star_in_companion_image = find_star_by_designation(companion_image.analysis, star['designation'])
             if not star_in_companion_image:
                 print 'Skipping star %d because could not locate same star %s in companion image' % (i, star['designation'])
                 continue

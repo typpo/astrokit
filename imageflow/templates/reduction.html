@@ -58,8 +58,9 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
     <div class="form-group">
       <label>Image 2
         <select id="select-image-companion" class="form-control">
+          <option value="0">None selected</option>
           {% for image in potential_image_companions %}
-            <option value="{{image.id}}">{{image.original_filename}} - filter {{image.analysis.image_filter}}</option>
+            <option value="{{image.id}}" {% if reduction.meta.image_companion_id == image.id %}selected{% endif %}>{{image.original_filename}} - filter {{image.analysis.image_filter}}</option>
           {% endfor %}
         </select>
         <select id="select-color-index-2" class="form-control">
@@ -168,7 +169,52 @@ In which:<br>
   {% endif %}
 </div>
 
-<h4>Step 5: Compute the Color Index</h4>
+<h4>Step 5: Find the hidden transform</h4>
+<div class="well">
+  {% if no_reduction or reduction.meta.status == 'CREATED' %}
+    <p class="run-reductions-mask">
+      <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
+      <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+    </p>
+  {% else %}
+    Hidden transform = {{reduction.data.hidden_transform}}<br>
+    Standard error = {{reduction.data.hidden_transform_std}}<br>
+    rval = {{reduction.data.hidden_transform_rval}}
+    <img src="{{reduction.urls.hidden_transform_graph}}">
+  {% endif %}
+</div>
+
+{% if not no_reduction and reduction.meta.status != 'CREATED' %}
+<div class="well" style="overflow: auto; max-height: 400px">
+    <p>
+      Using the formula derived above:
+    </p>
+    <table class="table table-striped table-hover">
+      <tr>
+        <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
+        <th>Designation</th>
+        <th>RA (obs)</th>
+        <th>Dec (obs)</th>
+        <th><span class="header-tooltip" data-toggle="tooltip" title="Computed with hidden transform">Color Index (computed)</span></th>
+        <th><span class="header-tooltip" data-toggle="tooltip" title="From catalog">Color Index (known)</span></th>
+      </tr>
+      {% for star in reduction.data.reduced_stars %}
+        <tr>
+          <td>{{star.id}}</td>
+          <td>
+            <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
+          </td>
+          <td>{{star.index_ra|floatformat:5}}</td>
+          <td>{{star.index_dec|floatformat:5}}</td>
+          <td><strong>{{star.color_index|floatformat:5}}</strong></td>
+          <td>{{star.color_index_known|floatformat:5}}</td>
+        </tr>
+      {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+<h4>Step 6: Compute the Color Index</h4>
 <div class="well" style="overflow: auto; max-height: 400px">
 <p>
   CI<sub>t</sub>: Color index of the target object<br>
@@ -177,7 +223,7 @@ In which:<br>
 </div>
 
 
-<h4>Step 6: Apply the formula to get M<sub><em>t</em></sub></h4>
+<h4>Step 7: Apply the formula to get M<sub><em>t</em></sub></h4>
 
 <div class="well" style="overflow: auto; max-height: 400px">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}

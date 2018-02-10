@@ -5,17 +5,13 @@ from astropy.time import Time
 from astropy.coordinates import SkyCoord, EarthLocation, AltAz
 
 def annotate_with_airmass(analysis, reduction):
-    annotated_stars = []
-    for star in analysis.annotated_point_sources:
-        ra = star['index_ra']
-        dec = star['index_dec']
+    for point in reduction.reduced_stars:
+        ra = point['index_ra']
+        dec = point['index_dec']
         computed_airmass = compute_airmass_for_point(analysis.image_latitude,
                 analysis.image_longitude, analysis.image_elevation,
                 analysis.image_datetime, ra, dec)
-        star['airmass'] = float(computed_airmass)
-
-        annotated_stars.append(star)
-    return annotated_stars
+        point['airmass'] = float(computed_airmass)
 
 def compute_airmass_for_point(latitude, longitude, elevation, obs_time, ra, dec):
     # Astropy reference: http://docs.astropy.org/en/v1.1.1/coordinates/observing-example.html
