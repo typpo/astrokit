@@ -49,8 +49,8 @@ def compute_tf_for_analysis(analysis, reduction, save_graph=False):
 
 def compute_tf(apparent_mags, standard_mags, colors_1, colors_2):
     # Reference: https://docs.scipy.org/doc/numpy-1.13.0/reference/generated/numpy.linalg.lstsq.html
-    xs = np.array(standard_mags) - np.array(apparent_mags)
-    ys = np.array(colors_1) - np.array(colors_2)
+    xs = np.array(colors_1) - np.array(colors_2)
+    ys = np.array(standard_mags) - np.array(apparent_mags)
     A = np.vstack([xs, np.ones(len(xs))]).T
     m, c = np.linalg.lstsq(A, ys)[0]
 
