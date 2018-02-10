@@ -51,15 +51,19 @@ article a {
           <div class="well">
             <div class="image-container">
               {% if image.analysis.original_display_url %}
-                <a href="{{image.analysis.original_display_url}}">
+                <a href="/submission/{{image.submission.subid}}">
                   <img src="{{image.analysis.original_display_url}}" class="user-image" />
                 </a>
               {% else %}
-                <a href="/submission/{{image.submission.subid}}" class="alert alert-warning"">Image Not Loaded</a>
+                <a href="/submission/{{image.submission.subid}}" class="alert alert-warning">Image Not Loaded</a>
               {% endif %}
             </div>
             <article>
-              <strong><a href="http://35.202.61.141/status/{{image.submission.subid}}">Job #{{image.submission.subid}}</a></strong>
+              <strong>
+                <a href="/submission/{{image.submission.subid}}">
+                  Submission #{{image.submission.subid}}
+                </a>
+              </strong>
               <br>
               Filename:
               <a download href="{{image.image_url}}">
