@@ -29,6 +29,12 @@ def supporting_calculations(analysis, reduction):
     reduction.tf = computed_tf
     reduction.tf_graph_url = tf_graph_url
 
+def get_matching_star(analysis, match_star):
+    for star in analysis.catalog_reference_stars:
+        if star['designation'] == match_star['designation']:
+            return star
+    return None
+
 
 def run_reductions(analysis):
     '''Run reductions on a given ImageAnalysis.
@@ -55,6 +61,19 @@ def run_reductions(analysis):
             print 'Skipping star %d because it does not have filter key %s' % (i, filter_key)
             continue
 
+        # Look up this same star in the companion image of this analysis. Used
+        # for color index.
+        companion_image = analysis.reduction.image_companion
+        if companion_image:
+            star_in_companion_image = \
+                    get_matching_star(companion_image.analysis, star)
+            if not star_in_companion_image:
+                print 'Skipping star %d because could not locate same star %s in companion image' % (i, star['designation'])
+                continue
+        else:
+            # TODO(ian): handle this
+            pass
+
         # Mt = (mt - mc) - k"f Xt (CIt - CIc) + Tf (CIt - CIc) + Mc
         estimates = []
         for j in xrange(len(reduction.reduced_stars)):
@@ -70,10 +89,13 @@ def run_reductions(analysis):
                 continue
 
             term1 = star['mag_instrumental'] - comparison_star['mag_instrumental']
+
             # FIXME(ian): CI calculation is not correct. Need to use companion image analysis.
+            # TODO(ian): Use manually entered ci value.
             ci_target = star[ci1_key] - star[ci2_key]
             ci_comparison = comparison_star[ci1_key] - comparison_star[ci2_key]
             ci_diff = (ci_target - ci_comparison)
+
             term2 = reduction.second_order_extinction * comparison_star['airmass'] * ci_diff
             term3 = reduction.tf * ci_diff
             combined = term1 - term2 + term3 + comparison_star[filter_key]
@@ -90,6 +112,8 @@ def run_reductions(analysis):
 
     reduction.analysis.status = ImageAnalysis.REDUCTION_COMPLETE
     reduction.analysis.save()
+
+    print 'Completed reduction %d for analysis %d' % (reduction.id, analysis.id)
 
 def process_pending_reductions():
     pending = Reduction.objects.all().filter(
