@@ -42,7 +42,7 @@ def astrometry(request, pk):
         'analysis': analysis.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
     }
-    return render_to_response('submission.html', template_args,
+    return render_to_response('astrometry.html', template_args,
             context_instance=RequestContext(request))
 
 def set_datetime(request, pk):
