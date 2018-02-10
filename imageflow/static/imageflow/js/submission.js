@@ -56,7 +56,7 @@ function plotStars(canvas, stars, rawOpts) {
 
     ctx.font = '14px Arial';
     ctx.strokeStyle= 'black';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 4;
     var labelWidth = ctx.measureText(text).width;
     ctx.strokeText(text, star.field_x - (labelWidth / 2), star.field_y - 8);
     ctx.fillStyle = 'yellow';
