@@ -14,13 +14,10 @@
 {% endblock %}
 
 {% block content-interior %}
-<ol class="breadcrumb">
-  <li><a href="#">Astrometry</a></li>
-  <li><a href="#">Point Sources</a></li>
-  <li><a href="#">Reference Stars</a></li>
-  <li>Reduction</li>
-  <li><a href="#">Light Curve</a></li>
-</ol>
+
+{% with active_crumb='reduction' %}
+  {% include 'imageflow_breadcrumbs.html' %}
+{% endwith %}
 
 <h3>Reduction to Standard Magnitudes</h3>
 <p>
@@ -40,11 +37,14 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
   <div id="select-color-index-success" class="alert alert-danger" style="display:none">
     Something went wrong - failed to update your setting.
   </div>
-  <form class="form-inline">
+  <p>
+    Color Index CI = Image1 - Image2
+  </p>
+  <form class="form form-inline">
     <div class="form-group">
-      <label>Image 1
+      <label>Image 1 (this image)
           <select class="form-control" disabled>
-            <option value="">{{result.meta.uploaded_image.original_filename}}</option>
+            <option value="">{{result.meta.uploaded_image.original_filename | truncatechars:50}}</option>
           </select>
           <select id="select-color-index-1" class="form-control" disabled>
             {% for filter in image_filters %}
@@ -55,12 +55,11 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
           </select>
       </label>
     </div>
-    <br>-<br>
     <div class="form-group">
       <label>Image 2
         <select id="select-image-companion" class="form-control">
-          {% for image in image_companions %}
-            <option value="{{image.id}}">{{image.original_filename}}</option>
+          {% for image in potential_image_companions %}
+            <option value="{{image.id}}">{{image.original_filename}} - filter {{image.analysis.image_filter}}</option>
           {% endfor %}
         </select>
         <select id="select-color-index-2" class="form-control">
@@ -71,6 +70,12 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
           {% endfor %}
         </select>
       </label>
+    </div>
+    <hr/>
+    <div>
+      <p>
+        or, manually enter a color index: <input id="color-index-manual" type="number" class="form-control" placeholder="0.0" />
+      </p>
     </div>
   </form>
 </div>
@@ -161,7 +166,16 @@ In which:<br>
   {% endif %}
 </div>
 
-<h4>Step 5: Apply the formula to get M<sub><em>t</em></sub></h4>
+<h4>Step 5: Compute the Color Index</h4>
+<div class="well" style="overflow: auto; max-height: 400px">
+<p>
+  CI<sub>t</sub>: Color index of the target object<br>
+  CI<sub>c</sub>: Color index of the comparison object
+</p>
+</div>
+
+
+<h4>Step 6: Apply the formula to get M<sub><em>t</em></sub></h4>
 
 <div class="well" style="overflow: auto; max-height: 400px">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}

@@ -5,13 +5,10 @@
 {% block heading %}Summary{% endblock %}
 
 {% block content-interior %}
-<ol class="breadcrumb">
-  <li class="active">Summary</li>
-  <li><a href="#">Point Sources</a></li>
-  <li><a href="#">Reference Stars</a></li>
-  <li><a href="#">Reduction</a></li>
-  <li><a href="#">Light Curve</a></li>
-</ol>
+
+{% with active_crumb='astrometry' %}
+  {% include 'imageflow_breadcrumbs.html' %}
+{% endwith %}
 
 <p>
 Submission #{{result.subid}} &middot; Analysis #{{result.id}} &middot; {{result.meta.uploaded_image.original_filename}}

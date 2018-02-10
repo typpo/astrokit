@@ -282,13 +282,13 @@ def reduction(request, subid):
                 context_instance=RequestContext(request))
 
     # Other images in this light curve.
-    image_companions = analysis.lightcurve.useruploadedimage_set.all()
+    potential_image_companions = analysis.lightcurve.useruploadedimage_set.all()
 
     template_args = {
         'result': analysis.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
 
-        'image_companions': image_companions,
+        'potential_image_companions': potential_image_companions,
     }
     if hasattr(analysis, 'reduction') and analysis.reduction:
         template_args.update({

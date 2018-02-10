@@ -105,6 +105,7 @@ class ImageAnalysis(models.Model):
             'id': self.id,
             'jobid': self.astrometry_job.jobid,
             'subid': self.astrometry_job.submission.subid,
+            'lightcurve_id': self.lightcurve.id,
             'meta': {
                 'datetime': self.image_datetime,
                 'latitude': self.image_latitude,
