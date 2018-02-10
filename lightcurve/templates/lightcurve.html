@@ -78,7 +78,7 @@ h1 span {
   </p>
   {% for image in images %}
   <div id="image-{{forloop.counter0}}" class="well">
-    Analysis #{{image.analysis.id}}<br>
+    <strong><a href="/analysis/{{image.id}}">Analysis #{{image.analysis.id}}</a></strong><br>
     Filename:
     <a download href="{{image.image_url}}">
       {{image.original_filename}}
