@@ -19,7 +19,10 @@ h1 span {
 {% endblock %}
 
 {% block content-interior %}
-<h1>Light Curve <span>{{lightcurve.name}}</span></h1>
+<h1>Light Curve
+  <span>{{lightcurve.name}}</span>
+  <a href="{% url "upload_image" %}/{{lightcurve.id}}" class="btn btn-primary pull-right">Upload New Images</a>
+</h1>
 <div>
   <h3>Observation Metadata</h3>
   <p>These settings apply to all images.  You can change these values for individual images later.</p>
