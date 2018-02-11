@@ -2,9 +2,9 @@
 {% load staticfiles %}
 {% load jsonify %}
 
-{% block title %}Analysis #{{analysis.id}} Point Sources{% endblock %}
+{% block title %}Analysis #{{analysis.id}} Instrumental Photometry{% endblock %}
 
-{% block heading %}Point Sources{% endblock %}
+{% block heading %}Instrumental Photometry{% endblock %}
 
 {% block styles %}
 <style>
@@ -25,7 +25,7 @@ blockquote.smallquote {
   {% include 'imageflow_breadcrumbs.html' %}
 {% endwith %}
 
-<h3>Instrumental photometry</h3>
+<h2>Flux and Magnitudes</h2>
 <p>
   Sigma clipping is a common way to estimate the background of an image and eliminate background noise.  Outliers above and below 3 sigma are masked.
 </p>
@@ -79,9 +79,9 @@ blockquote.smallquote {
 </div>
 
 {% comment %}
-<h3>Point-spread function</h3>
+<h2>Point-spread function</h2>
 
-<h4>Fluxes for each point source</h4>
+<h3>Fluxes for each point source</h3>
 <div class="well">
   <img src="{{analysis.urls.psf_bar_url}}" />
   <a href="{{analysis.urls.psf_bar_url}}" download>Download</a>
@@ -99,13 +99,13 @@ blockquote.smallquote {
 </div>
 {% endcomment %}
 
-<h4>Computed flux (astrokit) vs astrometry.net coarse flux estimation.</h4>
+<h3>Computed flux (astrokit) vs astrometry.net coarse flux estimation.</h3>
 <div class="well">
   <img src="{{analysis.urls.psf_scatter_url}}" />
   <a href="{{analysis.urls.psf_scatter_url}}" download>Download</a>
 </div>
 
-<h4>Residual image</h4>
+<h3>Residual image</h3>
 <div class="well">
   <img src="{{analysis.urls.psf_residual_image_url}}" />
   <a href="{{analysis.urls.psf_residual_image_url}}" download>Download</a>
