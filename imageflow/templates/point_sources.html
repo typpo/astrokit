@@ -2,6 +2,8 @@
 {% load staticfiles %}
 {% load jsonify %}
 
+{% block title %}Analysis #{{analysis.id}} Point Sources{% endblock %}
+
 {% block heading %}Point Sources{% endblock %}
 
 {% block styles %}
@@ -48,47 +50,6 @@
   </div>
 </div>
 
-<h3>Point source coordinates</h3>
-<p>
-{{analysis.data.coords | length}} point sources detected via
-<a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
-</p>
-<a href="{{analysis.urls.coords_json_url}}">Coordinates JSON</a>
-&middot;
-<a href="{{analysis.urls.coords_fits_url}}">Coordinates FITS</a>
-{% comment %}
-<div class="well">
-  <img src="{{analysis.urls.coords_plot_url}}" />
-  <a href="{{analysis.urls.coords_plot_url}}" download>Download</a>
-</div>
-{% endcomment %}
-
-<div class="well">
-  Cursor position:
-  (<span id="canvas-x-pos">0</span>,
-  <span id="canvas-y-pos">0</span>)
-  <div>
-    <canvas id="star-plot" style="cursor: crosshair" />
-  </div>
-</div>
-
-<h4>Target Selection</h4>
-<div class="well">
-  <div id="target-id-success" class="alert alert-success" style="display:none">
-    Target ID successfully updated.
-  </div>
-  <div id="target-id-failure" class="alert alert-danger" style="display:none">
-    Something went wrong - failed to update your setting.
-  </div>
-  <p>Enter the ID number of your target point source:</p>
-  <input id="target-id"
-         class="form-control"
-         type="number"
-         min="0"
-         max="{{analysis.data.coords | length}}"
-         value="{{analysis.meta.target_id}}"/>
-</div>
-
 <h3>Point-spread function</h3>
 
 <h4>Fluxes for each point source</h4>
@@ -102,6 +63,13 @@
   <img src="{{analysis.urls.psf_hist_url}}" />
   <a href="{{analysis.urls.psf_hist_url}}" download>Download</a>
 </div>
+
+{% comment %}
+<div class="well">
+  <img src="{{analysis.urls.coords_plot_url}}" />
+  <a href="{{analysis.urls.coords_plot_url}}" download>Download</a>
+</div>
+{% endcomment %}
 
 <h4>Computed flux (astrokit) vs astrometry.net coarse flux estimation.</h4>
 <div class="well">

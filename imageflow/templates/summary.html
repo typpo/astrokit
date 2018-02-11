@@ -2,6 +2,8 @@
 {% load staticfiles %}
 {% load jsonify %}
 
+{% block title %}Analysis #{{analysis.id}} Summary{% endblock %}
+
 {% block heading %}Summary{% endblock %}
 
 {% block content-interior %}
@@ -20,6 +22,40 @@ Submission #{{analysis.subid}} &middot; Analysis #{{analysis.id}} &middot; {{ana
     <img src="{{analysis.urls.original_display_url}}" />
   </a>
   <a href="{{analysis.urls.original_display_url}}" download>Download</a>
+</div>
+
+<h3>Target selection</h3>
+<p>
+{{analysis.data.coords | length}} point sources detected via
+<a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
+</p>
+<a href="{{analysis.urls.coords_json_url}}">Coordinates JSON</a>
+&middot;
+<a href="{{analysis.urls.coords_fits_url}}">Coordinates FITS</a>
+
+<div class="well">
+  Cursor position:
+  (<span id="canvas-x-pos">0</span>,
+  <span id="canvas-y-pos">0</span>)
+  <div>
+    <canvas id="star-plot" style="cursor: crosshair" />
+  </div>
+
+  <div>
+    <div id="target-id-success" class="alert alert-success" style="display:none">
+      Target ID successfully updated.
+    </div>
+    <div id="target-id-failure" class="alert alert-danger" style="display:none">
+      Something went wrong - failed to update your setting.
+    </div>
+    <p>Enter the ID number of your target point source:</p>
+    <input id="target-id"
+           class="form-control"
+           type="number"
+           min="0"
+           max="{{analysis.data.coords | length}}"
+           value="{{analysis.meta.target_id}}"/>
+  </div>
 </div>
 
 <h3>Date &amp; time</h3>
@@ -106,8 +142,11 @@ Elevation above sea level, in meters.
 {% block scripts %}
   <script>
     window.analysisId = {{analysis.id | jsonify }};
+    window.originalImageUrl = {{analysis.urls.original_display_url | jsonify}};
+    window.pointSourceData = {{ analysis.data.coords | jsonify }};
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="{% static "imageflow/js/shared.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/astrometry.js" %}" type="text/javascript"></script>
 {% endblock %}

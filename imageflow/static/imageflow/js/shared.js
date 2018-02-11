@@ -93,5 +93,7 @@ $(function() {
   setupTables();
 
   // Initialize tooltips.
-  $('[data-toggle="tooltip"]').tooltip({container: 'body'})
+  if ($.tooltip) {
+    $('[data-toggle="tooltip"]').tooltip({container: 'body'})
+  }
 });
