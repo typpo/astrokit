@@ -29,6 +29,7 @@ def plot_lightcurve(request, lightcurve_id):
 def plot_lightcurve_json(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
     reductions = Reduction.objects.filter(analysis__useruploadedimage__lightcurve=lc,
+                                          analysis__status=ImageAnalysis.ADDED_TO_LIGHT_CURVE,
                                           status=Reduction.COMPLETE)
 
     ret = []
