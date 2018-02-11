@@ -93,7 +93,7 @@ $(function() {
   setupTables();
 
   // Initialize tooltips.
-  if ($.tooltip) {
+  if ($().tooltip) {
     $('[data-toggle="tooltip"]').tooltip({container: 'body'})
   }
 });

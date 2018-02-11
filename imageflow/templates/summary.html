@@ -124,16 +124,18 @@ Elevation above sea level, in meters.
   <input id="set-elevation" class="form-control" style="width: 30em" type="text" value="{{analysis.meta.elevation}}">
 </div>
 
+{% comment %}
 <h3>Annotated image</h3>
 <div class="well">
   <img src="{{analysis.urls.astrometry_annotated_display_url}}" />
   <a href="{{analysis.urls.astrometry_annotated_display_url}}" download>Download</a>
 </div>
+{% endcomment %}
 
 <div style="text-align: right">
   <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
   <a href="/analysis/point_sources/{{analysis.id}}"
-     class="btn btn-lg btn-primary">View point source analysis</a>
+     class="btn btn-lg btn-primary">View instrumental photometry</a>
 </div>
 {% endblock %}
 

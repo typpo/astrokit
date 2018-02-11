@@ -12,6 +12,10 @@
   color: #337ab7;
   cursor: help;
 }
+
+blockquote.smallquote {
+  font-size: 12px;
+}
 </style>
 {% endblock %}
 
@@ -22,6 +26,24 @@
 {% endwith %}
 
 <h3>Instrumental photometry</h3>
+<p>
+  Sigma clipping is a common way to estimate the background of an image and eliminate background noise.  Outliers above and below 3 sigma are masked.
+</p>
+<p>
+  <blockquote class="smallquote">
+    sigma-clipped median (background) = {{analysis.data.sigma_clipped_median|floatformat:3}}
+    <br>
+    sigma-clipped std = {{analysis.data.sigma_clipped_std|floatformat:3}}
+  </blockquote>
+</p>
+<p>
+  Flux and magnitude are estimated by <a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
+  <blockquote class="smallquote">
+    fwhm = 2.0
+    <br>
+    threshold (above background) = 5-sigma
+  </blockquote>
+</p>
 
 <div class="well">
   <div class="table-wrapper">
@@ -32,7 +54,10 @@
           <th>Field X</th>
           <th>Field Y</th>
           <th>Flux</th>
-          <th>Instrumental magnitude</th>
+          <th>Instrumental mag</th>
+          <th><span class="header-tooltip" data-toggle="tooltip" title="Number of pixels in the Gaussian kernel"># pixels</span></th>
+          <th><span class="header-tooltip" data-toggle="tooltip" title="The input 'sky' parameter">sky</span></th>
+          <th><span class="header-tooltip" data-toggle="tooltip" title="The peak sky-subtracted pixel value of the object">peak</span></th>
         </tr>
       </thead>
       <tbody>
@@ -42,7 +67,10 @@
             <td>{{point_source.field_x|floatformat:2}}</td>
             <td>{{point_source.field_y|floatformat:2}}</td>
             <td>{{point_source.flux|floatformat:3}}</td>
-            <td>{{point_source.mag_instrumental|floatformat:3}}</td>
+            <td><strong>{{point_source.mag_instrumental|floatformat:3}}</strong></td>
+            <td>{{point_source.npix|floatformat:3}}</td>
+            <td>{{point_source.peak|floatformat:3}}</td>
+            <td>{{point_source.sky|floatformat:3}}</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -50,6 +78,7 @@
   </div>
 </div>
 
+{% comment %}
 <h3>Point-spread function</h3>
 
 <h4>Fluxes for each point source</h4>
@@ -64,7 +93,6 @@
   <a href="{{analysis.urls.psf_hist_url}}" download>Download</a>
 </div>
 
-{% comment %}
 <div class="well">
   <img src="{{analysis.urls.coords_plot_url}}" />
   <a href="{{analysis.urls.coords_plot_url}}" download>Download</a>

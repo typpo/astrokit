@@ -32,9 +32,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def compute(data):
-    # TODO(ian): Compare vs iraf starfind - can use an elliptical guassian
-    # kernel and use image moments.
-
     # Estimate background and background noise.
     mean, median, std = sigma_clipped_stats(data, sigma=3.0, iters=5)
 
@@ -42,9 +39,10 @@ def compute(data):
     # For output, see https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L79
     # sources = daofind(data - median, fwhm=3.0, threshold=5.*std)
     sources = irafstarfind(data - median, fwhm=2.0, threshold=5.*std)
-    return sources
+    return sources, (mean, median, std)
 
 def save_image(data, path):
+    # FIXME(ian): This is not trustworthy.
     width_height = (len(data[0]), len(data))
     img = Image.new('L', width_height)
     flatdata = np.asarray(data.flatten())
@@ -78,6 +76,10 @@ def format_for_json_export(sources):
     flux = sources['flux']
     mag_instrumental = sources['mag']
 
+    npix = sources['npix']
+    sky = sources['sky']
+    peak = sources['peak']
+
     out = []
     for i in xrange(len(field_x)):
         out.append({
@@ -86,6 +88,10 @@ def format_for_json_export(sources):
             'field_y': field_y[i],
             'flux': flux[i],
             'mag_instrumental': mag_instrumental[i],
+
+            'npix': npix[i],
+            'sky': sky[i],
+            'peak': peak[i],
         })
     return out
 

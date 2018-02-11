@@ -18,14 +18,14 @@ sys.path.insert(0, os.getcwd())
 django.setup()
 
 import imageflow.s3_util as s3_util
-import astrometry.astrometry_original_image_client
+from astrometry import astrometry_original_image_client
 from astrometry.astrometry_client import Client
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.process import process_astrometry_online
 from imageflow.models import ImageAnalysis, UserUploadedImage
 
 import point_source_extraction
-import photometry
+import catalog
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -208,16 +208,24 @@ class SubmissionHandler():
         fitsobj = point_source_extraction.get_fits_from_raw(image_fits_data)
 
         data = point_source_extraction.extract_image_data_from_fits(fitsobj)
-        sources = point_source_extraction.compute(data)
+        sources, stats = point_source_extraction.compute(data)
+
+        result.sigma_clipped_mean = stats[0]
+        result.sigma_clipped_median = stats[1]
+        result.sigma_clipped_std = stats[2]
 
         # Unaltered image.
         image_path = '%d_%d_display_image.png' % (submission.subid, job.jobid)
         point_source_extraction.save_image(data, image_path);
         logger.info('  -> Uploading %s...' % image_path)
         if not args.dry_run:
+            '''
             result.original_display_url = \
                     s3_util.upload_to_s3_via_file(image_path, \
                                                   upload_key_prefix)
+            '''
+            # Astrometry image looks much better.
+            result.original_display_url = result.astrometry_original_display_url
 
         # Coords.
         coords_plot_path = '%d_%d_plot.png' % (submission.subid, job.jobid)
@@ -286,9 +294,8 @@ class SubmissionHandler():
         correlations = urllib.urlopen(result.astrometry_corr_fits_url).read()
 
         # Compute reference stars and their apparent magnitudes.
-        # TODO(ian): Produce a graphic that marks the reference stars.
         ref_stars, unknown_stars = \
-                photometry.choose_reference_stars(image_fits_data, correlations, coords)
+                catalog.choose_reference_stars(image_fits_data, correlations, coords)
 
         name = '%d_%d_image_reference_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
@@ -313,7 +320,7 @@ class SubmissionHandler():
                 (submission.subid))
 
         # Get reference star standard magnitudes.
-        standard_mags = photometry.get_standard_magnitudes_urat1(ref_stars)
+        standard_mags = catalog.get_standard_magnitudes_urat1(ref_stars)
         name = '%d_%d_catalog_reference_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
@@ -323,7 +330,7 @@ class SubmissionHandler():
                                          upload_key_prefix, name)
 
         # Combine into single annotated point sources object.
-        all_points = photometry.merge_known_with_unknown(standard_mags, unknown_stars)
+        all_points = catalog.merge_known_with_unknown(standard_mags, unknown_stars)
         name = '%d_%d_annotated_point_sources.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:

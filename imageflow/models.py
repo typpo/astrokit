@@ -62,6 +62,10 @@ class ImageAnalysis(models.Model):
     psf_hist_url = models.CharField(max_length=1024)
     psf_residual_image_url = models.CharField(max_length=1024)
 
+    sigma_clipped_mean = models.FloatField(default=0)
+    sigma_clipped_median = models.FloatField(default=0)
+    sigma_clipped_std = models.FloatField(default=0)
+
     # ID of point source target.
     target_id = models.IntegerField(default=0)
 
@@ -137,6 +141,10 @@ class ImageAnalysis(models.Model):
                 'coords': self.coords,
                 'catalog_reference_stars': self.catalog_reference_stars,
                 'unknown_stars': self.image_unknown_stars,
+
+                'sigma_clipped_mean': self.sigma_clipped_mean,
+                'sigma_clipped_median': self.sigma_clipped_median,
+                'sigma_clipped_std': self.sigma_clipped_std,
             },
         }
 
