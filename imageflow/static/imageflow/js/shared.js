@@ -81,6 +81,17 @@ function setupTables() {
   $('.table-wrapper').on('scroll', function() {
     $(this).find('thead').css('transform', 'translate(0,' + this.scrollTop + 'px)');
   });
+  $('.js-scroll-to-target').on('click', function() {
+    scrollToTarget($(this).parent().prev());
+    return false;
+  });
+}
+
+function scrollToTarget($wrapper) {
+  var $elt = $wrapper.find('tr.highlight');
+  $wrapper.animate({
+    scrollTop: $wrapper.scrollTop() + ($elt.position().top - $wrapper.position().top) - ($wrapper.height()/2) + ($elt.height()/2),
+  });
 }
 
 $(function() {

@@ -180,6 +180,9 @@ In which:<br>
         </tbody>
       </table>
     </div>
+    <div class="table-actions">
+      <a href="#" class="js-scroll-to-target">&raquo; Scroll to target</a>
+    </div>
   {% endif %}
 </div>
 
@@ -239,6 +242,9 @@ In which:<br>
         {% endfor %}
         </tbody>
       </table>
+    </div>
+    <div class="table-actions">
+      <a href="#" class="js-scroll-to-target">&raquo; Scroll to target</a>
     </div>
 </div>
 {% endif %}
@@ -305,6 +311,9 @@ In which:<br>
         </tbody>
       </table>
     </div>
+    <div class="table-actions">
+      <a href="#" class="js-scroll-to-target">&raquo; Scroll to target</a>
+    </div>
   {% endif %}
 </div>
 
@@ -326,6 +335,7 @@ NYI: standard mag vs catalog mag
 {% block scripts %}
   <script>
     window.analysisId = {{analysis.id | jsonify }};
+    window.targetId = {{analysis.target_id | jsonify }};
     window.originalImageUrl = {{analysis.urls.original_display_url | jsonify}};
     window.catalogReferenceStars = {{ analysis.data.catalog_reference_stars | jsonify }};
   </script>

@@ -159,6 +159,9 @@ NYI: instrumental mag vs catalog mag
       </tbody>
     </table>
   </div>
+  <div class="table-actions">
+      <a href="#" class="js-scroll-to-target">&raquo; Scroll to target</a>
+  </div>
 </div>
 
 <div style="text-align: right">
@@ -170,6 +173,7 @@ NYI: instrumental mag vs catalog mag
 {% block scripts %}
   <script>
     window.originalImageUrl = {{analysis.urls.original_display_url | jsonify}};
+    window.targetId = {{analysis.target_id | jsonify }};
     window.pointSourceData = {{ analysis.data.coords | jsonify }};
     window.catalogData = {{ analysis.data.catalog_reference_stars | jsonify }};
   </script>

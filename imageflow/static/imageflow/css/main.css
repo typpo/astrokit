@@ -34,6 +34,10 @@ ol.breadcrumb > li.active a {
   height: 400px;
 }
 
+.table-actions {
+  margin-top: 1.5em;
+}
+
 th {
   background-color: #f3ddb4;
 }
