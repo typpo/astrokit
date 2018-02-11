@@ -246,7 +246,7 @@ In which:<br>
 
 <h3>Step 7: Apply the formula to get M<sub><em>t</em></sub></h3>
 
-<div class="well" style="overflow: auto; max-height: 400px">
+<div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask">
       <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
@@ -262,30 +262,41 @@ In which:<br>
     <p>
       All magnitudes are in band {{analysis.meta.image_band}}.
     </p>
-    <table class="table table-striped table-hover">
-      <tr>
-        <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
-        <th>Designation</th>
-        <th>RA (obs)</th>
-        <th>Dec (obs)</th>
-        <th>Standard Mag</th>
-        <th>Catalog Mag</th>
-        <th>Diff</th>
-      </tr>
-      {% for star in reduction.data.reduced_stars %}
-        <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
-          <td>{{star.id}}</td>
-          <td>
-            <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
-          </td>
-          <td>{{star.index_ra|floatformat:5}}</td>
-          <td>{{star.index_dec|floatformat:5}}</td>
-          <td><strong>{{star.mag_standard|floatformat:3}}</strong></td>
-          <td><strong>{{star.mag_catalog|floatformat:3}}</strong></td>
-          <td><strong>{{star.mag_error|floatformat:3}}</strong></td>
-        </tr>
-      {% endfor %}
-    </table>
+    <div class="table-wrapper">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
+            <th>Designation</th>
+            <th>RA (obs)</th>
+            <th>Dec (obs)</th>
+            <th>Standard Mag</th>
+            <th>Catalog Mag</th>
+            <th>Diff</th>
+            <th>Std</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for star in reduction.data.reduced_stars %}
+          <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+            <td>{{star.id}}</td>
+            <td>
+              {% if star.id == analysis.meta.target_id %}
+                TARGET
+              {% endif %}
+              <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
+            </td>
+            <td>{{star.index_ra|floatformat:5}}</td>
+            <td>{{star.index_dec|floatformat:5}}</td>
+            <td><strong>{{star.mag_standard|floatformat:3}}</strong></td>
+            <td><strong>{{star.mag_catalog|floatformat:3}}</strong></td>
+            <td><strong>{{star.mag_error|floatformat:3}}</strong></td>
+            <td>{{star.mag_std|floatformat:3}}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
   {% endif %}
 </div>
 
