@@ -167,6 +167,9 @@ In which:<br>
           <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
             <td>{{star.id}}</td>
             <td>
+              {% if star.id == analysis.meta.target_id %}
+                TARGET
+              {% endif %}
               <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
             </td>
             <td>{{star.index_ra|floatformat:5}}</td>
@@ -198,7 +201,7 @@ In which:<br>
 </div>
 
 {% if not no_reduction and reduction.meta.status != 'CREATED' %}
-<h4>Sanity-checking the hidden transform</h4>
+<h4>Checking the hidden transform</h4>
 <div class="well">
     <p>
       This table compares values generated using the formula derived above with known catalog values for your color index.
@@ -223,6 +226,9 @@ In which:<br>
           <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
             <td>{{star.id}}</td>
             <td>
+              {% if star.id == analysis.meta.target_id %}
+                TARGET
+              {% endif %}
               <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
             </td>
             <td>{{star.index_ra|floatformat:5}}</td>
