@@ -33,7 +33,7 @@ $(function() {
                 $('#select-color-index-failure'));
 
   setupListener('set_image_companion',
-                $('#select-image-companion'),
+                $('input[name="image-companion"]'),
                 $('#select-color-index-success'),
                 $('#select-color-index-failure'));
 
