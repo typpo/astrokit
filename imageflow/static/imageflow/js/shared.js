@@ -77,6 +77,12 @@ function setupCanvasListeners(canvas) {
   }
 }
 
+function setupTables() {
+  $('.table-wrapper').on('scroll', function() {
+    $(this).find('thead').css('transform', 'translate(0,' + this.scrollTop + 'px)');
+  });
+}
+
 $(function() {
   var canvas = document.getElementById('star-plot');
   if (canvas) {
@@ -84,6 +90,8 @@ $(function() {
     plotImage(canvas, window.originalImageUrl);
   }
 
+  setupTables();
+
   // Initialize tooltips.
-  $('[data-toggle="tooltip"]').tooltip()
+  $('[data-toggle="tooltip"]').tooltip({container: 'body'})
 });

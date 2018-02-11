@@ -21,29 +21,31 @@
 
 <h3>Instrumental photometry</h3>
 
-<div class="well" style="overflow: auto; max-height: 400px">
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
-        <th>Field X</th>
-        <th>Field Y</th>
-        <th>Flux</th>
-        <th>Instrumental magnitude</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for point_source in analysis.data.coords %}
+<div class="well">
+  <div class="table-wrapper">
+    <table class="table table-striped">
+      <thead>
         <tr>
-          <td>{{point_source.id}}</td>
-          <td>{{point_source.field_x|floatformat:2}}</td>
-          <td>{{point_source.field_y|floatformat:2}}</td>
-          <td>{{point_source.flux|floatformat:3}}</td>
-          <td>{{point_source.mag_instrumental|floatformat:3}}</td>
+          <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
+          <th>Field X</th>
+          <th>Field Y</th>
+          <th>Flux</th>
+          <th>Instrumental magnitude</th>
         </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {% for point_source in analysis.data.coords %}
+          <tr>
+            <td>{{point_source.id}}</td>
+            <td>{{point_source.field_x|floatformat:2}}</td>
+            <td>{{point_source.field_y|floatformat:2}}</td>
+            <td>{{point_source.flux|floatformat:3}}</td>
+            <td>{{point_source.mag_instrumental|floatformat:3}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <h3>Point source coordinates</h3>

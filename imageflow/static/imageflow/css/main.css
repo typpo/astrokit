@@ -29,6 +29,15 @@ ol.breadcrumb > li.active a {
   color: #444;
 }
 
+.table-wrapper {
+  overflow: auto;
+  height: 400px;
+}
+
+th {
+  background-color: #f3ddb4;
+}
+
 tr.highlight {
   background-color: yellow !important;
   font-weight: bold;
