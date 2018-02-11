@@ -113,6 +113,7 @@ class ImageAnalysis(models.Model):
                 'elevation': self.image_elevation,
                 'image_band': self.image_filter.band,
                 'photometric_system': self.image_filter.system,
+                # TODO(ian): Don't pass an object - can't be serialized to json.
                 'uploaded_image': self.get_uploaded_image_or_none(),
                 'target_id': self.target_id,
             },

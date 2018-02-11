@@ -3,10 +3,10 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from astrometry.models import AstrometrySubmission
-from imageflow.models import ImageAnalysis, UserUploadedImage
-from lightcurve.models import LightCurve
-
 from astrometry.process import process_astrometry_online
+from imageflow.models import ImageAnalysis, Reduction, UserUploadedImage
+from lightcurve.models import LightCurve
+from reduction.util import find_point_by_id
 
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
@@ -17,6 +17,40 @@ def edit_lightcurve(request, lightcurve_id):
     }
     return render_to_response('lightcurve.html', context,
             context_instance=RequestContext(request))
+
+def plot_lightcurve(request, lightcurve_id):
+    lc = LightCurve.objects.get(id=lightcurve_id)
+    context = {
+        'lightcurve': lc,
+    }
+    return render_to_response('lightcurve_plot.html', context,
+            context_instance=RequestContext(request))
+
+def plot_lightcurve_json(request, lightcurve_id):
+    lc = LightCurve.objects.get(id=lightcurve_id)
+    reductions = Reduction.objects.filter(analysis__useruploadedimage__lightcurve=lc,
+                                          status=Reduction.COMPLETE)
+
+    ret = []
+    for reduction in reductions:
+        result = find_point_by_id(reduction.reduced_stars, reduction.analysis.target_id)
+        if not result:
+            # Reduction not complete.
+            continue
+        ret.append({
+            'id': reduction.id,
+            'timestamp': reduction.analysis.image_datetime,
+            'analysisId': reduction.analysis.id,
+            # TODO(ian): Maybe one day we can bake the target id into the URL.
+            # That way you can compare your target light curve to any light
+            # curve from a known object!
+            'result': result,
+        })
+
+    return JsonResponse({
+        'success': True,
+        'reductions': ret,
+    })
 
 def save_observation_default(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
