@@ -362,9 +362,9 @@ In which:<br>
 
 <div style="text-align: right">
   <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
+  <a href="/lightcurve/{{analysis.lightcurve_id}}/edit" class="btn btn-lg btn-default">Return to Light curve</a>
   <a href="#" class="btn btn-lg btn-default js-run-reductions">Run Reductions</a>
   <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
-  <a href="/lightcurve/{{analysis.lightcurve_id}}/edit" class="btn btn-lg btn-default">Return to Light curve</a>
   {% if next_image %}
     <a href="/analysis/{{next_image.id}}" class="btn btn-lg btn-primary">Next image</a>
   {% endif %}
