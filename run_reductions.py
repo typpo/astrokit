@@ -124,7 +124,8 @@ def process_pending_reductions():
     pending = Reduction.objects.all().filter(
             status=Reduction.PENDING)
     for reduction in pending:
-        run_reductions(reduction.analysis)
+        if reduction.analysis.target_id != 0:
+            run_reductions(reduction.analysis)
 
 if __name__ == '__main__':
     import os
