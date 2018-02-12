@@ -102,11 +102,13 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
                   <tr>
                 {% endif %}
                   <td>
-                    <input type="radio" name="image-companion" value="{{image.id}}" {% if reduction.meta.image_companion_id == image.id %}checked{% endif %} />
+                    {% if image.analysis.target_id %}
+                      <input type="radio" name="image-companion" value="{{image.id}}" {% if reduction.meta.image_companion_id == image.id %}checked{% endif %} />
+                    {% endif %}
                   </td>
-                  <td>{{image.analysis.id}}</td>
+                  <td><a href="/analysis/{{image.analysis.id}}">{{image.analysis.id}}</a></td>
                   <td>{{image.analysis.image_filter.band}}</td>
-                  <td>{{image.original_filename | truncatechars:40}}</td>
+                  <td><a href="/analysis/{{image.analysis.id}}">{{image.original_filename | truncatechars:40}}</a></td>
                   <td>
                     {% if image.analysis.target_id %}
                       {{image.analysis.target_id}}
