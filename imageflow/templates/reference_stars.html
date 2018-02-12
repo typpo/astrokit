@@ -41,7 +41,7 @@
           <th>Field Y</th>
           <th>RA (J2000)</th>
           <th>Dec (J2000)</th>
-          <th>Instrumental magnitude</th>
+          <th>Instrumental mag</th>
         </tr>
       </thead>
       <tbody>
@@ -74,7 +74,8 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
         <tr>
           <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
           <th>Designation</th>
-          <th>Instrumental magnitude</th>
+          <th>Instrumental mag</th>
+          <th>Temperature (K)</th>
           <th><span class="header-tooltip" data-toggle="tooltip" title="442 nm">B (Johnson)</span></th>
           <th><span class="header-tooltip" data-toggle="tooltip" title="540 nm">V (Johnson)</span></th>
           <th><span class="header-tooltip" data-toggle="tooltip" title="Color index B-V">B-V</span></th>
@@ -95,6 +96,7 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
             <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
           </td>
           <td>{{star.mag_instrumental|floatformat:3}}</td>
+          <td>{{star.temperature|floatformat:1}}</td>
           <td>{{star.Bmag}}</td>
           <td>{{star.Vmag}}</td>
           <td>{{star.delta_BV}}</td>
