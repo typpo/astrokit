@@ -116,6 +116,7 @@ class ImageAnalysis(models.Model):
                 'longitude': self.image_longitude,
                 'elevation': self.image_elevation,
                 'image_band': self.image_filter.band,
+                'image_band_urat1_key': self.image_filter.urat1_key,
                 'photometric_system': self.image_filter.system,
                 # TODO(ian): Don't pass an object - can't be serialized to json.
                 'uploaded_image': self.get_uploaded_image_or_none(),

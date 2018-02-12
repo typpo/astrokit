@@ -94,6 +94,34 @@ function scrollToTarget($wrapper) {
   });
 }
 
+function setupMagnitudeChecks($elts, type, xData, yData) {
+  // Standard and instrumental mags vs catalog mags.
+  $elts.each(function() {
+    var $elt = $(this);
+    var chart = [
+      {
+        x: xData.map(function(r) {
+          return type === 'instrumental' ? r[window.urat1Key] : r.mag_standard;
+        }),
+        y: yData.map(function(r) { return r.mag_instrumental }),
+        type: 'scatter',
+        mode: 'markers',
+      },
+    ];
+    var layout = {
+      xaxis: {
+        title: 'Standard Catalog Mag',
+      },
+      yaxis: {
+        title: type === 'instrumental' ? 'Instrumental Mag' : 'Standard Mag (computed)',
+      },
+    };
+
+    Plotly.newPlot($elt[0], chart, layout);
+  });
+
+}
+
 $(function() {
   var canvas = document.getElementById('star-plot');
   if (canvas) {

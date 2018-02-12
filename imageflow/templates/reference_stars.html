@@ -12,6 +12,11 @@
   color: #337ab7;
   cursor: help;
 }
+
+.plot-container {
+  width: 100%;
+  height: 400px;
+}
 </style>
 {% endblock %}
 
@@ -125,7 +130,7 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
 
 <h3>Checking our work</h3>
 <div class="well">
-NYI: instrumental mag vs catalog mag
+  <div class="plot-container"></div>
 </div>
 
 <h3>Unknown point sources</h3>
@@ -176,7 +181,10 @@ NYI: instrumental mag vs catalog mag
     window.targetId = {{analysis.target_id | jsonify }};
     window.pointSourceData = {{ analysis.data.coords | jsonify }};
     window.catalogData = {{ analysis.data.catalog_reference_stars | jsonify }};
+    window.urat1Key = {{ analysis.meta.image_band_urat1_key | jsonify }};
   </script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="{% static "imageflow/js/shared.js" %}" type="text/javascript"></script>
+  <script src="{% static "imageflow/js/reference_stars.js" %}" type="text/javascript"></script>
 {% endblock %}

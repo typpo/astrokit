@@ -62,4 +62,9 @@ $(function() {
 
   setupRunReductions();
   setupAddToLightcurve();
+
+  setupMagnitudeChecks($('.plot-container'),
+                       'standard',
+                       window.reducedStars,
+                       window.reducedStars);
 });
