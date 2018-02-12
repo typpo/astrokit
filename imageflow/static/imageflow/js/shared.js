@@ -129,9 +129,11 @@ function setupMagnitudeChecks($elts, type, xData, yData) {
     var chart = [
       {
         x: xData.map(function(r) {
-          return type === 'instrumental' ? r[window.urat1Key] : r.mag_standard;
+          return r[window.urat1Key];
         }),
-        y: yData.map(function(r) { return r.mag_instrumental }),
+        y: yData.map(function(r) {
+          return type === 'instrumental' ? r.mag_instrumental : r.mag_standard;
+        }),
         type: 'scatter',
         mode: 'markers',
       },
