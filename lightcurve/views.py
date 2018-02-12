@@ -76,8 +76,6 @@ def save_observation_default(request, lightcurve_id):
     elevation = request.POST.get('elevation')
     extinction = request.POST.get('extinction')
 
-    print lat, lng, elevation, extinction
-
     for image in images:
         if lat:
             image.image_latitude= float(lat)
