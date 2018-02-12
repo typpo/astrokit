@@ -72,8 +72,8 @@ function setupCanvasListeners(canvas) {
     var rect = canvas.getBoundingClientRect();
     var mx = e.clientX - rect.left;
     var my = e.clientY - rect.top;
-    xPosElt.innerHTML = mx;
-    yPosElt.innerHTML = my;
+    xPosElt.innerHTML = parseInt(mx, 10);
+    yPosElt.innerHTML = parseInt(my, 10);
   }
 }
 
