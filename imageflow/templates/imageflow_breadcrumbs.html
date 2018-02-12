@@ -1,7 +1,7 @@
 <ol class="breadcrumb">
   <li {% if active_crumb == 'lightcurve' %}class="active"{% endif %}><a href="/lightcurve/{{analysis.lightcurve_id}}/edit">Light Curve #{{analysis.lightcurve_id}}</a></li>
   <li><a href="/analysis/{{analysis.id}}">Analysis #{{analysis.id}}</a></li>
-  <li {% if active_crumb == 'astrometry' %}class="active"{% endif %}><a href="/analysis/{{analysis.id}}">Astrometry</a></li>
+  <li {% if active_crumb == 'summary' %}class="active"{% endif %}><a href="/analysis/{{analysis.id}}">Summary</a></li>
   <li {% if active_crumb == 'point_sources' %}class="active"{% endif %}><a href="/analysis/point_sources/{{analysis.id}}">Photometry</a></li>
   <li {% if active_crumb == 'reference_stars' %}class="active"{% endif %}><a href="/analysis/reference_stars/{{analysis.id}}">Reference Stars</a></li>
   <li {% if active_crumb == 'reduction' %}class="active"{% endif %}><a href="/analysis/reduction/{{analysis.id}}">Reduction</a></li>

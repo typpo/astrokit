@@ -26,7 +26,15 @@
   {% include 'imageflow_breadcrumbs.html' %}
 {% endwith %}
 
+
 <h2>Reduction to Standard Magnitudes</h2>
+{% if not analysis.meta.target_id %}
+  <div class="alert alert-danger">
+    <strong>
+      You MUST choose a target star in the first step. <a href="/analysis/{{analysis.id}}#target-selection">Select a target</a>
+    </strong>
+  </div>
+{% endif %}
 <p>
 Let's convert our raw instrumental magnitudes to standard magnitudes per the following equation:
 </p>

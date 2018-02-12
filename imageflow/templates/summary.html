@@ -8,7 +8,7 @@
 
 {% block content-interior %}
 
-{% with active_crumb='astrometry' %}
+{% with active_crumb='summary' %}
   {% include 'imageflow_breadcrumbs.html' %}
 {% endwith %}
 
@@ -24,7 +24,7 @@ Submission #{{analysis.subid}} &middot; Analysis #{{analysis.id}} &middot; {{ana
   <a href="{{analysis.urls.original_display_url}}" download>Download</a>
 </div>
 
-<h3>Target selection</h3>
+<h3 id="target-selection">Target selection</h3>
 <p>
 {{analysis.data.coords | length}} point sources detected via
 <a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
@@ -48,7 +48,7 @@ Submission #{{analysis.subid}} &middot; Analysis #{{analysis.id}} &middot; {{ana
     <div id="target-id-failure" class="alert alert-danger" style="display:none">
       Something went wrong - failed to update your setting.
     </div>
-    <p>Enter the ID number of your target point source:</p>
+    <p>Enter the ID number of your target point source (set to 0 for no target):</p>
     <input id="target-id"
            class="form-control"
            type="number"
