@@ -264,11 +264,18 @@ def reduction(request, pk):
     # Other images in this light curve.
     potential_image_companions = analysis.lightcurve.useruploadedimage_set.all()
 
+    # Next image for user to process in this light curve.
+    next_image = ImageAnalysis.objects.filter(status=ImageAnalysis.REVIEW_PENDING,
+                                              useruploadedimage__lightcurve=analysis.lightcurve) \
+                                      .exclude(pk=pk) \
+                                      .first()
+
     template_args = {
         'analysis': analysis.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
 
         'potential_image_companions': potential_image_companions,
+        'next_image': next_image,
     }
     if hasattr(analysis, 'reduction') and analysis.reduction:
         template_args.update({
