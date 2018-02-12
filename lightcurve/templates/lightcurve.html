@@ -115,7 +115,7 @@ h1 span {
 
     <div class="image-container">
       {% if image.analysis.original_display_url %}
-        <a href="/analysis/{{image.id}}">
+        <a href="/analysis/{{image.analysis.id}}">
           <img src="{{image.analysis.original_display_url}}" class="user-image" />
         </a>
       {% endif %}
@@ -123,9 +123,9 @@ h1 span {
 
     <div class="button-row">
       {% if image.submission and image.submission.status == 'COMPLETE' %}
-        <a href="/analysis/{{image.id}}" class="btn btn-primary">Review Analysis</a>
+        <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary">Review Analysis</a>
       {% elif image.submission %}
-        <a href="/analysis/{{image.id}}" class="btn btn-primary disabled">Analysis Pending</a>
+        <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary disabled">Analysis Pending</a>
       {% endif %}
       {% if image.submission %}
         <a href="http://35.202.61.141/status/{{image.id}}" class="btn btn-default">View Astrometry job</a>
