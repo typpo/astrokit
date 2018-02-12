@@ -3,6 +3,8 @@ function plotImage(canvas, imageUrl) {
   var ctx = canvas.getContext('2d');
   var img = new Image();
   img.onload = function() {
+    // TODO(ian): Scale the width and height of plotted canvas images to a
+    // reasonable size.  See issue #71
     canvas.width = img.width;
     canvas.height = img.height;
     ctx.drawImage(img, 0, 0, img.width, img.height,
@@ -64,16 +66,23 @@ function plotStars(canvas, stars, rawOpts) {
   }
 }
 
+function getMousePos(canvas, evt) {
+  var rect = canvas.getBoundingClientRect();
+  return {
+    x: evt.clientX - rect.left,
+    y: evt.clientY - rect.top
+  };
+}
+
 function setupCanvasListeners(canvas) {
   var xPosElt = document.getElementById('canvas-x-pos');
   var yPosElt = document.getElementById('canvas-y-pos');
+
   canvas.onmousemove = function onMouseover(e) {
-    // https://stackoverflow.com/questions/17130395/real-mouse-position-in-canvas
-    var rect = canvas.getBoundingClientRect();
-    var mx = e.clientX - rect.left;
-    var my = e.clientY - rect.top;
-    xPosElt.innerHTML = parseInt(mx, 10);
-    yPosElt.innerHTML = parseInt(my, 10);
+    // Update mouse position display.
+    var pos = getMousePos(canvas, e);
+    xPosElt.innerHTML = parseInt(pos.x, 10);
+    yPosElt.innerHTML = parseInt(pos.y, 10);
   }
 }
 
@@ -130,8 +139,8 @@ function setupMagnitudeChecks($elts, type, xData, yData) {
 $(function() {
   var canvas = document.getElementById('star-plot');
   if (canvas) {
-    setupCanvasListeners(canvas);
     plotImage(canvas, window.originalImageUrl);
+    setupCanvasListeners(canvas);
   }
 
   setupTables();
