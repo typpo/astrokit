@@ -12,7 +12,7 @@ function plotImage(canvas, imageUrl) {
     if (window.catalogData) {
       plotStars(canvas, window.catalogData, {
         color: 'red',
-        radius: 5,
+        radius: 6,
         text: function(star) {
           return star.designation;
         }
@@ -21,7 +21,7 @@ function plotImage(canvas, imageUrl) {
     if (window.pointSourceData) {
       plotStars(canvas, window.pointSourceData, {
         color: 'green',
-        radius: 3,
+        radius: 4,
         text: window.catalogData ?
           function(star) { return null; } : function(star) { return star.id },
       });
@@ -44,7 +44,7 @@ function plotStars(canvas, stars, rawOpts) {
     ctx.beginPath();
     // Circle - defined by x, y, radius, ...
     ctx.arc(star.field_x, star.field_y, opts.radius, 0, Math.PI * 2);
-    ctx.strokeStyle = opts.color;
+    ctx.strokeStyle = star.id === window.targetId ? 'cyan' : opts.color;
     ctx.lineWidth = 3;
     ctx.stroke();
 

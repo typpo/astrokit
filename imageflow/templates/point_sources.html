@@ -124,7 +124,7 @@ blockquote.smallquote {
 {% block scripts %}
   <script>
     window.analysisId = {{analysis.id | jsonify }};
-    window.targetId = {{analysis.target_id | jsonify }};
+    window.targetId = {{analysis.meta.target_id | jsonify }};
     window.originalImageUrl = {{analysis.urls.original_display_url | jsonify}};
     window.pointSourceData = {{ analysis.data.coords | jsonify }};
   </script>
