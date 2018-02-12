@@ -28,29 +28,43 @@ def plot_lightcurve(request, lightcurve_id):
 
 def plot_lightcurve_json(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
-    reductions = Reduction.objects.filter(analysis__useruploadedimage__lightcurve=lc,
-                                          analysis__status=ImageAnalysis.ADDED_TO_LIGHT_CURVE,
-                                          status=Reduction.COMPLETE)
-
     ret = []
-    for reduction in reductions:
-        result = find_point_by_id(reduction.reduced_stars, reduction.analysis.target_id)
-        if not result:
-            # Reduction not complete.
-            continue
-        ret.append({
-            'id': reduction.id,
-            'timestamp': reduction.analysis.image_datetime,
-            'analysisId': reduction.analysis.id,
-            # TODO(ian): Maybe one day we can bake the target id into the URL.
-            # That way you can compare your target light curve to any light
-            # curve from a known object!
-            'result': result,
-        })
+    if request.GET.get('type') == 'instrumental':
+        analyses = ImageAnalysis.objects.filter(useruploadedimage__lightcurve=lc) \
+                                        .exclude(status=ImageAnalysis.PENDING)
+        for analysis in analyses:
+            result = find_point_by_id(analysis.annotated_point_sources, analysis.target_id)
+            if not result:
+                continue
+            ret.append({
+                'analysisId': analysis.id,
+                'timestamp': analysis.image_datetime,
+                'result': result,
+            })
+    else:
+        # type == 'standard'
+        reductions = Reduction.objects.filter(analysis__useruploadedimage__lightcurve=lc,
+                                              analysis__status=ImageAnalysis.ADDED_TO_LIGHT_CURVE,
+                                              status=Reduction.COMPLETE)
+
+        for reduction in reductions:
+            result = find_point_by_id(reduction.reduced_stars, reduction.analysis.target_id)
+            if not result:
+                # Reduction not complete.
+                continue
+            ret.append({
+                'analysisId': reduction.analysis.id,
+                'reductionId': reduction.id,
+                'timestamp': reduction.analysis.image_datetime,
+                # TODO(ian): Maybe one day we can bake the target id into the URL.
+                # That way you can compare your target light curve to any light
+                # curve from a known object!
+                'result': result,
+            })
 
     return JsonResponse({
         'success': True,
-        'reductions': ret,
+        'results': ret,
     })
 
 def save_observation_default(request, lightcurve_id):

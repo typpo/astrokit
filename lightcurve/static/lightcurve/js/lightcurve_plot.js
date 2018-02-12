@@ -1,19 +1,21 @@
 function loadData() {
-  $.get('/lightcurve/' + window.lightcurveId + '/plot_json', function(data) {
-    console.log(data.reductions);
-    plot(data.reductions);
+  var url = '/lightcurve/' + window.lightcurveId +
+            '/plot_json?type=' + getChartType();
+  $.get(url, function(data) {
+    console.log(data.results);
+    plot(data.results);
   });
 }
 
-function getChartForStandard(reductions) {
+function getChartForStandard(results) {
   return [
     {
-      x: reductions.map(function(r) { return r.timestamp }),
-      y: reductions.map(function(r) { return r.result.mag_standard }),
+      x: results.map(function(r) { return r.timestamp }),
+      y: results.map(function(r) { return r.result.mag_standard }),
       error_y: {
         type: 'data',
         visible: true,
-        array: reductions.map(function(r) { return r.result.mag_std }),
+        array: results.map(function(r) { return r.result.mag_std }),
       },
       type: 'scatter',
       mode: 'markers',
@@ -21,20 +23,20 @@ function getChartForStandard(reductions) {
   ];
 }
 
-function getChartForInstrumental(reductions) {
+function getChartForInstrumental(results) {
   return [
     {
-      x: reductions.map(function(r) { return r.timestamp }),
-      y: reductions.map(function(r) { return r.result.mag_instrumental }),
+      x: results.map(function(r) { return r.timestamp }),
+      y: results.map(function(r) { return r.result.mag_instrumental }),
       type: 'scatter',
       mode: 'markers',
     },
   ];
 }
 
-function getChart(reduction) {
+function getChart(results) {
   return getChartType() === 'instrumental' ?
-          getChartForInstrumental(reduction) : getChartForStandard(reduction);
+          getChartForInstrumental(results) : getChartForStandard(results);
 }
 
 function getChartYAxisLabel() {
@@ -49,8 +51,8 @@ function getChartType() {
   return url.searchParams.get('type') || 'standard';
 }
 
-function plot(reductions) {
-  var chart = getChart(reductions);
+function plot(results) {
+  var chart = getChart(results);
   var layout = {
     title: window.lightcurveName,
     xaxis: {
