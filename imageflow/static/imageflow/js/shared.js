@@ -1,14 +1,25 @@
-function plotImage(canvas, imageUrl) {
+var IMAGE_TO_PLOT_XY_CONVERSION_FACTOR = 0;
+
+function plotImage($container, canvas, imageUrl, opts) {
   // First, write the original image to canvas.
   var ctx = canvas.getContext('2d');
   var img = new Image();
   img.onload = function() {
-    // TODO(ian): Scale the width and height of plotted canvas images to a
-    // reasonable size.  See issue #71
-    canvas.width = img.width;
-    canvas.height = img.height;
+    // Scale the width and height of plotted canvas images to a reasonable
+    // size.  See issue #71
+    var hRatio = opts.width / img.width;
+    var vRatio = opts.height / img.height;
+    var ratio = Math.min(hRatio, vRatio);
+    IMAGE_TO_PLOT_XY_CONVERSION_FACTOR = ratio;
+
+    canvas.width = Math.min(opts.width, img.width * ratio);
+    canvas.height = Math.min(opts.height, img.height * ratio);
+    $container.width(canvas.width);
+    $container.height(canvas.height);
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, img.width, img.height,
-                       0, 0, canvas.width, canvas.height);
+									0, 0, img.width * ratio, img.height * ratio);
 
     // Then plot stars from the data source.
     if (window.catalogData) {
@@ -40,12 +51,14 @@ function plotStars(canvas, stars, rawOpts) {
   }, rawOpts);
   for (var i=0; i < stars.length; i++) {
     var star = stars[i];
+    var starX = star.field_x * IMAGE_TO_PLOT_XY_CONVERSION_FACTOR;
+    var starY = star.field_y * IMAGE_TO_PLOT_XY_CONVERSION_FACTOR;
 
     // Plot catalog stars over an image.
     var ctx = canvas.getContext('2d');
     ctx.beginPath();
     // Circle - defined by x, y, radius, ...
-    ctx.arc(star.field_x, star.field_y, opts.radius, 0, Math.PI * 2);
+    ctx.arc(starX, starY, opts.radius, 0, Math.PI * 2);
     ctx.strokeStyle = star.id === window.targetId ? 'cyan' : opts.color;
     ctx.lineWidth = 3;
     ctx.stroke();
@@ -60,9 +73,9 @@ function plotStars(canvas, stars, rawOpts) {
     ctx.strokeStyle= 'black';
     ctx.lineWidth = 4;
     var labelWidth = ctx.measureText(text).width;
-    ctx.strokeText(text, star.field_x - (labelWidth / 2), star.field_y - 8);
+    ctx.strokeText(text, starX - (labelWidth / 2), starY - 8);
     ctx.fillStyle = 'yellow';
-    ctx.fillText(text, star.field_x - (labelWidth / 2), star.field_y - 8);
+    ctx.fillText(text, starX - (labelWidth / 2), starY - 8);
   }
 }
 
@@ -81,8 +94,8 @@ function setupCanvasListeners(canvas) {
   canvas.onmousemove = function onMouseover(e) {
     // Update mouse position display.
     var pos = getMousePos(canvas, e);
-    xPosElt.innerHTML = parseInt(pos.x, 10);
-    yPosElt.innerHTML = parseInt(pos.y, 10);
+    xPosElt.innerHTML = parseInt(pos.x / IMAGE_TO_PLOT_XY_CONVERSION_FACTOR, 10);
+    yPosElt.innerHTML = parseInt(pos.y / IMAGE_TO_PLOT_XY_CONVERSION_FACTOR, 10);
   }
 }
 
@@ -139,7 +152,11 @@ function setupMagnitudeChecks($elts, type, xData, yData) {
 $(function() {
   var canvas = document.getElementById('star-plot');
   if (canvas) {
-    plotImage(canvas, window.originalImageUrl);
+    var $container = $('#plot-container');
+    plotImage($container, canvas, window.originalImageUrl, {
+      width: $container.width(),
+      height: $container.height(),
+    });
     setupCanvasListeners(canvas);
   }
 
