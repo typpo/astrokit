@@ -30,6 +30,8 @@ class ImageAnalysis(models.Model):
     status = models.CharField(
             max_length=50, choices=STATUSES, default=PENDING)
 
+    notes = models.TextField(default='')
+
     user = models.ForeignKey(User)
 
     lightcurve = models.ForeignKey(LightCurve, null=True)
@@ -111,6 +113,7 @@ class ImageAnalysis(models.Model):
             'subid': self.astrometry_job.submission.subid,
             'lightcurve_id': self.lightcurve.id,
             'meta': {
+                'notes': self.notes,
                 'datetime': self.image_datetime,
                 'latitude': self.image_latitude,
                 'longitude': self.image_longitude,

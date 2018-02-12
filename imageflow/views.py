@@ -296,3 +296,12 @@ def api_get_analysis_results(request, subid):
         'success': True,
         'analysis': analysis.get_summary_obj(),
     })
+
+def notes(request, pk):
+    # TODO(ian): Verify owner of reduction for all these ImageAnalysis fetches.
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    analysis.notes = request.POST.get('val')
+    analysis.save()
+    return JsonResponse({
+        'success': True,
+    })

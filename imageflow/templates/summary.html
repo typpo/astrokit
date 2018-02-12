@@ -13,11 +13,14 @@
 {% endwith %}
 
 <p>
-Submission #{{analysis.subid}} &middot; Analysis #{{analysis.id}} &middot; {{analysis.meta.uploaded_image.original_filename}}
+  <textarea class="form-control js-notes" placeholder="Use this space to record notes about this image.">{{analysis.meta.notes}}</textarea>
 </p>
 
 <h3>Original image</h3>
 <div class="well">
+  <p>
+    Filename: {{analysis.meta.uploaded_image.original_filename}}
+  </p>
   <a href="{{analysis.urls.original_display_url}}">
     <img src="{{analysis.urls.original_display_url}}" />
   </a>

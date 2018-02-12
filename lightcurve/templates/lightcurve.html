@@ -113,6 +113,10 @@ h1 span {
       <span style="color:purple">Uploaded, astrometry stage starting...</span>
     {% endif %}
 
+    {% if image.analysis.notes %}
+        <br>Note: <em>{{image.analysis.notes}}</em>
+    {% endif %}
+
     <div class="image-container">
       {% if image.analysis.original_display_url %}
         <a href="/analysis/{{image.analysis.id}}">

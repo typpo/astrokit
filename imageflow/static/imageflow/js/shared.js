@@ -94,6 +94,12 @@ function scrollToTarget($wrapper) {
   });
 }
 
+function setupNotes() {
+  $('.js-notes').on('change', function() {
+    $.post('/analysis/' + window.analysisId + '/notes', { val: $(this).val() });
+  });
+}
+
 function setupMagnitudeChecks($elts, type, xData, yData) {
   // Standard and instrumental mags vs catalog mags.
   $elts.each(function() {
@@ -119,7 +125,6 @@ function setupMagnitudeChecks($elts, type, xData, yData) {
 
     Plotly.newPlot($elt[0], chart, layout);
   });
-
 }
 
 $(function() {
@@ -130,6 +135,7 @@ $(function() {
   }
 
   setupTables();
+  setupNotes();
 
   // Initialize tooltips.
   if ($().tooltip) {
