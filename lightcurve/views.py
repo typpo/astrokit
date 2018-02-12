@@ -132,7 +132,7 @@ def my_lightcurve(request):
             'images': images,
         })
 
-    return render_to_response('lightcurve-listing.html', {"contexts": context_list},
+    return render_to_response('lightcurve_list.html', {"contexts": context_list},
             context_instance=RequestContext(request))
 
 def all_lightcurve(request):
@@ -146,5 +146,5 @@ def all_lightcurve(request):
             'images': images,
         })
 
-    return render_to_response('lightcurve-listing.html', {"contexts": context_list, "request_all": True},
+    return render_to_response('lightcurve_list.html', {"contexts": context_list, "request_all": True},
             context_instance=RequestContext(request))
