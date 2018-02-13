@@ -10,7 +10,7 @@ from jsonfield import JSONField
 
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from lightcurve.models import LightCurve
-from photometry.models import ImageFilter
+from photometry.models import ImageFilter, PhotometrySettings
 
 class ImageAnalysis(models.Model):
     PENDING = 'PENDING'
@@ -58,7 +58,9 @@ class ImageAnalysis(models.Model):
     coords = JSONField()
     coords_json_url = models.CharField(max_length=1024)
 
-    # Point source extraction.
+    # Point source extraction & photometry.
+    photometry_settings = models.ForeignKey(PhotometrySettings, null=True)
+
     psf_scatter_url = models.CharField(max_length=1024)
     psf_bar_url = models.CharField(max_length=1024)
     psf_hist_url = models.CharField(max_length=1024)
@@ -105,6 +107,10 @@ class ImageAnalysis(models.Model):
             reduction.color_index_2 = self.image_filter
             reduction.save()
         return reduction
+
+    def get_or_create_photometry_settings(self):
+        ret, _ = Reduction.objects.get_or_create(analysis=self)
+        return ret
 
     def get_summary_obj(self):
         return {
