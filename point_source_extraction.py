@@ -5,11 +5,8 @@ Point-source extraction.
 Usage: python point_source_extraction.py myimage.fits
 '''
 
-import argparse
 import logging
 import simplejson as json
-import sys
-import tempfile
 import urllib
 
 from cStringIO import StringIO
@@ -17,11 +14,8 @@ from cStringIO import StringIO
 import matplotlib.pylab as plt
 import numpy as np
 
-from astropy.io import fits
-#from astropy.visualization import SqrtStretch
-#from astropy.visualization.mpl_normalize import ImageNormalize
-from matplotlib.colors import LogNorm
 from PIL import Image
+from astropy.io import fits
 from astropy.modeling.fitting import LevMarLSQFitter
 from astropy.stats import gaussian_sigma_to_fwhm
 from photutils import CircularAperture
@@ -181,42 +175,3 @@ def extract_image_data_from_fits(im):
         return im[0].data[2]
     # Sometimes it's just a normal image.
     return im[0].data
-
-def get_args():
-    parser = argparse.ArgumentParser('Extract point sources from image.')
-    parser.add_argument('image', help='filesystem path or url to input image')
-    parser.add_argument('--coords_plot', help='path to output overlay plot')
-    parser.add_argument('--coords_fits', help='path to output point source coords to')
-    parser.add_argument('--coords_json', help='path to output point source coords to')
-    parser.add_argument('--psf_scatter', help='output path for scatterplot of fluxes')
-    parser.add_argument('--psf_bar', help='output path for distribution plot of fluxes')
-    parser.add_argument('--psf_hist', help='output path for histogram of fluxes')
-    parser.add_argument('--psf_residual', help='output path for residual image with PSF subtracted')
-    return parser.parse_args()
-
-if __name__ == '__main__':
-    args = get_args()
-    if args.image.startswith('http:'):
-        image_data = load_url(args.image)
-    else:
-        image_data = load_image(args.image)
-    # FIXME(ian): This call is out of date...
-    sources = compute(image_data)
-
-    # Coords.
-    if args.coords_plot:
-        plot(sources, image_data, args.coords_plot)
-    if args.coords_fits:
-        save_fits(sources, args.coords_fits)
-    if args.coords_json:
-        save_json(sources, args.coords_json)
-
-    # PSF.
-    '''
-    if args.psf_scatter or args.psf_bar or args.psf_residual or args.psf_hist:
-        compute_psf_flux(image_data, sources, \
-                args.psf_scatter, args.psf_bar, args.psf_hist, \
-                args.psf_residual)
-    '''
-
-    logger.info('Done.')
