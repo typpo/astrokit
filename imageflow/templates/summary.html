@@ -17,14 +17,16 @@
 </p>
 
 <h3>Original image</h3>
+<p>
+  File: <a href="{{analysis.meta.uploaded_image.image_url}}">{{analysis.meta.uploaded_image.original_filename}}</a>
+</p>
 <div class="well">
-  <p>
-    Filename: {{analysis.meta.uploaded_image.original_filename}}
-  </p>
   <a href="{{analysis.urls.original_display_url}}">
     <img src="{{analysis.urls.original_display_url}}" />
   </a>
-  <a href="{{analysis.urls.original_display_url}}" download>Download</a>
+  <a href="{{analysis.meta.uploaded_image.image_url}}" download>Download original</a>
+  &middot;
+  <a href="{{analysis.urls.original_display_url}}" download>Download converted image</a>
 </div>
 
 <h3 id="target-selection">Target selection</h3>
@@ -32,9 +34,6 @@
 {{analysis.data.coords | length}} point sources detected via
 <a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
 </p>
-<a href="{{analysis.urls.coords_json_url}}">Coordinates JSON</a>
-&middot;
-<a href="{{analysis.urls.coords_fits_url}}">Coordinates FITS</a>
 
 <div class="well">
   Field position:
@@ -51,7 +50,12 @@
     <div id="target-id-failure" class="alert alert-danger" style="display:none">
       Something went wrong - failed to update your setting.
     </div>
-    <p>Enter the ID number of your target point source (set to 0 for no target):</p>
+    <p>
+      <a href="{{analysis.urls.coords_json_url}}">Download JSON</a>
+      &middot;
+      <a href="{{analysis.urls.coords_fits_url}}">Download FITS</a>
+    </p>
+    <p><strong>Enter the ID number of your target point source (set to 0 for no target):</strong></p>
     <input id="target-id"
            class="form-control"
            type="number"
@@ -59,20 +63,6 @@
            max="{{analysis.data.coords | length}}"
            value="{{analysis.meta.target_id}}"/>
   </div>
-</div>
-
-<h3>Date &amp; time</h3>
-<p>
-Parsed from fits <code>DATE-OBS</code> field (ISO 8601 format).
-</p>
-<div class="well">
-  <div id="edit-image-datetime-success" class="alert alert-success" style="display:none">
-    Date and time successfully updated.
-  </div>
-  <div id="edit-image-datetime-success" class="alert alert-danger" style="display:none">
-    Something went wrong - failed to update your setting.
-  </div>
-  <input id="edit-image-datetime" class="form-control" style="width: 30em" type="text" value="{{analysis.meta.datetime | date:'c'}}">
 </div>
 
 <h3>Filter</h3>
@@ -97,9 +87,23 @@ Select the standard filter that most closely matches the filter used for this im
   </label>
 </div>
 
+<h3>Date &amp; time</h3>
+<p>
+The default datetime value is parsed from FITS <code>DATE-OBS</code> field.  Datetimes should be <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> format.
+</p>
+<div class="well">
+  <div id="edit-image-datetime-success" class="alert alert-success" style="display:none">
+    Date and time successfully updated.
+  </div>
+  <div id="edit-image-datetime-success" class="alert alert-danger" style="display:none">
+    Something went wrong - failed to update your setting.
+  </div>
+  <input id="edit-image-datetime" class="form-control" style="width: 30em" type="text" value="{{analysis.meta.datetime | date:'c'}}">
+</div>
+
 <h3>Coordinates</h3>
 <p>
-Latitude Longitude coordinates of observation.
+Geographical coordinates of observation.
 </p>
 <div class="well">
   <div id="set-latlng-success" class="alert alert-success" style="display:none">
