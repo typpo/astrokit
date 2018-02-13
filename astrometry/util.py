@@ -16,10 +16,10 @@ def create_new_lightcurve(user, imgs):
     lc.save()
 
     for img in imgs:
-        url = s3_util.upload_to_s3(img.read(), 'raw', img.name)
-        print 'Uploaded %s to s3 url: %s' % (img.name, url)
+        # url = s3_util.upload_to_s3(img.read(), 'raw', img.name)
+        # print 'Uploaded %s to s3 url: %s' % (img.name, url)
         UserUploadedImage(user=user,
-                          image_url=url,
+                          # image_url=url,
                           original_filename=img.name,
                           lightcurve=lc).save()
 
@@ -29,10 +29,10 @@ def edit_lightcurve(user, imgs, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
 
     for img in imgs:
-        url = s3_util.upload_to_s3(img.read(), 'raw', img.name)
-        print 'Uploaded %s to s3 url: %s' % (img.name, url)
+        # url = s3_util.upload_to_s3(img.read(), 'raw', img.name)
+        # print 'Uploaded %s to s3 url: %s' % (img.name, url)
         UserUploadedImage(user=user,
-                          image_url=url,
+                          # image_url=url,
                           original_filename=img.name,
                           lightcurve=lc).save()
     return lc
