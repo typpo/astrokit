@@ -14,6 +14,7 @@ from photometry.models import ImageFilter, PhotometrySettings
 
 class ImageAnalysis(models.Model):
     ASTROMETRY_PENDING = 'ASTROMETRY_PENDING'
+    PHOTOMETRY_PENDING = 'PHOTOMETRY_PENDING'
     REVIEW_PENDING = 'REVIEW_PENDING'
     REVIEW_COMPLETE = 'REVIEW_COMPLETE'
     REDUCTION_COMPLETE = 'REDUCTION_COMPLETE'
@@ -21,6 +22,7 @@ class ImageAnalysis(models.Model):
     FAILED = 'FAILED'
     STATUSES = (
         (ASTROMETRY_PENDING, 'Astrometry pending'),
+        (PHOTOMETRY_PENDING, 'Photometry pending'),
         (REVIEW_PENDING, 'Review pending'),
         (REVIEW_PENDING, 'Review complete'),
         (REDUCTION_COMPLETE, "Reduction complete"),
