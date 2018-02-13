@@ -200,6 +200,8 @@ class SubmissionHandler():
             except ValueError:
                 pass
 
+        # TODO(ian): Get latlng
+
     def process_point_sources(self, image_fits_data, job, result, upload_key_prefix):
         submission = self.submission
 
@@ -208,7 +210,7 @@ class SubmissionHandler():
         fitsobj = point_source_extraction.get_fits_from_raw(image_fits_data)
 
         data = point_source_extraction.extract_image_data_from_fits(fitsobj)
-        sources, stats = point_source_extraction.compute(data)
+        sources, residual_image, stats = point_source_extraction.compute(data)
 
         result.sigma_clipped_mean = stats[0]
         result.sigma_clipped_median = stats[1]
@@ -254,6 +256,7 @@ class SubmissionHandler():
                                                   upload_key_prefix)
 
         # PSF.
+        '''
         psf_scatter_path = '%d_%d_psf_scatter.png' % (submission.subid, job.jobid)
         psf_bar_path = '%d_%d_psf_bar.png' % (submission.subid, job.jobid)
         psf_hist_path = '%d_%d_psf_hist.png' % (submission.subid, job.jobid)
@@ -278,6 +281,7 @@ class SubmissionHandler():
             result.psf_residual_image_url = \
                     s3_util.upload_to_s3_via_file(psf_residual_path, \
                                                   upload_key_prefix)
+        '''
 
         # TODO(ian): Should delete the files afterwards, or create them as
         # temporary files.
