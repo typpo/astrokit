@@ -21,48 +21,37 @@ from astropy.stats import gaussian_sigma_to_fwhm
 from photutils import CircularAperture
 from photutils.background import MMMBackground, MADStdBackgroundRMS
 from photutils.detection import IRAFStarFinder
-from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtractedPSFPhotometry
+from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtractedPSFPhotometry, DAOPhotPSFPhotometry
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def compute(image_data):
     # Taken from photuils example http://photutils.readthedocs.io/en/stable/psf.html
-    # For parameters to irafstarfind and daofind, see https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L272
-    # For output, see https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L79
+    # See also http://photutils.readthedocs.io/en/stable/api/photutils.psf.DAOPhotPSFPhotometry.html#photutils.psf.DAOPhotPSFPhotometry
 
     sigma_psf = 2.0
+    niters = 1
+    box_size = 11
 
-    # http://photutils.readthedocs.io/en/stable/api/photutils.background.MADStdBackgroundRMS.html
     bkgrms = MADStdBackgroundRMS()
     std = bkgrms(image_data)
 
-    # http://photutils.readthedocs.io/en/stable/api/photutils.IRAFStarFinder.html
-    treshold = 5.0 * std #3.5*std
-    iraffind = IRAFStarFinder(threshold=treshold,
-			      fwhm=sigma_psf*gaussian_sigma_to_fwhm,
-			      minsep_fwhm=0.01, roundhi=5.0, roundlo=-5.0,
-			      sharplo=0.0, sharphi=2.0)
+    photargs = {
+	'crit_separation': sigma_psf*5,
+	'threshold': 5.0 * std,
+	'fwhm': sigma_psf*gaussian_sigma_to_fwhm,
+	'fitter': LevMarLSQFitter(),
+	'niters': niters,
+	'fitshape': (box_size, box_size),
+    }
 
-    # http://photutils.readthedocs.io/en/stable/api/photutils.DAOGroup.html
-    daogroup = DAOGroup(2.0*sigma_psf*gaussian_sigma_to_fwhm)
+    photargs['psf_model'] = IntegratedGaussianPRF(sigma=sigma_psf)
+    photargs['psf_model'].sigma.fixed = False
 
-    # http://photutils.readthedocs.io/en/stable/api/photutils.MMMBackground.html
-    mmm_bkg = MMMBackground()
+    photometry = DAOPhotPSFPhotometry(**photargs)
 
-    # http://docs.astropy.org/en/stable/api/astropy.modeling.fitting.LevMarLSQFitter.html
-    fitter = LevMarLSQFitter()
 
-    # http://photutils.readthedocs.io/en/stable/api/photutils.IntegratedGaussianPRF.html
-    psf_model = IntegratedGaussianPRF(sigma=sigma_psf)
-
-    # http://photutils.readthedocs.io/en/stable/api/photutils.psf.IterativelySubtractedPSFPhotometry.html
-    photometry = IterativelySubtractedPSFPhotometry(finder=iraffind,
-						    group_maker=daogroup,
-						    bkg_estimator=mmm_bkg,
-						    psf_model=psf_model,
-						    fitter=LevMarLSQFitter(),
-						    niters=3, fitshape=(11,11))
     # Column names:
     # 'flux_0', 'x_fit', 'x_0', 'y_fit', 'y_0', 'flux_fit', 'id', 'group_id',
     # 'flux_unc', 'x_0_unc', 'y_0_unc', 'iter_detected'
