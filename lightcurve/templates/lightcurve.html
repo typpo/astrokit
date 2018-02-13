@@ -94,7 +94,7 @@ h1 span {
 
     Status:
     {% if image.analysis %}
-      {% if image.analysis.status == 'PENDING'  %}
+      {% if image.analysis.status == 'ASTROMETRY_PENDING'  %}
         <span style="color:#ff1493"><strong>Stage 1 - Astrometry: performing analysis</strong></span>
       {% elif image.analysis.status == 'REVIEW_PENDING'  %}
         <span style="color:#ff1493"><strong>Stage 1 - Astrometry: analysis complete, review pending</strong></span>

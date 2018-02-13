@@ -31,7 +31,7 @@ def plot_lightcurve_json(request, lightcurve_id):
     ret = []
     if request.GET.get('type') == 'instrumental':
         analyses = ImageAnalysis.objects.filter(useruploadedimage__lightcurve=lc) \
-                                        .exclude(status=ImageAnalysis.PENDING)
+                                        .exclude(status=ImageAnalysis.ASTROMETRY_PENDING)
         for analysis in analyses:
             result = find_point_by_id(analysis.annotated_point_sources, analysis.target_id)
             if not result:

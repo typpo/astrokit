@@ -13,14 +13,14 @@ from lightcurve.models import LightCurve
 from photometry.models import ImageFilter, PhotometrySettings
 
 class ImageAnalysis(models.Model):
-    PENDING = 'PENDING'
+    ASTROMETRY_PENDING = 'ASTROMETRY_PENDING'
     REVIEW_PENDING = 'REVIEW_PENDING'
     REVIEW_COMPLETE = 'REVIEW_COMPLETE'
     REDUCTION_COMPLETE = 'REDUCTION_COMPLETE'
     ADDED_TO_LIGHT_CURVE = 'ADDED_TO_LIGHT_CURVE'
     FAILED = 'FAILED'
     STATUSES = (
-        (PENDING, 'Pending'),
+        (ASTROMETRY_PENDING, 'Astrometry pending'),
         (REVIEW_PENDING, 'Review pending'),
         (REVIEW_PENDING, 'Review complete'),
         (REDUCTION_COMPLETE, "Reduction complete"),
@@ -28,7 +28,7 @@ class ImageAnalysis(models.Model):
         (FAILED, 'Failed'),
     )
     status = models.CharField(
-            max_length=50, choices=STATUSES, default=PENDING)
+            max_length=50, choices=STATUSES, default=ASTROMETRY_PENDING)
 
     notes = models.TextField(default='')
 
