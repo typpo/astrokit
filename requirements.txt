@@ -5,7 +5,7 @@ attrs==17.4.0
 beautifulsoup4==4.5.3
 boto==2.4.0
 cffi==1.10.0
-cryptography==1.8.1
+cryptography==2.1.4
 cycler==0.10.0
 decorator==4.0.9
 Django==1.9.1
@@ -46,4 +46,3 @@ simplejson==3.11.1
 six==1.10.0
 South==1.0.2
 webencodings==0.5.1
-wheel==0.26.0
