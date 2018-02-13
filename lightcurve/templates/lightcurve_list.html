@@ -1,6 +1,14 @@
 {% extends 'layout-internal.html' %}
 {% load staticfiles %}
 
+{% block title %}
+{% if request_all %}
+  Browse all light curves
+{% else %}
+  Browse light curves by {{request.user}}
+{% endif %}
+{% endblock %}
+
 {% block styles %}
 <style>
 h1 span {
@@ -40,12 +48,15 @@ article a {
 </style>
 {% endblock %}
 
+{% block heading %}
+  {% if request_all %}
+    <h1>All Light Curves</h1>
+  {% else %}
+    <h1>Light Curves by {{request.user}}</h1>
+  {% endif %}
+{% endblock %}
+
 {% block content-interior %}
-{% if request_all %}
-  <h1>All Light Curves</h1>
-{% else %}
-  <h1>Light Curves by {{request.user}}</h1>
-{% endif %}
 <div>
 
   {% for context in contexts %}

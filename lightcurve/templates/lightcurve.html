@@ -2,6 +2,8 @@
 {% load staticfiles %}
 {% load jsonify %}
 
+{% block title %}Light Curve {{lightcurve.name}} - Overview{% endblock %}
+
 {% block styles %}
 <style>
 h1 span {
@@ -19,8 +21,9 @@ h1 span {
 </style>
 {% endblock %}
 
+{% block heading %}Light Curve <span>{{lightcurve.name}}</span>{% endblock %}
+
 {% block content-interior %}
-<h1>Light Curve <span>{{lightcurve.name}}</span></h1>
 <a href="plot" class="btn btn-default">Standard Magnitudes Plot</a>
 <a href="plot?type=instrumental" class="btn btn-default">Instrumental Magnitudes Plot</a>
 <a href="#" class="btn btn-default">Download as XLSX</a>
