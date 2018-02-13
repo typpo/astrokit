@@ -170,9 +170,6 @@ def load_url(url):
     return extract_image_data_from_fits(fits.open(StringIO(content)))
     #return fits.getdata(StringIO(content))
 
-def get_fits_from_raw(data):
-    return fits.open(StringIO(data))
-
 def extract_image_data_from_fits(im):
     if len(im[0].data) == 3:
         # Sometimes the resulting image is 3 dimensional.

@@ -96,14 +96,16 @@ h1 span {
     {% if image.analysis %}
       {% if image.analysis.status == 'ASTROMETRY_PENDING'  %}
         <span style="color:#ff1493"><strong>Stage 1 - Astrometry: performing analysis</strong></span>
+      {% elif image.analysis.status == 'PHOTOMETRY_PENDING'  %}
+        <span style="color:#ff1493"><strong>Stage 2 - Photometry: performing analysis</strong></span>
       {% elif image.analysis.status == 'REVIEW_PENDING'  %}
-        <span style="color:#ff1493"><strong>Stage 1 - Astrometry: analysis complete, review pending</strong></span>
+        <span style="color:#ff1493"><strong>Stage 3 - Review: analysis complete, review pending</strong></span>
       {% elif image.analysis.status == 'REVIEW_COMPLETE'  %}
-        <span style="color:#215022"><strong>Stage 2 - Reduction: astrometry review complete, reduction pending</strong></span>
+        <span style="color:#215022"><strong>Stage 4 - Reduction: analysis reviewed, reduction pending</strong></span>
       {% elif image.analysis.status == 'REDUCTION_COMPLETE'  %}
-        <span style="color:#215022"><strong>Stage 2 - Reduction: complete</strong></span>
+        <span style="color:#215022"><strong>Stage 4 - Reduction: complete</strong></span>
       {% elif image.analysis.status == 'ADDED_TO_LIGHT_CURVE'  %}
-        <span style="color:#215022"><strong>Stage 3 - Added to light curve</strong></span>
+        <span style="color:#215022"><strong>Stage 5 - Added to light curve</strong></span>
       {% endif %}
     {% elif image.submission %}
       {% if image.submission.status == 'FAILED_TO_SUBMIT' %}

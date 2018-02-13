@@ -16,7 +16,6 @@ class ImageAnalysis(models.Model):
     ASTROMETRY_PENDING = 'ASTROMETRY_PENDING'
     PHOTOMETRY_PENDING = 'PHOTOMETRY_PENDING'
     REVIEW_PENDING = 'REVIEW_PENDING'
-    REVIEW_COMPLETE = 'REVIEW_COMPLETE'
     REDUCTION_COMPLETE = 'REDUCTION_COMPLETE'
     ADDED_TO_LIGHT_CURVE = 'ADDED_TO_LIGHT_CURVE'
     FAILED = 'FAILED'
@@ -24,7 +23,6 @@ class ImageAnalysis(models.Model):
         (ASTROMETRY_PENDING, 'Astrometry pending'),
         (PHOTOMETRY_PENDING, 'Photometry pending'),
         (REVIEW_PENDING, 'Review pending'),
-        (REVIEW_PENDING, 'Review complete'),
         (REDUCTION_COMPLETE, "Reduction complete"),
         (ADDED_TO_LIGHT_CURVE, "Added to light curve"),
         (FAILED, 'Failed'),
