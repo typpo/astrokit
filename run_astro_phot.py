@@ -192,13 +192,13 @@ class SubmissionHandler():
         if not dateobs:
             return None
 
-        # TODO(ian): make this a util
         for fmt in ('%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%d', '%d.%m.%Y', '%d/%m/%y'):
             try:
+                # TODO(ian): Set timezone
                 result.image_datetime = datetime.strptime(dateobs, fmt)
                 break
             except ValueError:
-                pass
+                logger.warning('Unable to parse DATE-OBS %s' % dateobs)
 
         # TODO(ian): Get latlng
 
