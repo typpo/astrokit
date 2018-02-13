@@ -113,6 +113,7 @@ class ImageAnalysis(models.Model):
             'subid': self.astrometry_job.submission.subid,
             'lightcurve_id': self.lightcurve.id,
             'meta': {
+                'image_name_short': self.get_short_name(),
                 'notes': self.notes,
                 'datetime': self.image_datetime,
                 'latitude': self.image_latitude,
@@ -152,18 +153,30 @@ class ImageAnalysis(models.Model):
             },
         }
 
-    def __str__(self):
+    def get_short_name(self, maxlen=30):
         image = self.useruploadedimage_set.first()
         if image:
-            image_name = image.original_filename
+            name = image.original_filename
         else:
-            image_name = 'Unknown image'
-        return '%s: %s - Sub %d Job %d, Band %s @ %s' % \
-                (image_name,
+            name = 'Unknown image'
+
+        if len(name) <= 30:
+            return name
+
+        # Half the size, minus the 3 dots.
+        n_2 = maxlen / 2 - 3
+        # Remainder
+        n_1 = maxlen - n_2 - 3
+        return '%s...%s' % (name[:n_1], name[-n_2:])
+
+    def __str__(self):
+        return '#%d %s: %s - Sub %d Job %d, Band %s @ %s' % \
+                (self.id,
+                 self.get_short_name(),
                  self.status,
                  self.astrometry_job.submission.subid, \
                  self.astrometry_job.jobid, \
-                 str(self.image_filter), \
+                 str(self.image_filter.band), \
                  str(self.image_datetime))
 
 

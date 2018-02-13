@@ -18,28 +18,49 @@ import matplotlib.pylab as plt
 import numpy as np
 
 from astropy.io import fits
-from astropy.stats import sigma_clipped_stats
-from astropy.visualization import SqrtStretch
-from astropy.visualization.mpl_normalize import ImageNormalize
+#from astropy.visualization import SqrtStretch
+#from astropy.visualization.mpl_normalize import ImageNormalize
 from matplotlib.colors import LogNorm
 from PIL import Image
+from astropy.modeling.fitting import LevMarLSQFitter
+from astropy.stats import gaussian_sigma_to_fwhm
 from photutils import CircularAperture
-from photutils import datasets, daofind, irafstarfind
-from photutils.psf import psf_photometry, GaussianPSF
-from photutils.psf import subtract_psf
+from photutils.background import MMMBackground, MADStdBackgroundRMS
+from photutils.detection import IRAFStarFinder
+from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtractedPSFPhotometry
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def compute(data):
-    # Estimate background and background noise.
-    mean, median, std = sigma_clipped_stats(data, sigma=3.0, iters=5)
-
+    # Taken from photuils example http://photutils.readthedocs.io/en/stable/psf.html
     # For parameters to irafstarfind and daofind, see https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L272
     # For output, see https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L79
-    # sources = daofind(data - median, fwhm=3.0, threshold=5.*std)
-    sources = irafstarfind(data - median, fwhm=2.0, threshold=5.*std)
-    return sources, (mean, median, std)
+
+    sigma_psf = 2.0
+    bkgrms = MADStdBackgroundRMS()
+    std = bkgrms(image)
+    iraffind = IRAFStarFinder(threshold=3.5*std,
+			      fwhm=sigma_psf*gaussian_sigma_to_fwhm,
+			      minsep_fwhm=0.01, roundhi=5.0, roundlo=-5.0,
+			      sharplo=0.0, sharphi=2.0)
+    daogroup = DAOGroup(2.0*sigma_psf*gaussian_sigma_to_fwhm)
+    mmm_bkg = MMMBackground()
+    fitter = LevMarLSQFitter()
+    psf_model = IntegratedGaussianPRF(sigma=sigma_psf)
+    photometry = IterativelySubtractedPSFPhotometry(finder=iraffind,
+						    group_maker=daogroup,
+						    bkg_estimator=mmm_bkg,
+						    psf_model=psf_model,
+						    fitter=LevMarLSQFitter(),
+						    niters=1, fitshape=(11,11))
+    result_tab = photometry(image=image)
+    print result_tab
+    print result_tab.columns
+
+    #residual_image = photometry.get_residual_image()
+
+    return result_tab, (0, 0, std)
 
 def save_image(data, path):
     # FIXME(ian): This is not trustworthy.
