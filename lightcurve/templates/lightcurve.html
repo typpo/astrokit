@@ -133,7 +133,7 @@ h1 span {
         <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary disabled">Analysis Pending</a>
       {% endif %}
       {% if image.submission %}
-        <a href="http://35.202.61.141/status/{{image.id}}" class="btn btn-default">View Astrometry job</a>
+        <a href="http://35.202.61.141/status/{{image.analysis.astrometry_job.jobid}}" class="btn btn-default">View Astrometry job</a>
       {% endif %}
       {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
         <div class="btn btn-default js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
