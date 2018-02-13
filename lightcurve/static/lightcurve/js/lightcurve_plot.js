@@ -10,7 +10,7 @@ function loadData() {
 function getChartForStandard(results) {
   return [
     {
-      x: results.map(function(r) { return r.timestamp }),
+      x: results.map(function(r) { return r.timestampJd }),
       y: results.map(function(r) { return r.result.mag_standard }),
       error_y: {
         type: 'data',
@@ -26,7 +26,7 @@ function getChartForStandard(results) {
 function getChartForInstrumental(results) {
   return [
     {
-      x: results.map(function(r) { return r.timestamp }),
+      x: results.map(function(r) { return r.timestampJd }),
       y: results.map(function(r) { return r.result.mag_instrumental }),
       type: 'scatter',
       mode: 'markers',
@@ -56,11 +56,16 @@ function plot(results) {
   var layout = {
     title: window.lightcurveName,
     xaxis: {
-      title: 'Date',
+      title: 'Time (Julian Date)',
+      exponentformat: 'none',
+      separatethousands: false,
+      hoverformat: '.5f',
     },
     yaxis: {
       title: getChartYAxisLabel(),
+      hoverformat: '.3f',
     },
+    separators: '.',
   };
 
   Plotly.newPlot('plot-container', chart, layout);

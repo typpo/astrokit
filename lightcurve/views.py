@@ -1,3 +1,4 @@
+from astropy.time import Time
 from django.http import JsonResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -39,6 +40,7 @@ def plot_lightcurve_json(request, lightcurve_id):
             ret.append({
                 'analysisId': analysis.id,
                 'timestamp': analysis.image_datetime,
+                'timestampJd': Time(analysis.image_datetime).jd,
                 'result': result,
             })
     else:
@@ -56,6 +58,7 @@ def plot_lightcurve_json(request, lightcurve_id):
                 'analysisId': reduction.analysis.id,
                 'reductionId': reduction.id,
                 'timestamp': reduction.analysis.image_datetime,
+                'timestampJd': Time(reduction.analysis.image_datetime).jd,
                 # TODO(ian): Maybe one day we can bake the target id into the URL.
                 # That way you can compare your target light curve to any light
                 # curve from a known object!
