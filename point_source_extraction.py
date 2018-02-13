@@ -32,14 +32,14 @@ from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtracted
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def compute(data):
+def compute(image_data):
     # Taken from photuils example http://photutils.readthedocs.io/en/stable/psf.html
     # For parameters to irafstarfind and daofind, see https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L272
     # For output, see https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L79
 
     sigma_psf = 2.0
     bkgrms = MADStdBackgroundRMS()
-    std = bkgrms(image)
+    std = bkgrms(image_data)
     iraffind = IRAFStarFinder(threshold=3.5*std,
 			      fwhm=sigma_psf*gaussian_sigma_to_fwhm,
 			      minsep_fwhm=0.01, roundhi=5.0, roundlo=-5.0,
@@ -54,13 +54,17 @@ def compute(data):
 						    psf_model=psf_model,
 						    fitter=LevMarLSQFitter(),
 						    niters=1, fitshape=(11,11))
-    result_tab = photometry(image=image)
-    print result_tab
-    print result_tab.columns
+    # Column names:
+    # 'flux_0', 'x_fit', 'x_0', 'y_fit', 'y_0', 'flux_fit', 'id', 'group_id',
+    # 'flux_unc', 'x_0_unc', 'y_0_unc', 'iter_detected'
+    result_tab = photometry(image=image_data)
+    # Formula: https://en.wikipedia.org/wiki/Instrumental_magnitude
+    result_tab['mag'] = -2.5 * np.log10(result_tab['flux_fit'])
 
-    #residual_image = photometry.get_residual_image()
+    residual_image = photometry.get_residual_image()
 
-    return result_tab, (0, 0, std)
+    # TODO(ian): Return uncertainty and other information.
+    return result_tab, residual_image, (0, 0, std)
 
 def save_image(data, path):
     # FIXME(ian): This is not trustworthy.
@@ -71,7 +75,7 @@ def save_image(data, path):
     img.save(path)
 
 def plot(sources, data, path):
-    positions = (sources['xcentroid'], sources['ycentroid'])
+    positions = (sources['x_fit'], sources['y_fit'])
     # TODO(ian): Show fwhm as aperture size.
     apertures = CircularAperture(positions, r=4.)
     #norm = ImageNormalize(stretch=SqrtStretch())
@@ -82,9 +86,9 @@ def plot(sources, data, path):
     plt.savefig(path)
 
 def save_fits(sources, path):
-    col_x = fits.Column(name='field_x', format='E', array=sources['xcentroid'])
-    col_y = fits.Column(name='field_y', format='E', array=sources['ycentroid'])
-    flux = fits.Column(name='flux', format='E', array=sources['flux'])
+    col_x = fits.Column(name='field_x', format='E', array=sources['x_fit'])
+    col_y = fits.Column(name='field_y', format='E', array=sources['y_fit'])
+    flux = fits.Column(name='flux', format='E', array=sources['flux_fit'])
     mag_instrumental = fits.Column(name='mag_instrumental', format='E', array=sources['mag'])
 
     cols = fits.ColDefs([col_x, col_y, flux, mag_instrumental])
@@ -92,27 +96,19 @@ def save_fits(sources, path):
     tbhdu.writeto(path, clobber=True)
 
 def format_for_json_export(sources):
-    field_x = sources['xcentroid']
-    field_y = sources['ycentroid']
-    flux = sources['flux']
+    field_x = sources['x_fit']
+    field_y = sources['y_fit']
+    flux = sources['flux_fit']
     mag_instrumental = sources['mag']
-
-    npix = sources['npix']
-    sky = sources['sky']
-    peak = sources['peak']
 
     out = []
     for i in xrange(len(field_x)):
         out.append({
             'id': i + 1,
-            'field_x': field_x[i],
-            'field_y': field_y[i],
-            'flux': flux[i],
-            'mag_instrumental': mag_instrumental[i],
-
-            'npix': npix[i],
-            'sky': sky[i],
-            'peak': peak[i],
+            'field_x': float(field_x[i]),
+            'field_y': float(field_y[i]),
+            'flux': float(flux[i]),
+            'mag_instrumental': float(mag_instrumental[i]),
         })
     return out
 
@@ -125,16 +121,17 @@ def compute_psf_flux(image_data, sources, \
         scatter_output_path=None, bar_output_path=None, hist_output_path=None, \
         residual_path=None):
     logger.info('Computing flux...')
-    coords = zip(sources['xcentroid'], sources['ycentroid'])
+    coords = zip(sources['x_fit'], sources['y_fit'])
 
-    psf_gaussian = GaussianPSF(1)
-    computed_fluxes = psf_photometry(image_data, coords, psf_gaussian)
-    computed_fluxes_sorted = sorted(computed_fluxes)
+    #psf_gaussian = GaussianPSF(1)
+    #computed_fluxes = psf_photometry(image_data, coords, psf_gaussian)
+    #computed_fluxes_sorted = sorted(computed_fluxes)
 
+    '''
     if scatter_output_path:
         logger.info('Saving scatter plot...')
         plt.close('all')
-        plt.scatter(sorted(sources['flux']), computed_fluxes_sorted)
+        plt.scatter(sorted(sources['flux_fit']), computed_fluxes_sorted)
         plt.xlabel('Fluxes catalog')
         plt.ylabel('Fluxes photutils')
         plt.savefig(scatter_output_path)
@@ -163,6 +160,7 @@ def compute_psf_flux(image_data, sources, \
         #plt.plot(coords[0], coords[1], marker='o', markerfacecolor='None', markeredgecolor='y', linestyle='None')
         #plt.colorbar(orientation='horizontal')
         plt.savefig(residual_path)
+    '''
 
 def load_image(path):
     return extract_image_data_from_fits(fits.open(path))
@@ -202,6 +200,7 @@ if __name__ == '__main__':
         image_data = load_url(args.image)
     else:
         image_data = load_image(args.image)
+    # FIXME(ian): This call is out of date...
     sources = compute(image_data)
 
     # Coords.
@@ -213,9 +212,11 @@ if __name__ == '__main__':
         save_json(sources, args.coords_json)
 
     # PSF.
+    '''
     if args.psf_scatter or args.psf_bar or args.psf_residual or args.psf_hist:
         compute_psf_flux(image_data, sources, \
                 args.psf_scatter, args.psf_bar, args.psf_hist, \
                 args.psf_residual)
+    '''
 
     logger.info('Done.')
