@@ -1,6 +1,6 @@
 var firstCheck = true;
 function checkStatus() {
-  $.get('/lightcurve/' + window.lightcurve_id + '/status', function(data) {
+  $.get('/lightcurve/' + window.lightcurveId + '/status', function(data) {
     $('#num-images-processed').text(data.numProcessed);
     if (data.complete && !firstCheck) {
       $('.js-new-results').show();
@@ -12,7 +12,7 @@ function checkStatus() {
 }
 
 function saveObservationDefault() {
-  $.post('/lightcurve/' + window.lightcurve_id + '/save_observation_default', {
+  $.post('/lightcurve/' + window.lightcurveId + '/save_observation_default', {
     'lat': $('#set-latitude').val(),
     'lng': $('#set-longitude').val(),
     'elevation': $('#set-elevation').val(),
@@ -27,7 +27,7 @@ function saveObservationDefault() {
 }
 
 function toggleAddToLightcurve(toggleButton) {
-  $.post('/lightcurve/' + window.lightcurve_id + '/add_image_toggle', {
+  $.post('/lightcurve/' + window.lightcurveId + '/add_image_toggle', {
     'analysis_id' : $(toggleButton).data('analysis-id')
   }, function(data) {
     if (data.success) {

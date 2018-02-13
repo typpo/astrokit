@@ -1,5 +1,8 @@
 {% extends 'layout-internal.html' %}
 {% load staticfiles %}
+{% load jsonify %}
+
+{% block title %}Light Curve {{lightcurve.name}} - Overview{% endblock %}
 
 {% block styles %}
 <style>
@@ -18,11 +21,13 @@ h1 span {
 </style>
 {% endblock %}
 
+{% block heading %}Light Curve <span>{{lightcurve.name}}</span>{% endblock %}
+<a href="{% url "upload_image" %}/{{lightcurve.id}}" class="btn btn-primary pull-right">Upload New Images</a>
+
 {% block content-interior %}
-<h1>Light Curve
-  <span>{{lightcurve.name}}</span>
-  <a href="{% url "upload_image" %}/{{lightcurve.id}}" class="btn btn-primary pull-right">Upload New Images</a>
-</h1>
+<a href="plot" class="btn btn-default">Standard Magnitudes Plot</a>
+<a href="plot?type=instrumental" class="btn btn-default">Instrumental Magnitudes Plot</a>
+<a href="#" class="btn btn-default">Download as XLSX</a>
 <div>
   <h3>Observation Metadata</h3>
   <p>These settings apply to all images.  You can change these values for individual images later.</p>
@@ -35,9 +40,9 @@ h1 span {
       <div id="set-latlng-success" class="alert alert-danger" style="display:none">
         Something went wrong - failed to update your setting.
       </div>
-      Latitude <input id="set-latitude" class="form-control" style="width: 30em" type="text" value="{{result.meta.latitude}}">
+      Latitude <input id="set-latitude" class="form-control" style="width: 30em" type="number" value="{{result.meta.latitude}}" min="-90" max="90">
       <br>
-      Longitude <input id="set-longitude" class="form-control" style="width: 30em" type="text" value="{{result.meta.longitude}}">
+      Longitude <input id="set-longitude" class="form-control" style="width: 30em" type="number" value="{{result.meta.longitude}}" min="-180" max="180">
     </div>
 
     <h4>Elevation</h4>
@@ -51,7 +56,7 @@ h1 span {
       <p>
         Above sea level, in meters
       </p>
-      <input id="set-elevation" class="form-control" style="width: 30em" type="text" value="{{result.meta.elevation}}">
+      <input id="set-elevation" class="form-control" style="width: 30em" type="number" value="{{result.meta.elevation}}">
     </div>
 
     <h4>Second-order extinction k"<sub><em>f</em></sub></h4>
@@ -81,23 +86,27 @@ h1 span {
   </p>
   {% for image in images %}
   <div id="image-{{forloop.counter0}}" class="well">
-    <strong><a href="/analysis/{{image.id}}">Analysis #{{image.analysis.id}}</a></strong><br>
+    <strong><a href="/analysis/{{image.analysis.id}}">Analysis #{{image.analysis.id}}</a></strong><br>
     Filename:
     <a download href="{{image.image_url}}">
       {{image.original_filename}}
     </a><br>
-    Uploaded: {{image.created_at}}<br>
+    Timestamp: {{image.analysis.image_datetime}}<br>
 
     Status:
     {% if image.analysis %}
-      {% if image.analysis.status == 'PENDING'  %}
-        <span style="color:#ff1493"><strong>Stage 1 - Astrometry: receiving analysis</strong></span>
+      {% if image.analysis.status == 'ASTROMETRY_PENDING'  %}
+        <span style="color:#ff1493"><strong>Stage 1 - Astrometry: performing analysis</strong></span>
+      {% elif image.analysis.status == 'PHOTOMETRY_PENDING'  %}
+        <span style="color:#ff1493"><strong>Stage 2 - Photometry: performing analysis</strong></span>
       {% elif image.analysis.status == 'REVIEW_PENDING'  %}
-        <span style="color:#ff1493"><strong>Stage 1 - Astrometry: analysis completed, review pending</strong></span>
+        <span style="color:#ff1493"><strong>Stage 3 - Review: analysis complete, review pending</strong></span>
       {% elif image.analysis.status == 'REVIEW_COMPLETE'  %}
-        <span style="color:dark green"><strong>Stage 2 - Reduction: astrometry review completed, run reduction</strong></span>
+        <span style="color:#215022"><strong>Stage 4 - Reduction: analysis reviewed, reduction pending</strong></span>
       {% elif image.analysis.status == 'REDUCTION_COMPLETE'  %}
-        <span style="color:dark green"><strong>Stage 2 - Reduction: completed</strong></span>
+        <span style="color:#215022"><strong>Stage 4 - Reduction: complete</strong></span>
+      {% elif image.analysis.status == 'ADDED_TO_LIGHT_CURVE'  %}
+        <span style="color:#215022"><strong>Stage 5 - Added to light curve</strong></span>
       {% endif %}
     {% elif image.submission %}
       {% if image.submission.status == 'FAILED_TO_SUBMIT' %}
@@ -111,9 +120,13 @@ h1 span {
       <span style="color:purple">Uploaded, astrometry stage starting...</span>
     {% endif %}
 
+    {% if image.analysis.notes %}
+        <br>Note: <em>{{image.analysis.notes}}</em>
+    {% endif %}
+
     <div class="image-container">
       {% if image.analysis.original_display_url %}
-        <a href="{{image.analysis.original_display_url}}">
+        <a href="/analysis/{{image.analysis.id}}">
           <img src="{{image.analysis.original_display_url}}" class="user-image" />
         </a>
       {% endif %}
@@ -121,19 +134,19 @@ h1 span {
 
     <div class="button-row">
       {% if image.submission and image.submission.status == 'COMPLETE' %}
-        <a href="/analysis/{{image.id}}" class="btn btn-primary">Review Analysis</a>
+        <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary">Review Analysis</a>
       {% elif image.submission %}
-        <a href="/analysis/{{image.id}}" class="btn btn-primary disabled">Analysis Pending</a>
-      {% endif %}
-      {% if image.submission %}
-        <a href="http://35.202.61.141/status/{{image.id}}" class="btn btn-default">View Astrometry job</a>
+        <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary disabled">Analysis Pending</a>
       {% endif %}
       {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
-        <div class="btn btn-default js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
+        <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
       {% elif image.analysis and image.analysis.status == 'ADDED_TO_LIGHT_CURVE' %}
-        <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Remove from lightcurve</div>
+        <div class="btn btn-warning js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Remove from lightcurve</div>
       {% elif image.submission %}
-        <div class="btn btn-default disabled">Add to lightcurve</div>
+        <!--<div class="btn btn-default disabled">Add to lightcurve</div>-->
+      {% endif %}
+      {% if image.submission %}
+        <a href="http://35.202.61.141/status/{{image.analysis.astrometry_job.jobid}}" class="btn btn-default">View Astrometry job</a>
       {% endif %}
     </div>
   </div>
@@ -150,8 +163,8 @@ h1 span {
 
 {% block scripts %}
   <script>
-    window.lightcurve_id = {{lightcurve.id}};
+    window.lightcurveId = {{lightcurve.id | jsonify}};
   </script>
-  <script src="{% static "imageflow/js/submission_util.js" %}" type="text/javascript"></script>
+  <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>
   <script src="{% static "lightcurve/js/lightcurve.js" %}" type="text/javascript"></script>
 {% endblock %}

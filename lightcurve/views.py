@@ -1,12 +1,13 @@
+from astropy.time import Time
 from django.http import JsonResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
 from astrometry.models import AstrometrySubmission
-from imageflow.models import ImageAnalysis, UserUploadedImage
-from lightcurve.models import LightCurve
-
 from astrometry.process import process_astrometry_online
+from imageflow.models import ImageAnalysis, Reduction, UserUploadedImage
+from lightcurve.models import LightCurve
+from reduction.util import find_point_by_id
 
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
@@ -18,6 +19,57 @@ def edit_lightcurve(request, lightcurve_id):
     return render_to_response('lightcurve.html', context,
             context_instance=RequestContext(request))
 
+def plot_lightcurve(request, lightcurve_id):
+    lc = LightCurve.objects.get(id=lightcurve_id)
+    context = {
+        'lightcurve': lc,
+    }
+    return render_to_response('lightcurve_plot.html', context,
+            context_instance=RequestContext(request))
+
+def plot_lightcurve_json(request, lightcurve_id):
+    lc = LightCurve.objects.get(id=lightcurve_id)
+    ret = []
+    if request.GET.get('type') == 'instrumental':
+        analyses = ImageAnalysis.objects.filter(useruploadedimage__lightcurve=lc) \
+                                        .exclude(status=ImageAnalysis.ASTROMETRY_PENDING)
+        for analysis in analyses:
+            result = find_point_by_id(analysis.annotated_point_sources, analysis.target_id)
+            if not result:
+                continue
+            ret.append({
+                'analysisId': analysis.id,
+                'timestamp': analysis.image_datetime,
+                'timestampJd': Time(analysis.image_datetime).jd,
+                'result': result,
+            })
+    else:
+        # type == 'standard'
+        reductions = Reduction.objects.filter(analysis__useruploadedimage__lightcurve=lc,
+                                              analysis__status=ImageAnalysis.ADDED_TO_LIGHT_CURVE,
+                                              status=Reduction.COMPLETE)
+
+        for reduction in reductions:
+            result = find_point_by_id(reduction.reduced_stars, reduction.analysis.target_id)
+            if not result:
+                # Reduction not complete.
+                continue
+            ret.append({
+                'analysisId': reduction.analysis.id,
+                'reductionId': reduction.id,
+                'timestamp': reduction.analysis.image_datetime,
+                'timestampJd': Time(reduction.analysis.image_datetime).jd,
+                # TODO(ian): Maybe one day we can bake the target id into the URL.
+                # That way you can compare your target light curve to any light
+                # curve from a known object!
+                'result': result,
+            })
+
+    return JsonResponse({
+        'success': True,
+        'results': ret,
+    })
+
 def save_observation_default(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
     images = lc.imageanalysis_set.all()
@@ -26,8 +78,6 @@ def save_observation_default(request, lightcurve_id):
     lng = request.POST.get('lng')
     elevation = request.POST.get('elevation')
     extinction = request.POST.get('extinction')
-
-    print lat, lng, elevation, extinction
 
     for image in images:
         if lat:
@@ -85,7 +135,7 @@ def my_lightcurve(request):
             'images': images,
         })
 
-    return render_to_response('lightcurve-listing.html', {"contexts": context_list},
+    return render_to_response('lightcurve_list.html', {"contexts": context_list},
             context_instance=RequestContext(request))
 
 def all_lightcurve(request):
@@ -99,5 +149,5 @@ def all_lightcurve(request):
             'images': images,
         })
 
-    return render_to_response('lightcurve-listing.html', {"contexts": context_list, "request_all": True},
+    return render_to_response('lightcurve_list.html', {"contexts": context_list, "request_all": True},
             context_instance=RequestContext(request))

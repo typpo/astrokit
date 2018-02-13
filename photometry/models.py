@@ -26,4 +26,12 @@ class ImageFilter(models.Model):
     def __unicode__(self):
         return u'%s (%s)' % (self.band, self.system)
 
+class PhotometrySettings(models.Model):
+    sigma_psf = models.FloatField(default=2.0)
+    crit_separation = models.FloatField(default=5.0)
+    threshold = models.FloatField(default=5.0)
+    box_size = models.IntegerField(default=11)
+    iters = models.IntegerField(default=1)
+
 admin.site.register(ImageFilter)
+admin.site.register(PhotometrySettings)

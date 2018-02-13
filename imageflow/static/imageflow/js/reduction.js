@@ -21,6 +21,24 @@ function pollReductionStatus() {
   });
 }
 
+function setupAddToLightcurve() {
+  $('.js-add-to-lightcurve').on('click', function() {
+    var $btn = $(this);
+    $.post('/lightcurve/' + window.lightcurveId + '/add_image_toggle', {
+      'analysis_id' : window.analysisId,
+    }, function(data) {
+      if (data.success) {
+        $btn.text('View light curve').on('click', function() {
+          window.location.href = '/lightcurve/' + window.lightcurveId + '/plot';
+        });
+      } else {
+        alert('Something went wrong. Changes were not applied to this image.');
+      }
+    });
+    return false;
+  });
+}
+
 $(function() {
   setupListener('set_color_index_1',
                 $('#select-color-index-1'),
@@ -33,7 +51,7 @@ $(function() {
                 $('#select-color-index-failure'));
 
   setupListener('set_image_companion',
-                $('#select-image-companion'),
+                $('input[name="image-companion"]'),
                 $('#select-color-index-success'),
                 $('#select-color-index-failure'));
 
@@ -43,4 +61,10 @@ $(function() {
                 $('#second-order-extinction-failure'));
 
   setupRunReductions();
+  setupAddToLightcurve();
+
+  setupMagnitudeChecks($('.plot-container'),
+                       'standard',
+                       window.reducedStars,
+                       window.reducedStars);
 });

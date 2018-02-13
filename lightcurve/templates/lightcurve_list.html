@@ -1,6 +1,14 @@
 {% extends 'layout-internal.html' %}
 {% load staticfiles %}
 
+{% block title %}
+{% if request_all %}
+  Browse all light curves
+{% else %}
+  Browse light curves by {{request.user}}
+{% endif %}
+{% endblock %}
+
 {% block styles %}
 <style>
 h1 span {
@@ -40,12 +48,15 @@ article a {
 </style>
 {% endblock %}
 
+{% block heading %}
+  {% if request_all %}
+    <h1>All Light Curves</h1>
+  {% else %}
+    <h1>Light Curves by {{request.user}}</h1>
+  {% endif %}
+{% endblock %}
+
 {% block content-interior %}
-{% if request_all %}
-  <h1>All Light Curves</h1>
-{% else %}
-  <h1>Light Curve by {{request.user}}</h1>
-{% endif %}
 <div>
 
   {% for context in contexts %}
@@ -57,17 +68,17 @@ article a {
           <div class="well">
             <div class="image-container">
               {% if image.analysis.original_display_url %}
-                <a href="/analysis/{{image.id}}">
+                <a href="/analysis/{{image.analysis.id}}">
                   <img src="{{image.analysis.original_display_url}}" class="user-image" />
                 </a>
               {% else %}
-                <a href="/analysis/{{image.id}}" class="alert alert-warning">Image Not Loaded</a>
+                <a href="/analysis/{{image.analysis.id}}" class="alert alert-warning">Image Not Loaded</a>
               {% endif %}
             </div>
             <article>
               <strong>
-                <a href="/analysis/{{image.id}}">
-                  Analysis #{{image.id}}
+                <a href="/analysis/{{image.analysis.id}}">
+                  Analysis #{{image.analysis.id}}
                 </a>
               </strong>
               <br>

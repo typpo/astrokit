@@ -2,13 +2,19 @@
 {% load staticfiles %}
 {% load jsonify %}
 
-{% block heading %}Point Sources{% endblock %}
+{% block title %}Analysis #{{analysis.id}} Instrumental Photometry{% endblock %}
+
+{% block heading %}Instrumental Photometry{% endblock %}
 
 {% block styles %}
 <style>
 .header-tooltip {
   color: #337ab7;
   cursor: help;
+}
+
+blockquote.smallquote {
+  font-size: 12px;
 }
 </style>
 {% endblock %}
@@ -19,77 +25,66 @@
   {% include 'imageflow_breadcrumbs.html' %}
 {% endwith %}
 
-<h3>Instrumental photometry</h3>
-
-<div class="well" style="overflow: auto; max-height: 400px">
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
-        <th>Field X</th>
-        <th>Field Y</th>
-        <th>Flux</th>
-        <th>Instrumental magnitude</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for point_source in analysis.data.coords %}
-        <tr>
-          <td>{{point_source.id}}</td>
-          <td>{{point_source.field_x|floatformat:2}}</td>
-          <td>{{point_source.field_y|floatformat:2}}</td>
-          <td>{{point_source.flux|floatformat:3}}</td>
-          <td>{{point_source.mag_instrumental|floatformat:3}}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-
-<h3>Point source coordinates</h3>
+<h2>Flux and Magnitudes</h2>
 <p>
-{{analysis.data.coords | length}} point sources detected via
-<a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
+  Sigma clipping is a common way to estimate the background of an image and eliminate background noise.  Outliers above and below 3 sigma are masked.
 </p>
-<a href="{{analysis.urls.coords_json_url}}">Coordinates JSON</a>
-&middot;
-<a href="{{analysis.urls.coords_fits_url}}">Coordinates FITS</a>
+<p>
+  <blockquote class="smallquote">
+    sigma-clipped median (background) = {{analysis.data.sigma_clipped_median|floatformat:3}}
+    <br>
+    sigma-clipped std = {{analysis.data.sigma_clipped_std|floatformat:3}}
+  </blockquote>
+</p>
+<p>
+  After adjusting for background noise, flux and magnitude are estimated using <a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a> with the following parameters.
+  <blockquote class="smallquote">
+    fwhm = 2.0
+    <br>
+    threshold (above background) = 5-sigma
+  </blockquote>
+</p>
+
+<div class="well">
+  <div class="table-wrapper">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
+          <th>Field X</th>
+          <th>Field Y</th>
+          <th>Flux</th>
+          <th>Instrumental mag</th>
+          <th><span class="header-tooltip" data-toggle="tooltip" title="Number of pixels in the Gaussian kernel"># pixels</span></th>
+          <th><span class="header-tooltip" data-toggle="tooltip" title="The input 'sky' parameter">sky</span></th>
+          <th><span class="header-tooltip" data-toggle="tooltip" title="The peak sky-subtracted pixel value of the object">peak</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for point_source in analysis.data.coords %}
+          <tr {% if point_source.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+            <td>{{point_source.id}}</td>
+            <td>{{point_source.field_x|floatformat:2}}</td>
+            <td>{{point_source.field_y|floatformat:2}}</td>
+            <td>{{point_source.flux|floatformat:3}}</td>
+            <td><strong>{{point_source.mag_instrumental|floatformat:3}}</strong></td>
+            <td>{{point_source.npix|floatformat:3}}</td>
+            <td>{{point_source.peak|floatformat:3}}</td>
+            <td>{{point_source.sky|floatformat:3}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="table-actions">
+    <a href="#" class="js-scroll-to-target">&raquo; Scroll to target</a>
+  </div>
+</div>
+
 {% comment %}
-<div class="well">
-  <img src="{{analysis.urls.coords_plot_url}}" />
-  <a href="{{analysis.urls.coords_plot_url}}" download>Download</a>
-</div>
-{% endcomment %}
+<h2>Point-spread function</h2>
 
-<div class="well">
-  Cursor position:
-  (<span id="canvas-x-pos">0</span>,
-  <span id="canvas-y-pos">0</span>)
-  <div>
-    <canvas id="star-plot" style="cursor: crosshair" />
-  </div>
-</div>
-
-<h4>Target Selection</h4>
-<div class="well">
-  <div id="target-id-success" class="alert alert-success" style="display:none">
-    Target ID successfully updated.
-  </div>
-  <div id="target-id-failure" class="alert alert-danger" style="display:none">
-    Something went wrong - failed to update your setting.
-  </div>
-  <p>Enter the ID number of your target point source:</p>
-  <input id="target-id"
-         class="form-control"
-         type="number"
-         min="0"
-         max="{{analysis.data.coords | length}}"
-         value="{{analysis.meta.target_id}}"/>
-</div>
-
-<h3>Point-spread function</h3>
-
-<h4>Fluxes for each point source</h4>
+<h3>Fluxes for each point source</h3>
 <div class="well">
   <img src="{{analysis.urls.psf_bar_url}}" />
   <a href="{{analysis.urls.psf_bar_url}}" download>Download</a>
@@ -101,13 +96,19 @@
   <a href="{{analysis.urls.psf_hist_url}}" download>Download</a>
 </div>
 
-<h4>Computed flux (astrokit) vs astrometry.net coarse flux estimation.</h4>
+<div class="well">
+  <img src="{{analysis.urls.coords_plot_url}}" />
+  <a href="{{analysis.urls.coords_plot_url}}" download>Download</a>
+</div>
+{% endcomment %}
+
+<h3>Computed flux (astrokit) vs astrometry.net coarse flux estimation.</h3>
 <div class="well">
   <img src="{{analysis.urls.psf_scatter_url}}" />
   <a href="{{analysis.urls.psf_scatter_url}}" download>Download</a>
 </div>
 
-<h4>Residual image</h4>
+<h3>Residual image</h3>
 <div class="well">
   <img src="{{analysis.urls.psf_residual_image_url}}" />
   <a href="{{analysis.urls.psf_residual_image_url}}" download>Download</a>
@@ -123,6 +124,7 @@
 {% block scripts %}
   <script>
     window.analysisId = {{analysis.id | jsonify }};
+    window.targetId = {{analysis.meta.target_id | jsonify }};
     window.originalImageUrl = {{analysis.urls.original_display_url | jsonify}};
     window.pointSourceData = {{ analysis.data.coords | jsonify }};
   </script>

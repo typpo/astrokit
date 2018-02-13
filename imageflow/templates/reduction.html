@@ -2,6 +2,8 @@
 {% load staticfiles %}
 {% load jsonify %}
 
+{% block title %}Analysis #{{analysis.id}} Reduction{% endblock %}
+
 {% block heading %}Reduction{% endblock %}
 
 {% block styles %}
@@ -9,6 +11,11 @@
 .header-tooltip {
   color: #337ab7;
   cursor: help;
+}
+
+.plot-container {
+  width: 100%;
+  height: 400px;
 }
 </style>
 {% endblock %}
@@ -19,7 +26,15 @@
   {% include 'imageflow_breadcrumbs.html' %}
 {% endwith %}
 
-<h3>Reduction to Standard Magnitudes</h3>
+
+<h2>Reduction to Standard Magnitudes</h2>
+{% if not analysis.meta.target_id %}
+  <div class="alert alert-danger">
+    <strong>
+      You MUST choose a target star in the first step. <a href="/analysis/{{analysis.id}}#target-selection">Select a target</a>
+    </strong>
+  </div>
+{% endif %}
 <p>
 Let's convert our raw instrumental magnitudes to standard magnitudes per the following equation:
 </p>
@@ -29,48 +44,92 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
 </blockquote>
 </p>
 
-<h4>Step 1: Select color index</h4>
+<h3>Step 1: Color index setup</h3>
 <div class="well">
-  <div id="select-color-index-success" class="alert alert-success" style="display:none">
-    Color index successfully updated.
-  </div>
-  <div id="select-color-index-success" class="alert alert-danger" style="display:none">
-    Something went wrong - failed to update your setting.
-  </div>
   <p>
-    Color Index CI = Image1 - Image2
+    To compute color index and the hidden transform to standard magnitudes, specify another image of the same field in a different band.  Color Index CI = Image1 - Image2.
   </p>
-  <form class="form form-inline">
-    <div class="form-group">
-      <label>Image 1 (this image)
-          <select class="form-control" disabled>
-            <option value="">{{analysis.meta.uploaded_image.original_filename | truncatechars:50}}</option>
-          </select>
-          <select id="select-color-index-1" class="form-control" disabled>
-            {% for filter in image_filters %}
-              <option value="{{filter.band}}" {% if filter.band == analysis.meta.image_band %}selected{% endif %}>
-                {{filter.band}} ({{filter.system}})
-              </option>
-            {% endfor %}
-          </select>
-      </label>
+  <p>
+    <strong>Image 1</strong> (this image)<br>
+    <div style="margin-left: 2em">
+      Filter: {{analysis.meta.image_band}}<br>
+      File: {{analysis.meta.uploaded_image.original_filename | truncatechars:50}}<br>
+      Target: {{analysis.meta.target_id}}
     </div>
-    <div class="form-group">
-      <label>Image 2
-        <select id="select-image-companion" class="form-control">
-          <option value="0">None selected</option>
-          {% for image in potential_image_companions %}
-            <option value="{{image.id}}" {% if reduction.meta.image_companion_id == image.id %}selected{% endif %}>{{image.original_filename}} - filter {{image.analysis.image_filter}}</option>
-          {% endfor %}
-        </select>
-        <select id="select-color-index-2" class="form-control">
+  </p>
+  <form class="form">
+    <strong>Image 2</strong>
+    <div style="margin-top:1em">
+      <div id="select-color-index-success" class="alert alert-success" style="display:none">
+        Color index successfully updated.
+      </div>
+      <div id="select-color-index-success" class="alert alert-danger" style="display:none">
+        Something went wrong - failed to update your setting.
+      </div>
+    </div>
+    <div style="margin-left: 2em">
+      <div class="form-group">
+        <label for="select-color-index-2">Filter</label>
+        <select id="select-color-index-2" class="form-control" style="display:inline-block; width: auto">
           {% for filter in image_filters %}
             <option value="{{filter.band}}" {% if filter.band == reduction.data.color_index_2_band %}selected{% endif %}>
               {{filter.band}} ({{filter.system}})
             </option>
           {% endfor %}
         </select>
-      </label>
+      </div>
+      <div>
+        <strong>Image</strong>
+        <div class="table-wrapper">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Analysis ID</th>
+                <th>Filter</th>
+                <th>Filename</th>
+                <th>Target ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <input type="radio" name="image-companion" value="0" checked />
+                </td>
+                <td>0</td>
+                <td>-</td>
+                <td>None selected</td>
+                <td>-</td>
+              </tr>
+              {% for image in potential_image_companions %}
+                {% if reduction.meta.image_companion_id == image.id %}
+                  <tr class="highlight">
+                {% elif image.analysis.target_id %}
+                  <tr style="background-color: #e5ffe0">
+                {% else %}
+                  <tr>
+                {% endif %}
+                  <td>
+                    {% if image.analysis.target_id %}
+                      <input type="radio" name="image-companion" value="{{image.id}}" {% if reduction.meta.image_companion_id == image.id %}checked{% endif %} />
+                    {% endif %}
+                  </td>
+                  <td><a href="/analysis/{{image.analysis.id}}">{{image.analysis.id}}</a></td>
+                  <td>{{image.analysis.image_filter.band}}</td>
+                  <td><a href="/analysis/{{image.analysis.id}}">{{image.original_filename | truncatechars:40}}</a></td>
+                  <td>
+                    {% if image.analysis.target_id %}
+                      {{image.analysis.target_id}}
+                    {% else %}
+                      <span style="color:red">No target</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
     <hr/>
     <div>
@@ -81,7 +140,7 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
   </form>
 </div>
 
-<h4>Step 2: Enter second-order extinction k"<sub><em>f</em></sub></h4>
+<h3>Step 2: Enter second-order extinction k"<sub><em>f</em></sub></h3>
 <div class="well">
   <div id="second-order-extinction-success" class="alert alert-success" style="display:none">
     k'' successfully updated.
@@ -100,7 +159,7 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
   <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
 </div>
 
-<h4>Step 3: Compute transform coefficient T<sub><em>f</em></sub></h4>
+<h3>Step 3: Compute transform coefficient T<sub><em>f</em></sub></h3>
 <p>
 T<sub><em>f</em></sub> is a coefficient that converts your raw instrumental magnitude to a standard magnitude in color band <em>f</em>. It is solved for by the following equation:
 </p>
@@ -134,9 +193,9 @@ In which:<br>
   {% endif %}
 </div>
 
-<h4>Step 4: Compute airmass X<sub>t</sub></h4>
+<h3>Step 4: Compute airmass X<sub>t</sub></h3>
 
-<div class="well" style="overflow: auto; max-height: 400px">
+<div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask">
       <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
@@ -146,30 +205,45 @@ In which:<br>
     <p>
       Using date <strong>{{analysis.meta.datetime | date:'c'}}</strong> and altitude <strong>{{analysis.meta.elevation}} meters</strong>.
     </p>
-    <table class="table table-striped table-hover">
-      <tr>
-        <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
-        <th>Designation</th>
-        <th>RA (obs)</th>
-        <th>Dec (obs)</th>
-        <th>Airmass</th>
-      </tr>
-      {% for star in reduction.data.reduced_stars %}
-        <tr>
-          <td>{{star.id}}</td>
-          <td>
-            <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
-          </td>
-          <td>{{star.index_ra|floatformat:5}}</td>
-          <td>{{star.index_dec|floatformat:5}}</td>
-          <td><strong>{{star.airmass|floatformat:5}}</strong></td>
-        </tr>
-      {% endfor %}
-    </table>
+    <p>
+      Your target id: {{analysis.meta.target_id}}
+    </p>
+    <div class="table-wrapper">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
+            <th>Designation</th>
+            <th>RA (obs)</th>
+            <th>Dec (obs)</th>
+            <th>Airmass</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for star in reduction.data.reduced_stars %}
+          <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+            <td>{{star.id}}</td>
+            <td>
+              {% if star.id == analysis.meta.target_id %}
+                TARGET
+              {% endif %}
+              <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
+            </td>
+            <td>{{star.index_ra|floatformat:5}}</td>
+            <td>{{star.index_dec|floatformat:5}}</td>
+            <td><strong>{{star.airmass|floatformat:5}}</strong></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-actions">
+      <a href="#" class="js-scroll-to-target">&raquo; Scroll to target</a>
+    </div>
   {% endif %}
 </div>
 
-<h4>Step 5: Find the hidden transform</h4>
+<h3>Step 5: Find the hidden transform</h3>
 <div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask">
@@ -177,55 +251,64 @@ In which:<br>
       <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
     </p>
   {% else %}
-    Hidden transform = {{reduction.data.hidden_transform}}<br>
-    Standard error = {{reduction.data.hidden_transform_std}}<br>
-    rval = {{reduction.data.hidden_transform_rval}}
+    <p>
+      Hidden transform = {{reduction.data.hidden_transform}}<br>
+      Standard error = {{reduction.data.hidden_transform_std}}<br>
+      rval = {{reduction.data.hidden_transform_rval}}
+    </p>
     <img src="{{reduction.urls.hidden_transform_graph}}">
   {% endif %}
 </div>
 
 {% if not no_reduction and reduction.meta.status != 'CREATED' %}
-<div class="well" style="overflow: auto; max-height: 400px">
+<h4>Checking the hidden transform</h4>
+<div class="well">
     <p>
-      Using the formula derived above:
+      This table compares values generated using the formula derived above with known catalog values for your color index.
     </p>
-    <table class="table table-striped table-hover">
-      <tr>
-        <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
-        <th>Designation</th>
-        <th>RA (obs)</th>
-        <th>Dec (obs)</th>
-        <th><span class="header-tooltip" data-toggle="tooltip" title="Computed with hidden transform">Color Index (computed)</span></th>
-        <th><span class="header-tooltip" data-toggle="tooltip" title="From catalog">Color Index (known)</span></th>
-      </tr>
-      {% for star in reduction.data.reduced_stars %}
-        <tr>
-          <td>{{star.id}}</td>
-          <td>
-            <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
-          </td>
-          <td>{{star.index_ra|floatformat:5}}</td>
-          <td>{{star.index_dec|floatformat:5}}</td>
-          <td><strong>{{star.color_index|floatformat:5}}</strong></td>
-          <td>{{star.color_index_known|floatformat:5}}</td>
-        </tr>
-      {% endfor %}
-    </table>
+    <p>
+      Your target id: {{analysis.meta.target_id}}
+    </p>
+    <div class="table-wrapper">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
+            <th>Designation</th>
+            <th>RA (obs)</th>
+            <th>Dec (obs)</th>
+            <th><span class="header-tooltip" data-toggle="tooltip" title="Computed with hidden transform">Color Index (computed)</span></th>
+            <th><span class="header-tooltip" data-toggle="tooltip" title="From catalog">Color Index (known)</span></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for star in reduction.data.reduced_stars %}
+          <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+            <td>{{star.id}}</td>
+            <td>
+              {% if star.id == analysis.meta.target_id %}
+                TARGET
+              {% endif %}
+              <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
+            </td>
+            <td>{{star.index_ra|floatformat:5}}</td>
+            <td>{{star.index_dec|floatformat:5}}</td>
+            <td><strong>{{star.color_index|floatformat:5}}</strong></td>
+            <td>{{star.color_index_known|floatformat:5}}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-actions">
+      <a href="#" class="js-scroll-to-target">&raquo; Scroll to target</a>
+    </div>
 </div>
 {% endif %}
 
-<h4>Step 6: Compute the Color Index</h4>
-<div class="well" style="overflow: auto; max-height: 400px">
-<p>
-  CI<sub>t</sub>: Color index of the target object<br>
-  CI<sub>c</sub>: Color index of the comparison object
-</p>
-</div>
+<h3>Step 7: Apply the formula to get M<sub><em>t</em></sub></h3>
 
-
-<h4>Step 7: Apply the formula to get M<sub><em>t</em></sub></h4>
-
-<div class="well" style="overflow: auto; max-height: 400px">
+<div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask">
       <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
@@ -241,38 +324,61 @@ In which:<br>
     <p>
       All magnitudes are in band {{analysis.meta.image_band}}.
     </p>
-    <table class="table table-striped table-hover">
-      <tr>
-        <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
-        <th>Designation</th>
-        <th>RA (obs)</th>
-        <th>Dec (obs)</th>
-        <th>Standard Mag</th>
-        <th>Catalog Mag</th>
-        <th>Diff</th>
-      </tr>
-      {% for star in reduction.data.reduced_stars %}
-        <tr>
-          <td>{{star.id}}</td>
-          <td>
-            <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
-          </td>
-          <td>{{star.index_ra|floatformat:5}}</td>
-          <td>{{star.index_dec|floatformat:5}}</td>
-          <td><strong>{{star.mag_standard|floatformat:3}}</strong></td>
-          <td><strong>{{star.mag_catalog|floatformat:3}}</strong></td>
-          <td><strong>{{star.mag_error|floatformat:3}}</strong></td>
-        </tr>
-      {% endfor %}
-    </table>
+    <div class="table-wrapper">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
+            <th>Designation</th>
+            <th>RA (obs)</th>
+            <th>Dec (obs)</th>
+            <th>Standard Mag</th>
+            <th>Catalog Mag</th>
+            <th>Diff</th>
+            <th>Std</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for star in reduction.data.reduced_stars %}
+          <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+            <td>{{star.id}}</td>
+            <td>
+              {% if star.id == analysis.meta.target_id %}
+                TARGET
+              {% endif %}
+              <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
+            </td>
+            <td>{{star.index_ra|floatformat:5}}</td>
+            <td>{{star.index_dec|floatformat:5}}</td>
+            <td><strong>{{star.mag_standard|floatformat:3}}</strong></td>
+            <td><strong>{{star.mag_catalog|floatformat:3}}</strong></td>
+            <td><strong>{{star.mag_error|floatformat:3}}</strong></td>
+            <td>{{star.mag_std|floatformat:3}}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-actions">
+      <a href="#" class="js-scroll-to-target">&raquo; Scroll to target</a>
+    </div>
   {% endif %}
+</div>
+
+<h2>Checking our work</h2>
+<div class="well">
+  <div class="plot-container"></div>
 </div>
 
 <div style="text-align: right">
   <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
+  <a href="/lightcurve/{{analysis.lightcurve_id}}/edit" class="btn btn-lg btn-default">Return to Light curve</a>
   <a href="#" class="btn btn-lg btn-default js-run-reductions">Run Reductions</a>
   <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
-  <a href="/analysis/reduction/{{analysis.id}}" class="btn btn-lg btn-primary">Review</a>
+  {% if next_image %}
+    <a href="/analysis/{{next_image.id}}" class="btn btn-lg btn-primary">Next image</a>
+  {% endif %}
+  <a href="#" class="btn btn-lg btn-success js-add-to-lightcurve">Add to light curve</a>
 </div>
 {% endblock %}
 
@@ -281,10 +387,16 @@ In which:<br>
 {% block scripts %}
   <script>
     window.analysisId = {{analysis.id | jsonify }};
+    window.targetId = {{analysis.meta.target_id | jsonify }};
+    window.lightcurveId = {{analysis.lightcurve_id | jsonify }};
+
     window.originalImageUrl = {{analysis.urls.original_display_url | jsonify}};
-    window.catalogReferenceStars = {{ analysis.data.catalog_reference_stars | jsonify }};
+    window.urat1Key = {{ analysis.meta.image_band_urat1_key | jsonify }};
+
+    window.reducedStars = {{ reduction.data.reduced_stars | jsonify }};
   </script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="{% static "imageflow/js/shared.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/reduction.js" %}" type="text/javascript"></script>

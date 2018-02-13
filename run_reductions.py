@@ -18,7 +18,6 @@ import transformation_coefficient as tf
 import hidden_transform as hidden_transform
 
 from imageflow.models import Reduction, ImageAnalysis, ImageFilter
-from reduction.util import find_star_by_designation
 
 def supporting_calculations(analysis, reduction):
     '''Compute airmass and transformation coefficient.
@@ -44,7 +43,7 @@ def supporting_calculations(analysis, reduction):
     reduction.hidden_transform_rval = ht_r
     reduction.hidden_transform_graph_url = ht_url
 
-    hidden_transform.annotate_color_index(reduction)
+    hidden_transform.annotate_color_index(analysis, reduction)
 
 def run_reductions(analysis):
     '''Run reductions on a given ImageAnalysis.
@@ -59,25 +58,14 @@ def run_reductions(analysis):
 
     # Now put it all together.
     for i in xrange(len(reduction.reduced_stars)):
-        # TODO(ian): Eliminate the outer loop. We only need to do this for the
-        # unknown. Computing standard mag for each catalog star will help us
-        # know our % error, though.
+        # Assume this star is our target (in reality, there is 1 true target
+        # and N reference stars)
         star = reduction.reduced_stars[i]
-        if filter_key not in star:
-            print 'Skipping star %d because it does not have filter key %s' % (i, filter_key)
-            continue
 
-        # Look up this same star in the companion image of this analysis. Used
-        # for color index.
-        companion_image = analysis.reduction.image_companion
-        if companion_image:
-            star_in_companion_image = find_star_by_designation(companion_image.analysis, star['designation'])
-            if not star_in_companion_image:
-                print 'Skipping star %d because could not locate same star %s in companion image' % (i, star['designation'])
-                continue
-        else:
-            # TODO(ian): handle this
-            pass
+        if 'color_index' not in star:
+            # This point source was unknown AND it is not our target, so it
+            # doesn't have color index.
+            continue
 
         # Mt = (mt - mc) - k"f Xt (CIt - CIc) + Tf (CIt - CIc) + Mc
         estimates = []
@@ -86,31 +74,43 @@ def run_reductions(analysis):
                 continue
 
             comparison_star = reduction.reduced_stars[j]
-
-            if not (ci1_key in star and ci2_key in star and \
-                    ci2_key in comparison_star and ci2_key in comparison_star and \
-                    filter_key in comparison_star):
-                print 'Skipping a star pair (%d, %d) due to incomplete data' % (i, j)
+            if comparison_star['id'] == analysis.target_id:
+                # The data generated here is for an unknown, so don't use it
+                # for a comparison star.
+                continue
+            if 'color_index_known' not in comparison_star:
+                # This point source doesn't have a catalog color index, so we
+                # don't trust it even though we may have computed its color
+                # index.
+                continue
+            if filter_key not in comparison_star:
+                # This point source doesn't have data from the filter we want
+                # to convert to.
                 continue
 
             term1 = star['mag_instrumental'] - comparison_star['mag_instrumental']
 
-            # FIXME(ian): CI calculation is not correct. Need to use companion image analysis.
             # TODO(ian): Use manually entered ci value.
-            ci_target = star[ci1_key] - star[ci2_key]
-            ci_comparison = comparison_star[ci1_key] - comparison_star[ci2_key]
-            ci_diff = (ci_target - ci_comparison)
+            ci_target = star['color_index']
+            ci_comparison = comparison_star['color_index_known']
+            ci_diff = ci_target - ci_comparison
 
-            term2 = reduction.second_order_extinction * comparison_star['airmass'] * ci_diff
+            term2 = reduction.second_order_extinction * star['airmass'] * ci_diff
             term3 = reduction.tf * ci_diff
-            combined = term1 - term2 + term3 + comparison_star[filter_key]
+            mc = comparison_star[filter_key]
+
+            combined = term1 - term2 + term3 + mc
             estimates.append(combined)
 
         star['mag_standard'] = np.mean(estimates)
+        star['mag_std'] = np.std(estimates)
 
         # Set mag_catalog to the URAT1 magnitude in this band.
-        star['mag_catalog'] = star[filter_key]
-        star['mag_error'] = star['mag_standard'] - star['mag_catalog']
+        if filter_key in star:
+            star['mag_catalog'] = star[filter_key]
+            star['mag_error'] = star['mag_standard'] - star['mag_catalog']
+        else:
+            print 'No filter', filter_key, 'in star', star
 
     reduction.status = Reduction.COMPLETE
     reduction.save()
@@ -124,7 +124,8 @@ def process_pending_reductions():
     pending = Reduction.objects.all().filter(
             status=Reduction.PENDING)
     for reduction in pending:
-        run_reductions(reduction.analysis)
+        if reduction.analysis.target_id != 0:
+            run_reductions(reduction.analysis)
 
 if __name__ == '__main__':
     import os

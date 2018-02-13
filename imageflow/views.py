@@ -38,7 +38,7 @@ def upload_image(request, lightcurve_id=None):
 def astrometry(request, pk):
     # TODO(ian): Handle failed Analysis Result.
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.PENDING:
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
@@ -46,15 +46,15 @@ def astrometry(request, pk):
         'analysis': analysis.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
     }
-    return render_to_response('astrometry.html', template_args,
+    return render_to_response('summary.html', template_args,
             context_instance=RequestContext(request))
 
 def set_datetime(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.PENDING:
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
             'success': False,
-            'msg': 'Could not find corresponding ImageAnalysis',
+            'msg': 'Astrometry is still pending',
         })
 
     # Set new datetime.
@@ -82,10 +82,10 @@ def set_datetime(request, pk):
 
 def set_target_point_source(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.PENDING:
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
             'success': False,
-            'msg': 'Could not find corresponding ImageAnalysis',
+            'msg': 'Astrometry is still pending',
         })
 
     analysis.target_id = request.POST.get('val')
@@ -125,10 +125,10 @@ def set_color_index_2(request, pk):
 
 def set_image_companion(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.PENDING:
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
             'success': False,
-            'msg': 'Could not find corresponding ImageAnalysis',
+            'msg': 'Astrometry is still pending',
         })
     analysis.get_or_create_reduction()
 
@@ -142,17 +142,17 @@ def set_image_companion(request, pk):
 
 def resolve_band(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.PENDING:
-        raise Error('Could not find corresponding ImageAnalysis')
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
+        raise Exception('Astrometry is still pending')
 
     band = request.POST.get('val')
     if not band:
-        raise Error('Filter band not specified')
+        raise Exception('Filter band not specified')
 
     try:
         filter_band = ImageFilter.objects.get(band=band)
     except ObjectDoesNotExist:
-        raise Error('Invalid filter band')
+        raise Exception('Invalid filter band')
 
     return analysis, filter_band
 
@@ -167,20 +167,20 @@ def set_longitude(request, pk):
 
 def set_second_order_extinction(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.PENDING:
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
             'success': False,
-            'msg': 'Could not find corresponding ImageAnalysis',
+            'msg': 'Astrometry is still pending',
         })
     analysis.get_or_create_reduction()
     return set_float(request, pk, 'second_order_extinction', on_reduction=True)
 
 def set_float(request, pk, attrname, on_reduction=False):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.PENDING:
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
             'success': False,
-            'msg': 'Could not find corresponding ImageAnalysis',
+            'msg': 'Astrometry is still pending',
         })
 
     try:
@@ -205,10 +205,10 @@ def set_float(request, pk, attrname, on_reduction=False):
 def set_reduction_status(request, pk):
     # TODO(ian): Verify owner of reduction for all these ImageAnalysis fetches.
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.PENDING:
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
             'success': False,
-            'msg': 'Could not find corresponding ImageAnalysis',
+            'msg': 'Astrometry is still pending',
         })
     reduction = analysis.get_or_create_reduction()
     reduction.status = Reduction.PENDING
@@ -220,10 +220,10 @@ def set_reduction_status(request, pk):
 
 def get_reduction_status(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.PENDING:
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
             'success': False,
-            'msg': 'Could not find corresponding ImageAnalysis',
+            'msg': 'Astrometry is still pending',
         })
     reduction = analysis.get_or_create_reduction()
     return JsonResponse({
@@ -234,7 +234,7 @@ def get_reduction_status(request, pk):
 def point_sources(request, pk):
     # TODO(ian): Dedup this with above code.
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.PENDING:
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
@@ -247,7 +247,7 @@ def point_sources(request, pk):
 def reference_stars(request, pk):
     # TODO(ian): Dedup this with above code.
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.PENDING:
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
@@ -261,18 +261,25 @@ def reference_stars(request, pk):
 def reduction(request, pk):
     # TODO(ian): Dedup this with above code.
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.PENDING:
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
     # Other images in this light curve.
     potential_image_companions = analysis.lightcurve.useruploadedimage_set.all()
 
+    # Next image for user to process in this light curve.
+    next_image = ImageAnalysis.objects.filter(status=ImageAnalysis.REVIEW_PENDING,
+                                              useruploadedimage__lightcurve=analysis.lightcurve) \
+                                      .exclude(pk=pk) \
+                                      .first()
+
     template_args = {
         'analysis': analysis.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
 
         'potential_image_companions': potential_image_companions,
+        'next_image': next_image,
     }
     if hasattr(analysis, 'reduction') and analysis.reduction:
         template_args.update({
@@ -292,4 +299,13 @@ def api_get_analysis_results(request, subid):
     return JsonResponse({
         'success': True,
         'analysis': analysis.get_summary_obj(),
+    })
+
+def notes(request, pk):
+    # TODO(ian): Verify owner of reduction for all these ImageAnalysis fetches.
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    analysis.notes = request.POST.get('val')
+    analysis.save()
+    return JsonResponse({
+        'success': True,
     })

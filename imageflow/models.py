@@ -10,25 +10,27 @@ from jsonfield import JSONField
 
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from lightcurve.models import LightCurve
-from photometry.models import ImageFilter
+from photometry.models import ImageFilter, PhotometrySettings
 
 class ImageAnalysis(models.Model):
-    PENDING = 'PENDING'
+    ASTROMETRY_PENDING = 'ASTROMETRY_PENDING'
+    PHOTOMETRY_PENDING = 'PHOTOMETRY_PENDING'
     REVIEW_PENDING = 'REVIEW_PENDING'
-    REVIEW_COMPLETE = 'REVIEW_COMPLETE'
     REDUCTION_COMPLETE = 'REDUCTION_COMPLETE'
     ADDED_TO_LIGHT_CURVE = 'ADDED_TO_LIGHT_CURVE'
     FAILED = 'FAILED'
     STATUSES = (
-        (PENDING, 'Pending'),
+        (ASTROMETRY_PENDING, 'Astrometry pending'),
+        (PHOTOMETRY_PENDING, 'Photometry pending'),
         (REVIEW_PENDING, 'Review pending'),
-        (REVIEW_PENDING, 'Review complete'),
         (REDUCTION_COMPLETE, "Reduction complete"),
         (ADDED_TO_LIGHT_CURVE, "Added to light curve"),
         (FAILED, 'Failed'),
     )
     status = models.CharField(
-            max_length=50, choices=STATUSES, default=PENDING)
+            max_length=50, choices=STATUSES, default=ASTROMETRY_PENDING)
+
+    notes = models.TextField(default='')
 
     user = models.ForeignKey(User)
 
@@ -56,11 +58,17 @@ class ImageAnalysis(models.Model):
     coords = JSONField()
     coords_json_url = models.CharField(max_length=1024)
 
-    # Point source extraction.
+    # Point source extraction & photometry.
+    photometry_settings = models.ForeignKey(PhotometrySettings, null=True)
+
     psf_scatter_url = models.CharField(max_length=1024)
     psf_bar_url = models.CharField(max_length=1024)
     psf_hist_url = models.CharField(max_length=1024)
     psf_residual_image_url = models.CharField(max_length=1024)
+
+    sigma_clipped_mean = models.FloatField(default=0)
+    sigma_clipped_median = models.FloatField(default=0)
+    sigma_clipped_std = models.FloatField(default=0)
 
     # ID of point source target.
     target_id = models.IntegerField(default=0)
@@ -100,6 +108,10 @@ class ImageAnalysis(models.Model):
             reduction.save()
         return reduction
 
+    def get_or_create_photometry_settings(self):
+        ret, _ = Reduction.objects.get_or_create(analysis=self)
+        return ret
+
     def get_summary_obj(self):
         return {
             'id': self.id,
@@ -107,12 +119,16 @@ class ImageAnalysis(models.Model):
             'subid': self.astrometry_job.submission.subid,
             'lightcurve_id': self.lightcurve.id,
             'meta': {
+                'image_name_short': self.get_short_name(),
+                'notes': self.notes,
                 'datetime': self.image_datetime,
                 'latitude': self.image_latitude,
                 'longitude': self.image_longitude,
                 'elevation': self.image_elevation,
                 'image_band': self.image_filter.band,
+                'image_band_urat1_key': self.image_filter.urat1_key,
                 'photometric_system': self.image_filter.system,
+                # TODO(ian): Don't pass an object - can't be serialized to json.
                 'uploaded_image': self.get_uploaded_image_or_none(),
                 'target_id': self.target_id,
             },
@@ -136,21 +152,37 @@ class ImageAnalysis(models.Model):
                 'coords': self.coords,
                 'catalog_reference_stars': self.catalog_reference_stars,
                 'unknown_stars': self.image_unknown_stars,
+
+                'sigma_clipped_mean': self.sigma_clipped_mean,
+                'sigma_clipped_median': self.sigma_clipped_median,
+                'sigma_clipped_std': self.sigma_clipped_std,
             },
         }
 
-    def __str__(self):
+    def get_short_name(self, maxlen=30):
         image = self.useruploadedimage_set.first()
         if image:
-            image_name = image.original_filename
+            name = image.original_filename
         else:
-            image_name = 'Unknown image'
-        return '%s: %s - Sub %d Job %d, Band %s @ %s' % \
-                (image_name,
+            name = 'Unknown image'
+
+        if len(name) <= 30:
+            return name
+
+        # Half the size, minus the 3 dots.
+        n_2 = maxlen / 2 - 3
+        # Remainder
+        n_1 = maxlen - n_2 - 3
+        return '%s...%s' % (name[:n_1], name[-n_2:])
+
+    def __str__(self):
+        return '#%d %s: %s - Sub %d Job %d, Band %s @ %s' % \
+                (self.id,
+                 self.get_short_name(),
                  self.status,
                  self.astrometry_job.submission.subid, \
                  self.astrometry_job.jobid, \
-                 str(self.image_filter), \
+                 str(self.image_filter.band), \
                  str(self.image_datetime))
 
 

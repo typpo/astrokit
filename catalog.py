@@ -19,6 +19,8 @@ from astropy.wcs.utils import pixel_to_skycoord
 from astroquery.vizier import Vizier
 from rtree import index as rTreeIndex
 
+import stellar_color
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -184,12 +186,15 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
             except InvalidOperation:
                 logger.warn('Encountered bad field for %s: %s = %s' % (json.dumps(obj), field, strvalue))
 
+        temp_k = stellar_color.estimate_temperature(obj)
+        if temp_k:
+            obj['temperature'] = temp_k
+
         mag_i = comparison_star.get('mag_instrumental')
         if mag_i:
             obj['mag_instrumental'] = mag_i
             obj['field_x'] = comparison_star['field_x'],
             obj['field_y'] = comparison_star['field_y'],
-            # TODO(ian): compute standard mag - instrumental mag (for the right band)
         if postprocess_fn:
             obj = postprocess_fn(obj)
         ret.append(obj)
