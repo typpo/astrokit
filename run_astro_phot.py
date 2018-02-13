@@ -120,10 +120,10 @@ class SubmissionHandler():
             analysis.save()
             user_upload.save()
 
-    def save_submission_results(self, job, result):
+    def save_submission_results(self, job, analysis):
         submission = self.submission
 
-        logger.info('-> Uploading results for submission %d' % (submission.subid))
+        logger.info('-> Uploading analysis for submission %d' % (submission.subid))
 
         original_display_url = astrometry_original_image_client.get_url(submission.subid)
         annotated_display_url = 'http://35.202.61.141/annotated_display/%d' \
@@ -140,7 +140,7 @@ class SubmissionHandler():
         name = '%d_%d_original.jpg' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            result.astrometry_original_display_url = \
+            analysis.astrometry_original_display_url = \
                     s3_util.upload_to_s3_via_url(original_display_url, \
                                                  upload_key_prefix, name)
 
@@ -148,7 +148,7 @@ class SubmissionHandler():
         name = '%d_%d_annotated.jpg' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            result.astrometry_annotated_display_url = \
+            analysis.astrometry_annotated_display_url = \
                     s3_util.upload_to_s3_via_url(annotated_display_url, \
                                                  upload_key_prefix, name)
 
@@ -156,7 +156,7 @@ class SubmissionHandler():
         name = '%d_%d_corr.fits' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            result.astrometry_corr_fits_url = \
+            analysis.astrometry_corr_fits_url = \
                     s3_util.upload_to_s3_via_url(corr_url, \
                                                  upload_key_prefix, name)
 
@@ -167,25 +167,25 @@ class SubmissionHandler():
         image_fits_data = urllib.urlopen(new_image_fits_url).read()
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            result.astrometry_image_fits_url = \
+            analysis.astrometry_image_fits_url = \
                     s3_util.upload_to_s3(image_fits_data, \
                                          upload_key_prefix, name)
 
-        logger.info('-> Uploaded results for submission %d' % (submission.subid))
+        logger.info('-> Uploaded analysis for submission %d' % (submission.subid))
 
         # Metadata processing.
-        self.process_metadata(image_fits_data, result)
+        self.process_metadata(image_fits_data, analysis)
 
         # Point source extraction processing.
-        self.process_point_sources(image_fits_data, job, result, upload_key_prefix)
+        self.process_point_sources(image_fits_data, job, analysis, upload_key_prefix)
 
         # Apparent magnitude processing.
         # TODO(ian): These inputs could be made more efficient by just passing
         # in the data from this function, rather than loading them again from
         # urls.
-        self.process_magnitudes(image_fits_data, job, result, upload_key_prefix)
+        self.process_magnitudes(image_fits_data, job, analysis, upload_key_prefix)
 
-    def process_metadata(self, image_fits_data, result):
+    def process_metadata(self, image_fits_data, analysis):
         fitsobj = point_source_extraction.get_fits_from_raw(image_fits_data)
 
         dateobs = fitsobj[0].header.get('DATE-OBS')
@@ -195,14 +195,14 @@ class SubmissionHandler():
         for fmt in ('%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%d', '%d.%m.%Y', '%d/%m/%y'):
             try:
                 # TODO(ian): Set timezone
-                result.image_datetime = datetime.strptime(dateobs, fmt)
+                analysis.image_datetime = datetime.strptime(dateobs, fmt)
                 break
             except ValueError:
                 logger.warning('Unable to parse DATE-OBS %s' % dateobs)
 
         # TODO(ian): Get latlng
 
-    def process_point_sources(self, image_fits_data, job, result, upload_key_prefix):
+    def process_point_sources(self, image_fits_data, job, analysis, upload_key_prefix):
         submission = self.submission
 
         logger.info('-> Processing fits image for submission %d' % (submission.subid))
@@ -212,9 +212,9 @@ class SubmissionHandler():
         data = point_source_extraction.extract_image_data_from_fits(fitsobj)
         sources, residual_image, stats = point_source_extraction.compute(data)
 
-        result.sigma_clipped_mean = stats[0]
-        result.sigma_clipped_median = stats[1]
-        result.sigma_clipped_std = stats[2]
+        analysis.sigma_clipped_mean = stats[0]
+        analysis.sigma_clipped_median = stats[1]
+        analysis.sigma_clipped_std = stats[2]
 
         # Unaltered image.
         image_path = '%d_%d_display_image.png' % (submission.subid, job.jobid)
@@ -222,19 +222,19 @@ class SubmissionHandler():
         logger.info('  -> Uploading %s...' % image_path)
         if not args.dry_run:
             '''
-            result.original_display_url = \
+            analysis.original_display_url = \
                     s3_util.upload_to_s3_via_file(image_path, \
                                                   upload_key_prefix)
             '''
             # Astrometry image looks much better.
-            result.original_display_url = result.astrometry_original_display_url
+            analysis.original_display_url = analysis.astrometry_original_display_url
 
         # Coords.
         coords_plot_path = '%d_%d_plot.png' % (submission.subid, job.jobid)
         point_source_extraction.plot(sources, data, coords_plot_path)
         logger.info('  -> Uploading %s...' % coords_plot_path)
         if not args.dry_run:
-            result.coords_plot_url = \
+            analysis.coords_plot_url = \
                     s3_util.upload_to_s3_via_file(coords_plot_path, \
                                                   upload_key_prefix)
 
@@ -242,7 +242,7 @@ class SubmissionHandler():
         point_source_extraction.save_fits(sources, coords_fits_path)
         logger.info('  -> Uploading %s...' % coords_fits_path)
         if not args.dry_run:
-            result.coords_fits_url = \
+            analysis.coords_fits_url = \
                     s3_util.upload_to_s3_via_file(coords_fits_path, \
                                                   upload_key_prefix)
 
@@ -250,8 +250,8 @@ class SubmissionHandler():
         point_source_extraction.save_json(sources, coords_json_path)
         logger.info('  -> Uploading %s...' % coords_json_path)
         if not args.dry_run:
-            result.coords = point_source_extraction.format_for_json_export(sources)
-            result.coords_json_url = \
+            analysis.coords = point_source_extraction.format_for_json_export(sources)
+            analysis.coords_json_url = \
                     s3_util.upload_to_s3_via_file(coords_json_path, \
                                                   upload_key_prefix)
 
@@ -269,16 +269,16 @@ class SubmissionHandler():
         logger.info('  -> Uploading %s' % psf_hist_path)
         logger.info('  -> Uploading %s' % psf_residual_path)
         if not args.dry_run:
-            result.psf_scatter_url = \
+            analysis.psf_scatter_url = \
                     s3_util.upload_to_s3_via_file(psf_scatter_path, \
                                                   upload_key_prefix)
-            result.psf_bar_url = \
+            analysis.psf_bar_url = \
                     s3_util.upload_to_s3_via_file(psf_bar_path, \
                                                   upload_key_prefix)
-            result.psf_hist_url = \
+            analysis.psf_hist_url = \
                     s3_util.upload_to_s3_via_file(psf_hist_path, \
                                                   upload_key_prefix)
-            result.psf_residual_image_url = \
+            analysis.psf_residual_image_url = \
                     s3_util.upload_to_s3_via_file(psf_residual_path, \
                                                   upload_key_prefix)
         '''
@@ -288,14 +288,14 @@ class SubmissionHandler():
 
         logger.info('-> Processed fits image for submission %d' % (submission.subid))
 
-    def process_magnitudes(self, image_fits_data, job, result, upload_key_prefix):
+    def process_magnitudes(self, image_fits_data, job, analysis, upload_key_prefix):
         submission = self.submission
 
         logger.info('-> Processing reference stars/magnitudes for submission %d' % \
                 (submission.subid))
 
-        coords = urllib.urlopen(result.coords_json_url).read()
-        correlations = urllib.urlopen(result.astrometry_corr_fits_url).read()
+        coords = urllib.urlopen(analysis.coords_json_url).read()
+        correlations = urllib.urlopen(analysis.astrometry_corr_fits_url).read()
 
         # Compute reference stars and their apparent magnitudes.
         ref_stars, unknown_stars = \
@@ -304,8 +304,8 @@ class SubmissionHandler():
         name = '%d_%d_image_reference_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            result.image_reference_stars = ref_stars
-            result.image_reference_stars_json_url = \
+            analysis.image_reference_stars = ref_stars
+            analysis.image_reference_stars_json_url = \
                     s3_util.upload_to_s3(json.dumps(ref_stars, indent=2, use_decimal=True), \
                                          upload_key_prefix, name)
 
@@ -315,8 +315,8 @@ class SubmissionHandler():
         name = '%d_%d_image_unknown_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            result.image_unknown_stars = unknown_stars
-            result.image_unknown_stars_json_url = \
+            analysis.image_unknown_stars = unknown_stars
+            analysis.image_unknown_stars_json_url = \
                     s3_util.upload_to_s3(json.dumps(unknown_stars, indent=2, use_decimal=True), \
                                          upload_key_prefix, name)
 
@@ -328,8 +328,8 @@ class SubmissionHandler():
         name = '%d_%d_catalog_reference_stars.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            result.catalog_reference_stars = standard_mags
-            result.catalog_reference_stars_json_url = \
+            analysis.catalog_reference_stars = standard_mags
+            analysis.catalog_reference_stars_json_url = \
                     s3_util.upload_to_s3(json.dumps(standard_mags, indent=2, use_decimal=True), \
                                          upload_key_prefix, name)
 
@@ -338,8 +338,8 @@ class SubmissionHandler():
         name = '%d_%d_annotated_point_sources.json' % (submission.subid, job.jobid)
         logger.info('  -> Uploading %s...' % name)
         if not args.dry_run:
-            result.annotated_point_sources = all_points
-            result.annotated_point_sources_json_url = \
+            analysis.annotated_point_sources = all_points
+            analysis.annotated_point_sources_json_url = \
                     s3_util.upload_to_s3(json.dumps(all_points, indent=2, use_decimal=True), \
                                          upload_key_prefix, name)
 
