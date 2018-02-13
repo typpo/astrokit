@@ -38,16 +38,16 @@ def compute(image_data):
     std = bkgrms(image_data)
 
     photargs = {
-	'crit_separation': sigma_psf*5,
+	'crit_separation': sigma_psf * 5,
 	'threshold': 5.0 * std,
-	'fwhm': sigma_psf*gaussian_sigma_to_fwhm,
+	'fwhm': sigma_psf * gaussian_sigma_to_fwhm,
 	'fitter': LevMarLSQFitter(),
 	'niters': niters,
 	'fitshape': (box_size, box_size),
     }
 
     photargs['psf_model'] = IntegratedGaussianPRF(sigma=sigma_psf)
-    photargs['psf_model'].sigma.fixed = False
+    # photargs['psf_model'].sigma.fixed = False
 
     photometry = DAOPhotPSFPhotometry(**photargs)
 
