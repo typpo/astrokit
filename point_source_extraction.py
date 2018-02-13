@@ -32,22 +32,37 @@ def compute(image_data):
     # For output, see https://github.com/astropy/photutils/blob/master/photutils/detection/findstars.py#L79
 
     sigma_psf = 2.0
+
+    # http://photutils.readthedocs.io/en/stable/api/photutils.background.MADStdBackgroundRMS.html
     bkgrms = MADStdBackgroundRMS()
     std = bkgrms(image_data)
-    iraffind = IRAFStarFinder(threshold=3.5*std,
+
+    # http://photutils.readthedocs.io/en/stable/api/photutils.IRAFStarFinder.html
+    treshold = 5.0 * std #3.5*std
+    iraffind = IRAFStarFinder(threshold=treshold,
 			      fwhm=sigma_psf*gaussian_sigma_to_fwhm,
 			      minsep_fwhm=0.01, roundhi=5.0, roundlo=-5.0,
 			      sharplo=0.0, sharphi=2.0)
+
+    # http://photutils.readthedocs.io/en/stable/api/photutils.DAOGroup.html
     daogroup = DAOGroup(2.0*sigma_psf*gaussian_sigma_to_fwhm)
+
+    # http://photutils.readthedocs.io/en/stable/api/photutils.MMMBackground.html
     mmm_bkg = MMMBackground()
+
+    # http://docs.astropy.org/en/stable/api/astropy.modeling.fitting.LevMarLSQFitter.html
     fitter = LevMarLSQFitter()
+
+    # http://photutils.readthedocs.io/en/stable/api/photutils.IntegratedGaussianPRF.html
     psf_model = IntegratedGaussianPRF(sigma=sigma_psf)
+
+    # http://photutils.readthedocs.io/en/stable/api/photutils.psf.IterativelySubtractedPSFPhotometry.html
     photometry = IterativelySubtractedPSFPhotometry(finder=iraffind,
 						    group_maker=daogroup,
 						    bkg_estimator=mmm_bkg,
 						    psf_model=psf_model,
 						    fitter=LevMarLSQFitter(),
-						    niters=1, fitshape=(11,11))
+						    niters=3, fitshape=(11,11))
     # Column names:
     # 'flux_0', 'x_fit', 'x_0', 'y_fit', 'y_0', 'flux_fit', 'id', 'group_id',
     # 'flux_unc', 'x_0_unc', 'y_0_unc', 'iter_detected'
