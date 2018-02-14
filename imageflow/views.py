@@ -200,6 +200,8 @@ def set_float(request, pk, attrname, on_reduction=False):
 
 def set_reduction_status(request, pk):
     # TODO(ian): Verify owner of reduction for all these ImageAnalysis fetches.
+    # TODO(ian): Join this with analysis_status and remove the status attribute
+    # on the Reduction model.
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
@@ -226,6 +228,30 @@ def get_reduction_status(request, pk):
         'success': True,
         'status': reduction.status,
     })
+
+def analysis_status(request, pk):
+    # TODO(ian): Constrain by user.
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        if status == 'PHOTOMETRY_PENDING':
+            analysis.status = ImageAnalysis.PHOTOMETRY_PENDING
+            analysis.save()
+            return JsonResponse({
+                'success': True,
+                'message': 'Photometry status set to pending',
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid status',
+            })
+    else:
+        return JsonResponse({
+            'success': True,
+            'status': analysis.status,
+        })
 
 def set_photometry_param(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)

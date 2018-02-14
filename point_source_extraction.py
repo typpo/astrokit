@@ -31,14 +31,16 @@ def compute(settings, image_data):
     # See also http://photutils.readthedocs.io/en/stable/api/photutils.psf.DAOPhotPSFPhotometry.html#photutils.psf.DAOPhotPSFPhotometry
 
     sigma_psf = settings.sigma_psf
-    niters = settings.iters
-    box_size = settings.box_size
-    threshold = settings.threshold
     crit_separation = settings.crit_separation
+    threshold = settings.threshold
+    box_size = settings.box_size
+    niters = settings.iters
 
     bkgrms = MADStdBackgroundRMS()
     std = bkgrms(image_data)
 
+    logger.info('Using sigma=%f, threshold=%f, separation=%f, box_size=%d, niters=%d' % \
+                (sigma_psf, threshold, crit_separation, box_size, niters))
     photargs = {
 	'crit_separation': crit_separation * sigma_psf,
 	'threshold': threshold * std,
@@ -52,7 +54,6 @@ def compute(settings, image_data):
     # photargs['psf_model'].sigma.fixed = False
 
     photometry = DAOPhotPSFPhotometry(**photargs)
-
 
     # Column names:
     # 'flux_0', 'x_fit', 'x_0', 'y_fit', 'y_0', 'flux_fit', 'id', 'group_id',

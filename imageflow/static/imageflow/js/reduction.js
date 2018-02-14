@@ -11,7 +11,7 @@ function setupRunReductions() {
 }
 
 function pollReductionStatus() {
-  $.post('/analysis/' + window.analysisId + '/get_reduction_status', function(data) {
+  $.get('/analysis/' + window.analysisId + '/get_reduction_status', function(data) {
     if (data.status === 'COMPLETE') {
       $('.page-loader').hide();
       window.location.reload();
