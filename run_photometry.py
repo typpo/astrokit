@@ -65,13 +65,11 @@ class PhotometryRunner(object):
         fitsobj = get_fits_from_raw(self.image_fits_data)
 
         data = point_source_extraction.extract_image_data_from_fits(fitsobj)
-        sources, residual_image, stats = \
+        sources, residual_image, std = \
                 point_source_extraction.compute(self.analysis.get_or_create_photometry_settings(),
                                                 data)
 
-        self.analysis.sigma_clipped_mean = stats[0]
-        self.analysis.sigma_clipped_median = stats[1]
-        self.analysis.sigma_clipped_std = stats[2]
+        self.analysis.sigma_clipped_std = std
 
         # Unaltered image.
         image_path = '%d_%d_display_image.png' % (submission.subid, job.jobid)
@@ -113,32 +111,13 @@ class PhotometryRunner(object):
                                                   self.get_upload_key_prefix())
 
         # PSF.
-        '''
-        psf_scatter_path = '%d_%d_psf_scatter.png' % (submission.subid, job.jobid)
-        psf_bar_path = '%d_%d_psf_bar.png' % (submission.subid, job.jobid)
-        psf_hist_path = '%d_%d_psf_hist.png' % (submission.subid, job.jobid)
         psf_residual_path = '%d_%d_psf_residual.png' % (submission.subid, job.jobid)
-        point_source_extraction.compute_psf_flux(data, sources, \
-                psf_scatter_path, psf_bar_path, psf_hist_path, psf_residual_path)
-
-        logger.info('  -> Uploading %s' % psf_scatter_path)
-        logger.info('  -> Uploading %s' % psf_bar_path)
-        logger.info('  -> Uploading %s' % psf_hist_path)
         logger.info('  -> Uploading %s' % psf_residual_path)
         if not args.dry_run:
-            self.analysis.psf_scatter_url = \
-                    s3_util.upload_to_s3_via_file(psf_scatter_path, \
-                                                  self.get_upload_key_prefix())
-            self.analysis.psf_bar_url = \
-                    s3_util.upload_to_s3_via_file(psf_bar_path, \
-                                                  self.get_upload_key_prefix())
-            self.analysis.psf_hist_url = \
-                    s3_util.upload_to_s3_via_file(psf_hist_path, \
-                                                  self.get_upload_key_prefix())
             self.analysis.psf_residual_image_url = \
-                    s3_util.upload_to_s3_via_file(psf_residual_path, \
-                                                  self.get_upload_key_prefix())
-        '''
+                    s3_util.upload_to_s3(residual_image,
+                                         self.get_upload_key_prefix(),
+                                         psf_residual_path)
 
         # TODO(ian): Should delete the files afterwards, or create them as
         # temporary files.

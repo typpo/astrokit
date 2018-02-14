@@ -155,8 +155,6 @@ class ImageAnalysis(models.Model):
                 'catalog_reference_stars': self.catalog_reference_stars,
                 'unknown_stars': self.image_unknown_stars,
 
-                'sigma_clipped_mean': self.sigma_clipped_mean,
-                'sigma_clipped_median': self.sigma_clipped_median,
                 'sigma_clipped_std': self.sigma_clipped_std,
             },
         }

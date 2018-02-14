@@ -63,9 +63,9 @@ def compute(settings, image_data):
     result_tab['mag'] = -2.5 * np.log10(result_tab['flux_fit'])
 
     residual_image = photometry.get_residual_image()
+    print residual_image
 
-    # TODO(ian): Return uncertainty and other information.
-    return result_tab, residual_image, (0, 0, std)
+    return result_tab, residual_image.data, std
 
 def save_image(data, path):
     # FIXME(ian): This is not trustworthy.
@@ -100,6 +100,7 @@ def format_for_json_export(sources):
     field_x = sources['x_fit']
     field_y = sources['y_fit']
     flux = sources['flux_fit']
+    flux_unc = sources['flux_unc']
     mag_instrumental = sources['mag']
 
     out = []
@@ -109,6 +110,7 @@ def format_for_json_export(sources):
             'field_x': float(field_x[i]),
             'field_y': float(field_y[i]),
             'flux': float(flux[i]),
+            'flux_unc': float(flux_unc[i]),
             'mag_instrumental': float(mag_instrumental[i]),
         })
     return out
@@ -117,51 +119,6 @@ def save_json(sources, path):
     out = format_for_json_export(sources)
     with open(path, 'w') as f:
         f.write(json.dumps(out, indent=2, use_decimal=True))
-
-def compute_psf_flux(image_data, sources, \
-        scatter_output_path=None, bar_output_path=None, hist_output_path=None, \
-        residual_path=None):
-    logger.info('Computing flux...')
-    coords = zip(sources['x_fit'], sources['y_fit'])
-
-    #psf_gaussian = GaussianPSF(1)
-    #computed_fluxes = psf_photometry(image_data, coords, psf_gaussian)
-    #computed_fluxes_sorted = sorted(computed_fluxes)
-
-    '''
-    if scatter_output_path:
-        logger.info('Saving scatter plot...')
-        plt.close('all')
-        plt.scatter(sorted(sources['flux_fit']), computed_fluxes_sorted)
-        plt.xlabel('Fluxes catalog')
-        plt.ylabel('Fluxes photutils')
-        plt.savefig(scatter_output_path)
-
-    if bar_output_path:
-        logger.info('Saving bar chart...')
-        plt.close('all')
-        plt.bar(xrange(len(computed_fluxes)), computed_fluxes_sorted[::-1])
-        plt.ylabel('Flux')
-        plt.savefig(bar_output_path)
-
-    if hist_output_path:
-        logger.info('Saving histogram...')
-        plt.close('all')
-        plt.hist(computed_fluxes, bins=50)
-        plt.xlabel('Flux')
-        plt.ylabel('Frequency')
-        plt.savefig(hist_output_path)
-
-    if residual_path:
-        residuals = subtract_psf(np.float64(image_data.copy()), psf_gaussian, coords, computed_fluxes)
-
-        # Plot it.
-        plt.close('all')
-        plt.imshow(residuals, interpolation='None', origin='lower')
-        #plt.plot(coords[0], coords[1], marker='o', markerfacecolor='None', markeredgecolor='y', linestyle='None')
-        #plt.colorbar(orientation='horizontal')
-        plt.savefig(residual_path)
-    '''
 
 def load_image(path):
     return extract_image_data_from_fits(fits.open(path))
