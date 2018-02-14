@@ -63,9 +63,8 @@ def compute(settings, image_data):
     result_tab['mag'] = -2.5 * np.log10(result_tab['flux_fit'])
 
     residual_image = photometry.get_residual_image()
-    print residual_image
 
-    return result_tab, residual_image.data, std
+    return result_tab, residual_image, std
 
 def save_image(data, path):
     # FIXME(ian): This is not trustworthy.
@@ -101,6 +100,7 @@ def format_for_json_export(sources):
     field_y = sources['y_fit']
     flux = sources['flux_fit']
     flux_unc = sources['flux_unc']
+    flux_unc_pct = sources['flux_unc'] / sources['flux_fit']
     mag_instrumental = sources['mag']
 
     out = []
@@ -111,6 +111,7 @@ def format_for_json_export(sources):
             'field_y': float(field_y[i]),
             'flux': float(flux[i]),
             'flux_unc': float(flux_unc[i]),
+            'flux_unc_pct': float(flux_unc_pct[i]) * 100.,
             'mag_instrumental': float(mag_instrumental[i]),
         })
     return out

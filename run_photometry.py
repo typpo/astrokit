@@ -112,12 +112,12 @@ class PhotometryRunner(object):
 
         # PSF.
         psf_residual_path = '%d_%d_psf_residual.png' % (submission.subid, job.jobid)
+        point_source_extraction.save_image(residual_image, psf_residual_path);
         logger.info('  -> Uploading %s' % psf_residual_path)
         if not args.dry_run:
             self.analysis.psf_residual_image_url = \
-                    s3_util.upload_to_s3(residual_image,
-                                         self.get_upload_key_prefix(),
-                                         psf_residual_path)
+                    s3_util.upload_to_s3_via_file(psf_residual_path, \
+                                                  self.get_upload_key_prefix())
 
         # TODO(ian): Should delete the files afterwards, or create them as
         # temporary files.

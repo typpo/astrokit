@@ -122,6 +122,7 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
           <th>Field Y</th>
           <th>Flux</th>
           <th>Flux uncertainty (±)</th>
+          <th>Flux uncertainty %</th>
           <th>Instrumental mag</th>
         </tr>
       </thead>
@@ -133,6 +134,7 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
             <td>{{point_source.field_y|floatformat:2}}</td>
             <td>{{point_source.flux|floatformat:3}}</td>
             <td>{{point_source.flux_unc|floatformat:3}}</td>
+            <td>{{point_source.flux_unc_pct|floatformat:3}}</td>
             <td><strong>{{point_source.mag_instrumental|floatformat:3}}</strong></td>
           </tr>
         {% endfor %}
@@ -163,18 +165,26 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
   <img src="{{analysis.urls.coords_plot_url}}" />
   <a href="{{analysis.urls.coords_plot_url}}" download>Download</a>
 </div>
-{% endcomment %}
 
 <h3>Computed flux (astrokit) vs astrometry.net coarse flux estimation.</h3>
 <div class="well">
   <img src="{{analysis.urls.psf_scatter_url}}" />
   <a href="{{analysis.urls.psf_scatter_url}}" download>Download</a>
 </div>
+{% endcomment %}
 
-<h3>Residual image</h3>
+<h3>Residual image (left) vs original (right)</h3>
 <div class="well">
-  <img src="{{analysis.urls.psf_residual_image_url}}" />
-  <a href="{{analysis.urls.psf_residual_image_url}}" download>Download</a>
+  <a href="{{analysis.urls.psf_residual_image_url}}">
+    <img src="{{analysis.urls.psf_residual_image_url}}" style="float:left;margin-right:3px;" />
+  </a>
+  <a href="{{analysis.urls.original_display_url}}">
+    <img src="{{analysis.urls.original_display_url}}" />
+  </a>
+</div>
+
+<h3>Original image</h3>
+<div class="well">
 </div>
 
 <div style="text-align: right">
