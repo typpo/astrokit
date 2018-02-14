@@ -39,15 +39,15 @@ def compute(settings, image_data):
     bkgrms = MADStdBackgroundRMS()
     std = bkgrms(image_data)
 
-    logger.info('Using sigma=%f, threshold=%f, separation=%f, box_size=%d, niters=%d' % \
-                (sigma_psf, threshold, crit_separation, box_size, niters))
+    logger.info('Using sigma=%f, threshold=%f, separation=%f, box_size=%d, niters=%d, std=%f' % \
+                (sigma_psf, threshold, crit_separation, box_size, niters, std))
     photargs = {
-	'crit_separation': crit_separation * sigma_psf,
-	'threshold': threshold * std,
-	'fwhm': sigma_psf * gaussian_sigma_to_fwhm,
-	'fitter': LevMarLSQFitter(),
-	'niters': niters,
-	'fitshape': (box_size, box_size),
+        'crit_separation': crit_separation * sigma_psf,
+        'threshold': threshold * std,
+        'fwhm': sigma_psf * gaussian_sigma_to_fwhm,
+        'fitter': LevMarLSQFitter(),
+        'niters': niters,
+        'fitshape': (box_size, box_size),
     }
 
     photargs['psf_model'] = IntegratedGaussianPRF(sigma=sigma_psf)

@@ -63,7 +63,11 @@ function pollPhotometryStatus() {
     } else if (data.status !== 'PHOTOMETRY_PENDING') {
       $('.page-loader').hide();
       alert('Done! Press OK to reload the page.')
-      window.location.search += '&select_target=1';
+      if (window.location.search.indexOf('select_target') > -1) {
+        window.location.reload();
+      } else {
+        window.location.search += '&select_target=1';
+      }
     } else {
       setTimeout(pollPhotometryStatus, 1000);
     }
