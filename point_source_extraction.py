@@ -59,6 +59,13 @@ def compute(settings, image_data):
     # 'flux_0', 'x_fit', 'x_0', 'y_fit', 'y_0', 'flux_fit', 'id', 'group_id',
     # 'flux_unc', 'x_0_unc', 'y_0_unc', 'iter_detected'
     result_tab = photometry(image=image_data)
+
+    # Only use from final iteration
+    result_tab = result_tab[result_tab['iter_detected'] == niters]
+
+    # Filter out negative flux
+    #result_tab = result_tab[result_tab['flux_fit'] >= 0]
+
     # Formula: https://en.wikipedia.org/wiki/Instrumental_magnitude
     result_tab['mag'] = -2.5 * np.log10(result_tab['flux_fit'])
 

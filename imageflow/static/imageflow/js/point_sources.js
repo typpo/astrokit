@@ -22,6 +22,21 @@ function setupListeners() {
                 $('#photometry-param-success'),
                 $('#photometry-param-failure'),
                 {param: 'fitshape'});
+
+  setupListener('photometry_params',
+                $('#photometry-iters'),
+                $('#photometry-param-success'),
+                $('#photometry-param-failure'),
+                {param: 'iters'});
+
+  setupListener('set_target_point_source',
+                $('#target-id'),
+                $('#target-id-success'),
+                $('#target-id-failure'));
+
+  $('#target_id').on('change', function() {
+    window.targetId = $(this).val();
+  });
 }
 
 function setupRunPhotometry() {
@@ -48,7 +63,7 @@ function pollPhotometryStatus() {
     } else if (data.status !== 'PHOTOMETRY_PENDING') {
       $('.page-loader').hide();
       alert('Done! Press OK to reload the page.')
-      window.location.reload();
+      window.location.search += '&select_target=1';
     } else {
       setTimeout(pollPhotometryStatus, 1000);
     }
