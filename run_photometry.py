@@ -65,7 +65,9 @@ class PhotometryRunner(object):
         fitsobj = get_fits_from_raw(self.image_fits_data)
 
         data = point_source_extraction.extract_image_data_from_fits(fitsobj)
-        sources, residual_image, stats = point_source_extraction.compute(data)
+        sources, residual_image, stats = \
+                point_source_extraction.compute(self.analysis.get_or_create_photometry_settings(),
+                                                data)
 
         self.analysis.sigma_clipped_mean = stats[0]
         self.analysis.sigma_clipped_median = stats[1]

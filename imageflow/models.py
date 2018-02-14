@@ -109,8 +109,10 @@ class ImageAnalysis(models.Model):
         return reduction
 
     def get_or_create_photometry_settings(self):
-        ret, _ = Reduction.objects.get_or_create(analysis=self)
-        return ret
+        if not self.photometry_settings:
+            self.photometry_settings = PhotometrySettings.objects.create()
+            self.save()
+        return self.photometry_settings
 
     def get_summary_obj(self):
         return {

@@ -26,20 +26,22 @@ from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtracted
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def compute(image_data):
+def compute(settings, image_data):
     # Taken from photuils example http://photutils.readthedocs.io/en/stable/psf.html
     # See also http://photutils.readthedocs.io/en/stable/api/photutils.psf.DAOPhotPSFPhotometry.html#photutils.psf.DAOPhotPSFPhotometry
 
-    sigma_psf = 2.0
-    niters = 1
-    box_size = 11
+    sigma_psf = settings.sigma_psf
+    niters = settings.iters
+    box_size = settings.box_size
+    threshold = settings.threshold
+    crit_separation = settings.crit_separation
 
     bkgrms = MADStdBackgroundRMS()
     std = bkgrms(image_data)
 
     photargs = {
-	'crit_separation': sigma_psf * 5,
-	'threshold': 5.0 * std,
+	'crit_separation': crit_separation * sigma_psf,
+	'threshold': threshold * std,
 	'fwhm': sigma_psf * gaussian_sigma_to_fwhm,
 	'fitter': LevMarLSQFitter(),
 	'niters': niters,
