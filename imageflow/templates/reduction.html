@@ -156,8 +156,10 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
 
 <div style="margin-bottom:1.8em">
   <a href="#" class="btn btn-primary btn-lg js-run-reductions">Run reductions</a>
-  <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+  <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
 </div>
+
+<hr/>
 
 <h3>Step 3: Compute transform coefficient T<sub><em>f</em></sub></h3>
 <p>
@@ -183,7 +185,7 @@ In which:<br>
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask">
       <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
-      <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+      <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
     </p>
   {% else %}
     Slope = t<sub><em>f</em></sub> = {{reduction.data.tf}}<br>
@@ -199,7 +201,7 @@ In which:<br>
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask">
       <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
-      <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+      <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
     </p>
   {% else %}
     <p>
@@ -248,7 +250,7 @@ In which:<br>
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask">
       <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
-      <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+      <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
     </p>
   {% else %}
     <p>
@@ -312,7 +314,7 @@ In which:<br>
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask">
       <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
-      <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+      <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
     </p>
   {% else %}
     <p>
@@ -374,7 +376,7 @@ In which:<br>
   <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
   <a href="/lightcurve/{{analysis.lightcurve_id}}/edit" class="btn btn-lg btn-default">Return to Light curve</a>
   <a href="#" class="btn btn-lg btn-default js-run-reductions">Run Reductions</a>
-  <img style="display:none" class="reductions-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+  <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
   {% if next_image %}
     <a href="/analysis/{{next_image.id}}" class="btn btn-lg btn-primary">Next image</a>
   {% endif %}

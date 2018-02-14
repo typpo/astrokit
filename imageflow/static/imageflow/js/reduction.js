@@ -3,7 +3,7 @@ function setupRunReductions() {
     $.post('/analysis/' + window.analysisId + '/set_reduction_status', {
       status: 'PENDING'
     }, function(data) {
-      $('.reductions-loader').show();
+      $('.page-loader').show();
       pollReductionStatus();
     });
     return false;
@@ -13,7 +13,7 @@ function setupRunReductions() {
 function pollReductionStatus() {
   $.post('/analysis/' + window.analysisId + '/get_reduction_status', function(data) {
     if (data.status === 'COMPLETE') {
-      $('.reductions-loader').hide();
+      $('.page-loader').hide();
       window.location.reload();
     } else {
       setTimeout(pollReductionStatus, 1000);

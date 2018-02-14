@@ -27,6 +27,19 @@ blockquote.smallquote {
 
 <h2>Flux and Magnitudes</h2>
 <p>
+Calculate the background RMS in an array as using the median absolute deviation (MAD).
+</p>
+<p>
+The standard deviation estimator is given by:
+</p>
+<p>
+σ≈{MAD}Φ−1(3/4)≈1.4826 {MAD}<br>
+σ≈{MAD}Φ−1(3/4)≈1.4826 {MAD}
+</p>
+<p>
+where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function evaluated at probability P=3/4P=3/4.
+</p>
+<p>
   Sigma clipping is a common way to estimate the background of an image and eliminate background noise.  Outliers above and below 3 sigma are masked.
 </p>
 <p>
@@ -45,6 +58,52 @@ blockquote.smallquote {
   </blockquote>
 </p>
 
+<h3>Parameters</h3>
+<div class="well">
+  <form class="form form-horizontal">
+    <div class="form-group">
+      <label class="control-label col-sm-1" for="photometry-sigma">
+        Sigma
+      </label>
+      <div class="col-sm-2">
+        <input id="photometry-sigma" class="form-control" type="number" value="{{phot_settings.sigma_psf}}" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-1" for="photometry-threshold">
+        Threshold
+      </label>
+      <div class="col-sm-2">
+        <input id="photometry-threshold" class="form-control" type="number" value="{{phot_settings.threshold}}" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-1" for="photometry-separation">
+        Separation
+      </label>
+      <div class="col-sm-2">
+        <input id="photometry-separation" class="form-control" type="number" value="{{phot_settings.crit_separation}}" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-1" for="photometry-fitshape">
+        Fitshape
+      </label>
+      <div class="col-sm-2">
+        <input id="photometry-fitshape" class="form-control" type="number" step="1" min="1" value="{{phot_settings.box_size}}" />
+      </div>
+    </div>
+  </form>
+</div>
+
+<div style="margin-bottom:1.8em">
+  <a href="#" class="btn btn-primary btn-lg js-run-reductions">Re-run photometry</a>
+  <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+</div>
+
+<hr/>
+
+<h3>Results</h3>
 <div class="well">
   <div class="table-wrapper">
     <table class="table table-striped">

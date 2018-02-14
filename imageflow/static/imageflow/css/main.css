@@ -18,6 +18,10 @@ body {
   color: #000;
 }
 
+hr {
+  border-color: #ccc;
+}
+
 .heading-container {
   border-bottom: 1px solid #ccc;
   width: 100%;
