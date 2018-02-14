@@ -227,6 +227,46 @@ def get_reduction_status(request, pk):
         'status': reduction.status,
     })
 
+def set_photometry_param(request, pk):
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Astrometry is still pending',
+        })
+
+    val = request.POST.get('val')
+    param = request.POST.get('param')
+
+    params = analysis.get_or_create_photometry_settings()
+
+    try:
+        if param == 'sigma':
+            params.sigma_psf = float(val)
+        elif param == 'separation':
+            params.crit_separation = float(val)
+        elif param == 'threshold':
+            params.threshold = float(val)
+        elif param == 'fitshape':
+            params.box_size = int(val)
+        elif param == 'iters':
+            params.iters = int(val)
+        else:
+            return JsonResponse({
+                'success': False,
+                'msg': 'Did not recognize param',
+            })
+        params.save()
+    except ValueError:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Invalid param format',
+        })
+
+    return JsonResponse({
+        'success': True,
+    })
+
 def point_sources(request, pk):
     # TODO(ian): Dedup this with above code.
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
