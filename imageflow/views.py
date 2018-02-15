@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.utils.dateparse import parse_datetime
 
-from astrometry.util import create_new_lightcurve
+from astrometry.util import create_new_lightcurve, edit_lightcurve
 
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
@@ -14,11 +14,14 @@ from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploaded
 def index(request):
     return render_to_response('index.html', context_instance=RequestContext(request))
 
-def upload_image(request):
+def upload_image(request, lightcurve_id=None):
     if request.user.is_authenticated():
         if request.method == 'POST':
             imgs = [request.FILES[key] for key in request.FILES]
-            lightcurve = create_new_lightcurve(request.user, imgs)
+            if lightcurve_id:
+                lightcurve = edit_lightcurve(request.user, imgs, lightcurve_id)
+            else:
+                lightcurve = create_new_lightcurve(request.user, imgs)
 
             # Redirect to submission viewing page.
             return JsonResponse({
@@ -26,10 +29,11 @@ def upload_image(request):
                 'redirect_url': reverse('edit_lightcurve', kwargs={'lightcurve_id': lightcurve.id}),
             })
 
-        return render_to_response('upload_image.html', {},
+        return render_to_response('upload_image.html', {"lightcurve_id": lightcurve_id},
                 context_instance=RequestContext(request))
     else:
         return HttpResponseRedirect(reverse('login'))
+
 
 def astrometry(request, pk):
     # TODO(ian): Handle failed Analysis Result.

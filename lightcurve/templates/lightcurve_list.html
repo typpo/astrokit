@@ -90,10 +90,13 @@ article a {
             </article>
           </div>
         {% endfor %}
+        <a href="{% url "upload_image" %}/{{context.lightcurve.id}}" class="btn btn-primary pull-right">Add Images</a>
+        <div style="clear: both"></div>
+
       {% else %}
         <br>
         <article>No images uploaded</article>
-        <a href="{% url "upload_image" %}" class="btn btn-primary pull-right upload">Upload Images</a>
+        <a href="{% url "upload_image" %}/{{context.lightcurve.id}}" class="btn btn-primary pull-right upload">Upload Images</a>
       {% endif %}
 
     </div>

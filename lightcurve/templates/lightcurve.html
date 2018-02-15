@@ -21,7 +21,11 @@ h1 span {
 </style>
 {% endblock %}
 
-{% block heading %}Light Curve <span>{{lightcurve.name}}</span>{% endblock %}
+{% block heading %}
+  Light Curve <span>{{lightcurve.name}}</span>
+  <a href="{% url "upload_image" %}/{{lightcurve.id}}" class="btn btn-primary pull-right">Add New Images</a>
+{% endblock %}
+
 
 {% block content-interior %}
 <a href="plot" class="btn btn-default">Standard Magnitudes Plot</a>

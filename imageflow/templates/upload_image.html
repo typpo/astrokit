@@ -47,10 +47,10 @@
 
   <main class="main">
     <div class="container">
-      <form class="section-upload dropzone" action="/upload" id="dropzone-upload" method="post" enctype="mutlipart/form-data">{% csrf_token %}
+      <form class="section-upload dropzone" action="/upload{% if lightcurve_id %}/{{lightcurve_id}}{% endif %}" id="dropzone-upload" method="post" enctype="mutlipart/form-data">{% csrf_token %}
         <header class="section-upload__head">
           <h2 class="section-upload__title">
-            Upload an <span>Image</span>
+            Upload an <span>Image{% if lightcurve_id %} for Light Curve {{lightcurve_id}}{% endif %}</span>
           </h2><!-- /.section-upload__title -->
 
           <h6 class="section-upload__subtitle">
