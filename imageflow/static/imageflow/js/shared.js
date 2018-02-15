@@ -73,9 +73,10 @@ function plotStars(canvas, stars, rawOpts) {
     ctx.strokeStyle= 'black';
     ctx.lineWidth = 6;
     var labelWidth = ctx.measureText(text).width;
-    ctx.strokeText(text, starX - (labelWidth / 2), starY - 8);
+    var offset = starY < 14 * 2 ? 14 + 8 : -8;
+    ctx.strokeText(text, starX - (labelWidth / 2), starY + offset);
     ctx.fillStyle = 'yellow';
-    ctx.fillText(text, starX - (labelWidth / 2), starY - 8);
+    ctx.fillText(text, starX - (labelWidth / 2), starY + offset);
   }
 }
 
