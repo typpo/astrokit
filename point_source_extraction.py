@@ -41,14 +41,26 @@ def compute_psf(settings, image_data):
 
     logger.info('Using sigma=%f, threshold=%f, separation=%f, box_size=%d, niters=%d, std=%f' % \
                 (sigma_psf, threshold, crit_separation, box_size, niters, std))
+    fitter = LevMarLSQFitter()
+    # See findpars args http://stsdas.stsci.edu/cgi-bin/gethelp.cgi?findpars
     photargs = {
         'crit_separation': crit_separation * sigma_psf,
         'threshold': threshold * std,
         'fwhm': sigma_psf * gaussian_sigma_to_fwhm,
-        'fitter': LevMarLSQFitter(),
+        'sigma_radius': sigma_psf * gaussian_sigma_to_fwhm,
+        'fitter': fitter,
         'niters': niters,
         'fitshape': (box_size, box_size),
+
+        'sharplo': 0.2,
+        'sharphi': 2.0,
+        'roundlo': -1.0,
+        'roundhi': 1.0,
+
     }
+
+    # starfinder takes 'exclude border'
+
 
     photargs['psf_model'] = IntegratedGaussianPRF(sigma=sigma_psf)
     # photargs['psf_model'].sigma.fixed = False
@@ -61,7 +73,9 @@ def compute_psf(settings, image_data):
     result_tab = photometry(image=image_data)
 
     # Only use from final iteration
-    result_tab = result_tab[result_tab['iter_detected'] == niters]
+    # result_tab = result_tab[result_tab['iter_detected'] == niters]
+
+    logger.info('Fit info: %s' % fitter.fit_info['message'])
 
     # Filter out negative flux
     #result_tab = result_tab[result_tab['flux_fit'] >= 0]
