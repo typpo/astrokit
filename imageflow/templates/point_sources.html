@@ -182,6 +182,17 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
 {% endcomment %}
 
 <h3>Residual image (left) vs original (right)</h3>
+<p>
+The residual ("subtracted") image shows the picture with all the PSF-fitted stars removed.
+Look at this image very carefully.  Are the faint stars cleanly removed with no
+residual traces?  (The very brightest stars may show noisy junk around their
+locations, which is normal.)
+</p>
+<p>
+If something looks consistently abnormal,
+like little holes or doughnuts everywhere there was a star, then something is
+wrong with the PSF.  Try again...
+</p>
 <div class="well">
   <a href="{{analysis.urls.psf_residual_image_url}}">
     <img src="{{analysis.urls.psf_residual_image_url}}" class="js-blinkable" style="display:inline-block" />
