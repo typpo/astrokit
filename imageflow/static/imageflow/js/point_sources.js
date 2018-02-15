@@ -34,7 +34,7 @@ function setupListeners() {
                 $('#target-id-success'),
                 $('#target-id-failure'));
 
-  $('#target_id').on('change', function() {
+  $('#target-id').on('change', function() {
     window.targetId = $(this).val();
   });
 }
