@@ -138,6 +138,7 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
           <th>Flux uncertainty (±)</th>
           <th>Flux uncertainty %</th>
           <th>Instrumental mag</th>
+          <th>Mag uncertainty (±)</th>
         </tr>
       </thead>
       <tbody>
@@ -150,6 +151,7 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
             <td>{{point_source.flux_unc|floatformat:3}}</td>
             <td>{{point_source.flux_unc_pct|floatformat:3}}</td>
             <td><strong>{{point_source.mag_instrumental|floatformat:3}}</strong></td>
+            <td>{{point_source.mag_instrumental_unc|floatformat:3}}</td>
           </tr>
         {% endfor %}
       </tbody>

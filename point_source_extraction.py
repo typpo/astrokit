@@ -82,6 +82,8 @@ def compute_psf(settings, image_data):
 
     # Formula: https://en.wikipedia.org/wiki/Instrumental_magnitude
     result_tab['mag'] = -2.5 * np.log10(result_tab['flux_fit'])
+    result_tab['mag_unc'] = np.abs(-2.5 * np.log10(result_tab['flux_fit'] + result_tab['flux_unc']) - \
+                                   -2.5 * np.log10(result_tab['flux_fit'] - result_tab['flux_unc']))
 
     residual_image = photometry.get_residual_image()
 
@@ -123,6 +125,7 @@ def format_for_json_export(sources):
     flux_unc = sources['flux_unc']
     flux_unc_pct = sources['flux_unc'] / sources['flux_fit']
     mag_instrumental = sources['mag']
+    mag_instrumental_unc = sources['mag_unc']
 
     out = []
     for i in xrange(len(field_x)):
@@ -134,6 +137,7 @@ def format_for_json_export(sources):
             'flux_unc': float(flux_unc[i]),
             'flux_unc_pct': float(flux_unc_pct[i]) * 100.,
             'mag_instrumental': float(mag_instrumental[i]),
+            'mag_instrumental_unc': float(mag_instrumental_unc[i]),
         })
     return out
 
