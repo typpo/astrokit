@@ -66,8 +66,8 @@ class PhotometryRunner(object):
 
         data = point_source_extraction.extract_image_data_from_fits(fitsobj)
         sources, residual_image, std = \
-                point_source_extraction.compute(self.analysis.get_or_create_photometry_settings(),
-                                                data)
+                point_source_extraction.compute_psf(self.analysis.get_or_create_photometry_settings(),
+                                                    data)
 
         self.analysis.sigma_clipped_std = std
 

@@ -26,7 +26,7 @@ from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtracted
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def compute(settings, image_data):
+def compute_psf(settings, image_data):
     # Taken from photuils example http://photutils.readthedocs.io/en/stable/psf.html
     # See also http://photutils.readthedocs.io/en/stable/api/photutils.psf.DAOPhotPSFPhotometry.html#photutils.psf.DAOPhotPSFPhotometry
 
