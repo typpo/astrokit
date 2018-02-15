@@ -74,7 +74,33 @@ function pollPhotometryStatus() {
   });
 }
 
+
+var blinkTimeout = null;
+function doBlink($imgs, idx) {
+  $imgs.hide();
+  $($imgs[idx]).show();
+  blinkTimeout = setTimeout(function() {
+    doBlink($imgs, ++idx % $imgs.length);
+  }, 600);
+}
+
+function setupBlinking() {
+  $('.js-start-blinking').on('click', function() {
+    $(this).hide();
+    $('.js-stop-blinking').show();
+    doBlink($('.js-blinkable'), 0);
+    return false;
+  });
+  $('.js-stop-blinking').on('click', function() {
+    clearTimeout(blinkTimeout);
+    $(this).hide();
+    $('.js-start-blinking').show();
+    return false;
+  });
+}
+
 $(function() {
   setupListeners();
   setupRunPhotometry();
+  setupBlinking();
 });

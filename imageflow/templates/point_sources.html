@@ -184,11 +184,15 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
 <h3>Residual image (left) vs original (right)</h3>
 <div class="well">
   <a href="{{analysis.urls.psf_residual_image_url}}">
-    <img src="{{analysis.urls.psf_residual_image_url}}" style="float:left;margin-right:3px;" />
+    <img src="{{analysis.urls.psf_residual_image_url}}" class="js-blinkable" style="display:inline-block" />
   </a>
   <a href="{{analysis.urls.original_display_url}}">
-    <img src="{{analysis.urls.original_display_url}}" />
+    <img src="{{analysis.urls.original_display_url}}" class="js-blinkable" style="display:inline-block" />
   </a>
+  <div>
+    <a class="js-start-blinking" href="#">Start blinking</a>
+    <a class="js-stop-blinking" href="#" style="display:none">Stop blinking</a>
+  </div>
 </div>
 
 {% if select_target %}
