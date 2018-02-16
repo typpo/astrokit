@@ -66,8 +66,6 @@ class ImageAnalysis(models.Model):
     psf_hist_url = models.CharField(max_length=1024)
     psf_residual_image_url = models.CharField(max_length=1024)
 
-    sigma_clipped_mean = models.FloatField(default=0)
-    sigma_clipped_median = models.FloatField(default=0)
     sigma_clipped_std = models.FloatField(default=0)
 
     # ID of point source target.
