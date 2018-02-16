@@ -48,6 +48,7 @@ def compute_psf(settings, image_data):
         'threshold': threshold * std,
         'fwhm': sigma_psf * gaussian_sigma_to_fwhm,
         'sigma_radius': sigma_psf * gaussian_sigma_to_fwhm,
+        # 'sigma': 5.0,
         'fitter': fitter,
         'niters': niters,
         'fitshape': (box_size, box_size),
@@ -56,7 +57,6 @@ def compute_psf(settings, image_data):
         'sharphi': 2.0,
         'roundlo': -1.0,
         'roundhi': 1.0,
-
     }
 
     # starfinder takes 'exclude border'

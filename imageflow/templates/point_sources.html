@@ -71,7 +71,7 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
   <form class="form form-horizontal">
     <div class="form-group">
       <label class="control-label col-sm-1" for="photometry-sigma">
-        Sigma
+        PSF Sigma
       </label>
       <div class="col-sm-2">
         <input id="photometry-sigma" class="form-control" type="number" value="{{phot_settings.sigma_psf}}" />
@@ -113,6 +113,17 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
       </label>
       <div class="col-sm-2">
         <input id="photometry-iters" class="form-control" type="number" step="1" min="1" value="{{phot_settings.iters}}" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-1" for="photometry-iters">
+        Sigma radius
+      </label>
+      <div class="col-sm-2">
+        <input id="photometry-iters" class="form-control" type="number" step="1" min="1" value="{{phot_settings.iters}}" />
+      </div>
+      <div class="col-sm-5">
+        The truncation radius of the Gaussian kernel in units of sigma (standard deviation) [1 sigma = FWHM / (2.0*sqrt(2.0*log(2.0)))].
       </div>
     </div>
   </form>

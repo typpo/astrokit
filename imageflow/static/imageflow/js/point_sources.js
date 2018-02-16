@@ -95,6 +95,7 @@ function setupBlinking() {
     clearTimeout(blinkTimeout);
     $(this).hide();
     $('.js-start-blinking').show();
+    $('.js-blinkable').show();
     return false;
   });
 }
