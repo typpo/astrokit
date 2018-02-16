@@ -76,6 +76,9 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
       <div class="col-sm-2">
         <input id="photometry-sigma" class="form-control" type="number" value="{{phot_settings.sigma_psf}}" />
       </div>
+      <div class="col-sm-5">
+        The semi-major axis of the Gaussian convolution kernel used to computed the density enhancement and mean density images in Gaussian sigma. This semi- major axis is equal to min (2.0, 0.42466 * nsigma * datapars.fwhmpsf / datapars.scale ) pixels.
+      </div>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-1" for="photometry-threshold">
@@ -83,6 +86,9 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
       </label>
       <div class="col-sm-2">
         <input id="photometry-threshold" class="form-control" type="number" value="{{phot_settings.threshold}}" />
+      </div>
+      <div class="col-sm-5">
+        The object detection threshold above local background in units of datapars.sigma .
       </div>
     </div>
     <div class="form-group">
@@ -99,6 +105,14 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
       </label>
       <div class="col-sm-2">
         <input id="photometry-fitshape" class="form-control" type="number" step="1" min="1" value="{{phot_settings.box_size}}" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-1" for="photometry-iters">
+        Iterations
+      </label>
+      <div class="col-sm-2">
+        <input id="photometry-iters" class="form-control" type="number" step="1" min="1" value="{{phot_settings.iters}}" />
       </div>
     </div>
   </form>
@@ -121,10 +135,10 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
           <th>Field X</th>
           <th>Field Y</th>
           <th>Flux</th>
+          <th>Flux uncertainty (±)</th>
+          <th>Flux uncertainty %</th>
           <th>Instrumental mag</th>
-          <th><span class="header-tooltip" data-toggle="tooltip" title="Number of pixels in the Gaussian kernel"># pixels</span></th>
-          <th><span class="header-tooltip" data-toggle="tooltip" title="The input 'sky' parameter">sky</span></th>
-          <th><span class="header-tooltip" data-toggle="tooltip" title="The peak sky-subtracted pixel value of the object">peak</span></th>
+          <th>Mag uncertainty (±)</th>
         </tr>
       </thead>
       <tbody>
@@ -134,10 +148,10 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
             <td>{{point_source.field_x|floatformat:2}}</td>
             <td>{{point_source.field_y|floatformat:2}}</td>
             <td>{{point_source.flux|floatformat:3}}</td>
+            <td>{{point_source.flux_unc|floatformat:3}}</td>
+            <td>{{point_source.flux_unc_pct|floatformat:3}}</td>
             <td><strong>{{point_source.mag_instrumental|floatformat:3}}</strong></td>
-            <td>{{point_source.npix|floatformat:3}}</td>
-            <td>{{point_source.peak|floatformat:3}}</td>
-            <td>{{point_source.sky|floatformat:3}}</td>
+            <td>{{point_source.mag_instrumental_unc|floatformat:3}}</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -167,19 +181,50 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
   <img src="{{analysis.urls.coords_plot_url}}" />
   <a href="{{analysis.urls.coords_plot_url}}" download>Download</a>
 </div>
-{% endcomment %}
 
 <h3>Computed flux (astrokit) vs astrometry.net coarse flux estimation.</h3>
 <div class="well">
   <img src="{{analysis.urls.psf_scatter_url}}" />
   <a href="{{analysis.urls.psf_scatter_url}}" download>Download</a>
 </div>
+{% endcomment %}
 
-<h3>Residual image</h3>
+<h3>Residual image (left) vs original (right)</h3>
+<p>
+The residual ("subtracted") image shows the picture with all the PSF-fitted stars removed.
+Look at this image very carefully.  Are the faint stars cleanly removed with no
+residual traces?  (The very brightest stars may show noisy junk around their
+locations, which is normal.)
+</p>
+<p>
+If something looks consistently abnormal,
+like little holes or doughnuts everywhere there was a star, then something is
+wrong with the PSF.  Try again...
+</p>
 <div class="well">
-  <img src="{{analysis.urls.psf_residual_image_url}}" />
-  <a href="{{analysis.urls.psf_residual_image_url}}" download>Download</a>
+  <a href="{{analysis.urls.psf_residual_image_url}}">
+    <img src="{{analysis.urls.psf_residual_image_url}}" class="js-blinkable" style="display:inline-block" />
+  </a>
+  <a href="{{analysis.urls.original_display_url}}">
+    <img src="{{analysis.urls.original_display_url}}" class="js-blinkable" style="display:inline-block" />
+  </a>
+  <div>
+    <a class="js-start-blinking" href="#">Start blinking</a>
+    <a class="js-stop-blinking" href="#" style="display:none">Stop blinking</a>
+  </div>
 </div>
+
+{% if select_target %}
+  <h3 id="target-selection">Target reselection</h3>
+  <div class="alert alert-danger">
+    <strong>Your target ID may have changed. Please reselect your target.</strong>
+  </div>
+  <p>
+  {{analysis.data.coords | length}} point sources detected via
+  <a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
+  </p>
+  {% include 'partials/point_source_plot.html' %}
+{% endif %}
 
 <div style="text-align: right">
   <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>

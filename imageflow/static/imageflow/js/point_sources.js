@@ -22,6 +22,21 @@ function setupListeners() {
                 $('#photometry-param-success'),
                 $('#photometry-param-failure'),
                 {param: 'fitshape'});
+
+  setupListener('photometry_params',
+                $('#photometry-iters'),
+                $('#photometry-param-success'),
+                $('#photometry-param-failure'),
+                {param: 'iters'});
+
+  setupListener('set_target_point_source',
+                $('#target-id'),
+                $('#target-id-success'),
+                $('#target-id-failure'));
+
+  $('#target-id').on('change', function() {
+    window.targetId = $(this).val();
+  });
 }
 
 function setupRunPhotometry() {
@@ -48,14 +63,44 @@ function pollPhotometryStatus() {
     } else if (data.status !== 'PHOTOMETRY_PENDING') {
       $('.page-loader').hide();
       alert('Done! Press OK to reload the page.')
-      window.location.reload();
+      if (window.location.search.indexOf('select_target') > -1) {
+        window.location.reload();
+      } else {
+        window.location.search += '&select_target=1';
+      }
     } else {
       setTimeout(pollPhotometryStatus, 1000);
     }
   });
 }
 
+
+var blinkTimeout = null;
+function doBlink($imgs, idx) {
+  $imgs.hide();
+  $($imgs[idx]).show();
+  blinkTimeout = setTimeout(function() {
+    doBlink($imgs, ++idx % $imgs.length);
+  }, 600);
+}
+
+function setupBlinking() {
+  $('.js-start-blinking').on('click', function() {
+    $(this).hide();
+    $('.js-stop-blinking').show();
+    doBlink($('.js-blinkable'), 0);
+    return false;
+  });
+  $('.js-stop-blinking').on('click', function() {
+    clearTimeout(blinkTimeout);
+    $(this).hide();
+    $('.js-start-blinking').show();
+    return false;
+  });
+}
+
 $(function() {
   setupListeners();
   setupRunPhotometry();
+  setupBlinking();
 });

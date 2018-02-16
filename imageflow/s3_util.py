@@ -24,7 +24,7 @@ def upload_to_s3(image_data, key_prefix, name, overwrite=True):
             is_secure=False)
     bucket = conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME, validate=True)
     k = Key(bucket)
-    keyname = '%s/%d-%s' % (key_prefix, int(time.time()), name)
+    keyname = '%s/%s' % (key_prefix, name)
     k.key = keyname
 
     if k.exists() and overwrite:

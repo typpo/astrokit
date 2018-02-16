@@ -1,0 +1,35 @@
+<div class="well">
+  <div>
+    <div id="target-id-success" class="alert alert-success" style="display:none">
+      Target ID successfully updated.
+    </div>
+    <div id="target-id-failure" class="alert alert-danger" style="display:none">
+      Something went wrong - failed to update your setting.
+    </div>
+    <p><strong>Enter the ID number of your target point source (set to 0 for no target):</strong></p>
+    <input id="target-id"
+           class="form-control"
+           style="width: 8em"
+           type="number"
+           min="0"
+           max="{{analysis.data.coords | length}}"
+           value="{{analysis.meta.target_id}}" />
+  </div>
+
+  <div style="margin-top:1.5em">
+    Field position:
+    (<span id="canvas-x-pos">0</span>,
+    <span id="canvas-y-pos">0</span>)
+    <div id="plot-container" style="width: 100%; height: 800px; background-color:#ccc;">
+      <canvas id="star-plot" style="cursor: crosshair" />
+    </div>
+  </div>
+
+  <div>
+    <p>
+      <a href="{{analysis.urls.coords_json_url}}">Download JSON</a>
+      &middot;
+      <a href="{{analysis.urls.coords_fits_url}}">Download FITS</a>
+    </p>
+  </div>
+</div>

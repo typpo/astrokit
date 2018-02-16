@@ -307,6 +307,7 @@ def point_sources(request, pk):
     template_args = {
         'analysis': analysis.get_summary_obj(),
         'phot_settings': analysis.get_or_create_photometry_settings(),
+        'select_target': request.GET.get('select_target') == '1',
     }
     return render_to_response('point_sources.html', template_args,
             context_instance=RequestContext(request))

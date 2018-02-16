@@ -26,7 +26,7 @@ from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtracted
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def compute(settings, image_data):
+def compute_psf(settings, image_data):
     # Taken from photuils example http://photutils.readthedocs.io/en/stable/psf.html
     # See also http://photutils.readthedocs.io/en/stable/api/photutils.psf.DAOPhotPSFPhotometry.html#photutils.psf.DAOPhotPSFPhotometry
 
@@ -39,16 +39,28 @@ def compute(settings, image_data):
     bkgrms = MADStdBackgroundRMS()
     std = bkgrms(image_data)
 
-    logger.info('Using sigma=%f, threshold=%f, separation=%f, box_size=%d, niters=%d' % \
-                (sigma_psf, threshold, crit_separation, box_size, niters))
+    logger.info('Using sigma=%f, threshold=%f, separation=%f, box_size=%d, niters=%d, std=%f' % \
+                (sigma_psf, threshold, crit_separation, box_size, niters, std))
+    fitter = LevMarLSQFitter()
+    # See findpars args http://stsdas.stsci.edu/cgi-bin/gethelp.cgi?findpars
     photargs = {
-	'crit_separation': crit_separation * sigma_psf,
-	'threshold': threshold * std,
-	'fwhm': sigma_psf * gaussian_sigma_to_fwhm,
-	'fitter': LevMarLSQFitter(),
-	'niters': niters,
-	'fitshape': (box_size, box_size),
+        'crit_separation': crit_separation * sigma_psf,
+        'threshold': threshold * std,
+        'fwhm': sigma_psf * gaussian_sigma_to_fwhm,
+        'sigma_radius': sigma_psf * gaussian_sigma_to_fwhm,
+        'fitter': fitter,
+        'niters': niters,
+        'fitshape': (box_size, box_size),
+
+        'sharplo': 0.2,
+        'sharphi': 2.0,
+        'roundlo': -1.0,
+        'roundhi': 1.0,
+
     }
+
+    # starfinder takes 'exclude border'
+
 
     photargs['psf_model'] = IntegratedGaussianPRF(sigma=sigma_psf)
     # photargs['psf_model'].sigma.fixed = False
@@ -59,13 +71,23 @@ def compute(settings, image_data):
     # 'flux_0', 'x_fit', 'x_0', 'y_fit', 'y_0', 'flux_fit', 'id', 'group_id',
     # 'flux_unc', 'x_0_unc', 'y_0_unc', 'iter_detected'
     result_tab = photometry(image=image_data)
+
+    # Only use from final iteration
+    # result_tab = result_tab[result_tab['iter_detected'] == niters]
+
+    logger.info('Fit info: %s' % fitter.fit_info['message'])
+
+    # Filter out negative flux
+    #result_tab = result_tab[result_tab['flux_fit'] >= 0]
+
     # Formula: https://en.wikipedia.org/wiki/Instrumental_magnitude
     result_tab['mag'] = -2.5 * np.log10(result_tab['flux_fit'])
+    result_tab['mag_unc'] = np.abs(-2.5 * np.log10(result_tab['flux_fit'] + result_tab['flux_unc']) - \
+                                   -2.5 * np.log10(result_tab['flux_fit'] - result_tab['flux_unc']))
 
     residual_image = photometry.get_residual_image()
 
-    # TODO(ian): Return uncertainty and other information.
-    return result_tab, residual_image, (0, 0, std)
+    return result_tab, residual_image, std
 
 def save_image(data, path):
     # FIXME(ian): This is not trustworthy.
@@ -100,7 +122,10 @@ def format_for_json_export(sources):
     field_x = sources['x_fit']
     field_y = sources['y_fit']
     flux = sources['flux_fit']
+    flux_unc = sources['flux_unc']
+    flux_unc_pct = sources['flux_unc'] / sources['flux_fit']
     mag_instrumental = sources['mag']
+    mag_instrumental_unc = sources['mag_unc']
 
     out = []
     for i in xrange(len(field_x)):
@@ -109,7 +134,10 @@ def format_for_json_export(sources):
             'field_x': float(field_x[i]),
             'field_y': float(field_y[i]),
             'flux': float(flux[i]),
+            'flux_unc': float(flux_unc[i]),
+            'flux_unc_pct': float(flux_unc_pct[i]) * 100.,
             'mag_instrumental': float(mag_instrumental[i]),
+            'mag_instrumental_unc': float(mag_instrumental_unc[i]),
         })
     return out
 
@@ -117,51 +145,6 @@ def save_json(sources, path):
     out = format_for_json_export(sources)
     with open(path, 'w') as f:
         f.write(json.dumps(out, indent=2, use_decimal=True))
-
-def compute_psf_flux(image_data, sources, \
-        scatter_output_path=None, bar_output_path=None, hist_output_path=None, \
-        residual_path=None):
-    logger.info('Computing flux...')
-    coords = zip(sources['x_fit'], sources['y_fit'])
-
-    #psf_gaussian = GaussianPSF(1)
-    #computed_fluxes = psf_photometry(image_data, coords, psf_gaussian)
-    #computed_fluxes_sorted = sorted(computed_fluxes)
-
-    '''
-    if scatter_output_path:
-        logger.info('Saving scatter plot...')
-        plt.close('all')
-        plt.scatter(sorted(sources['flux_fit']), computed_fluxes_sorted)
-        plt.xlabel('Fluxes catalog')
-        plt.ylabel('Fluxes photutils')
-        plt.savefig(scatter_output_path)
-
-    if bar_output_path:
-        logger.info('Saving bar chart...')
-        plt.close('all')
-        plt.bar(xrange(len(computed_fluxes)), computed_fluxes_sorted[::-1])
-        plt.ylabel('Flux')
-        plt.savefig(bar_output_path)
-
-    if hist_output_path:
-        logger.info('Saving histogram...')
-        plt.close('all')
-        plt.hist(computed_fluxes, bins=50)
-        plt.xlabel('Flux')
-        plt.ylabel('Frequency')
-        plt.savefig(hist_output_path)
-
-    if residual_path:
-        residuals = subtract_psf(np.float64(image_data.copy()), psf_gaussian, coords, computed_fluxes)
-
-        # Plot it.
-        plt.close('all')
-        plt.imshow(residuals, interpolation='None', origin='lower')
-        #plt.plot(coords[0], coords[1], marker='o', markerfacecolor='None', markeredgecolor='y', linestyle='None')
-        #plt.colorbar(orientation='horizontal')
-        plt.savefig(residual_path)
-    '''
 
 def load_image(path):
     return extract_image_data_from_fits(fits.open(path))
