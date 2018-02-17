@@ -17,6 +17,19 @@
   width: 100%;
   height: 400px;
 }
+
+.table-checkbox {
+  width: 1em;
+  text-align: center;
+}
+
+.table-checkbox input {
+  -ms-transform: scale(1.5); /* IE */
+  -moz-transform: scale(1.5); /* FF */
+  -webkit-transform: scale(1.5); /* Safari and Chrome */
+  -o-transform: scale(1.5); /* Opera */
+  cursor: pointer;
+}
 </style>
 {% endblock %}
 
@@ -32,9 +45,10 @@
 </p>
 <div class="well">
   <div class="table-wrapper">
-    <table class="table table-striped table-hover">
+    <table class="table table-striped table-hover js-reference-table">
       <thead>
         <tr>
+          <th></th>
           <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
           <th>Designation</th>
           <th>Field X</th>
@@ -47,7 +61,8 @@
       </thead>
       <tbody>
       {% for star in analysis.data.catalog_reference_stars %}
-        <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+        <tr data-star-id="{{star.id}}" {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+          <td class="table-checkbox"><input type="checkbox" /></td>
           <td>{{star.id}}</td>
           <td>
             <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
@@ -71,19 +86,19 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
 </p>
 <div class="well">
   <div class="table-wrapper">
-    <table class="table table-striped table-hover">
+    <table class="table table-striped table-hover js-reference-table">
       <thead>
         <tr>
+          <th></th>
           <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
           <th>Designation</th>
           <th>Instrumental mag</th>
+          <th>Mag uncertainty (±)</th>
           <th>Temperature (K)</th>
           <th><span class="header-tooltip" data-toggle="tooltip" title="442 nm">B (Johnson)</span></th>
           <th><span class="header-tooltip" data-toggle="tooltip" title="540 nm">V (Johnson)</span></th>
-          <th><span class="header-tooltip" data-toggle="tooltip" title="Color index B-V">B-V</span></th>
           <th><span class="header-tooltip" data-toggle="tooltip" title="475 nm">g' (Sloan)</span></th>
           <th><span class="header-tooltip" data-toggle="tooltip" title="622 nm">r' (Sloan)</span></th>
-          <th><span class="header-tooltip" data-toggle="tooltip" title="Color index g'-r'">g'-r'</span></th>
           <th><span class="header-tooltip" data-toggle="tooltip" title="763 nm">i' (Sloan)</span></th>
           <th><span class="header-tooltip" data-toggle="tooltip" title="1250 nm">J (2MASS)</span></th>
           <th><span class="header-tooltip" data-toggle="tooltip" title="1650 nm">H (2MASS)</span></th>
@@ -92,19 +107,19 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
       </thead>
       <tbody>
       {% for star in analysis.data.catalog_reference_stars %}
-        <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+        <tr data-star-id="{{star.id}}" {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+          <td class="table-checkbox"><input type="checkbox" /></td>
           <td>{{star.id}}</td>
           <td>
             <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
           </td>
           <td>{{star.mag_instrumental|floatformat:3}}</td>
+          <td>{{star.mag_instrumental_unc|floatformat:3}}</td>
           <td>{{star.temperature|floatformat:1}}</td>
           <td>{{star.Bmag}}</td>
           <td>{{star.Vmag}}</td>
-          <td>{{star.delta_BV}}</td>
           <td>{{star.gmag}}</td>
           <td>{{star.rmag}}</td>
-          <td>{{star.delta_gr}}</td>
           <td>{{star.imag}}</td>
           <td>{{star.Jmag}}</td>
           <td>{{star.Hmag}}</td>
