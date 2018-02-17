@@ -42,6 +42,7 @@
           <th>RA (J2000)</th>
           <th>Dec (J2000)</th>
           <th>Instrumental mag</th>
+          <th>Mag uncertainty (±)</th>
         </tr>
       </thead>
       <tbody>
@@ -56,6 +57,7 @@
           <td>{{star.index_ra|floatformat:5}}</td>
           <td>{{star.index_dec|floatformat:5}}</td>
           <td>{{star.mag_instrumental|floatformat:3}}</td>
+          <td>{{star.mag_instrumental_unc|floatformat:3}}</td>
         </tr>
       {% endfor %}
       </tbody>
@@ -149,7 +151,8 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
           <th>Field Y</th>
           <th>RA (J2000)</th>
           <th>Dec (J2000)</th>
-          <th>Instrumental magnitude</th>
+          <th>Instrumental mag</th>
+          <th>Mag uncertainty (±)</th>
         </tr>
       </thead>
       <tbody>
@@ -161,6 +164,7 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
           <td>{{star.index_ra|floatformat:5}}</td>
           <td>{{star.index_dec|floatformat:5}}</td>
           <td>{{star.mag_instrumental|floatformat:3}}</td>
+          <td>{{star.mag_instrumental_unc|floatformat:3}}</td>
         </tr>
       {% endfor %}
       </tbody>

@@ -24,14 +24,19 @@ from photutils.background import MMMBackground, MADStdBackgroundRMS
 from photutils.detection import IRAFStarFinder
 from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtractedPSFPhotometry, DAOPhotPSFPhotometry
 
+from photometry.lib import sewpy
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def compute_sextractor(settings, image_data):
+def compute_sextractor(settings, raw_data, image_data):
     params = [
         'X_IMAGE',
         'Y_IMAGE',
-        #'FLUX_RADIUS(3)',
+        'FLUX_PSF',
+        'FLUXERR_PSF',
+        'MAG_PSF',
+        'MAGERR_PSF',
         'FWHM_IMAGE',
         'FLAGS',
         'FLUX_BEST',
@@ -54,16 +59,15 @@ def compute_sextractor(settings, image_data):
     config = {
 
     }
-    with tempfile.TemporaryFile() as fp:
-        fp.write(image_data)
-        print fp.name
-        sew = sewpy.SEW(params=params, config=config)
+    with tempfile.NamedTemporaryFile(suffix='.fits') as fp:
+        fp.write(raw_data)
+        fp.flush()
+        sew = sewpy.SEW(params=params, config=config, sexpath='/usr/bin/sextractor')
         out = sew(fp.name)
 
-        print out
-        print out['table']
+    return out['table'], np.array([[1,2], [3,4]]), 0
 
-def compute_psf_photutils(settings, image_data):
+def compute_photutils(settings, image_data):
     # Taken from photuils example http://photutils.readthedocs.io/en/stable/psf.html
     # See also http://photutils.readthedocs.io/en/stable/api/photutils.psf.DAOPhotPSFPhotometry.html#photutils.psf.DAOPhotPSFPhotometry
 
@@ -120,7 +124,7 @@ def compute_psf_photutils(settings, image_data):
     # Formula: https://en.wikipedia.org/wiki/Instrumental_magnitude
     result_tab['mag'] = -2.5 * np.log10(result_tab['flux_fit'])
     result_tab['mag_unc'] = np.abs(-2.5 * np.log10(result_tab['flux_fit'] + result_tab['flux_unc']) - \
-                                   -2.5 * np.log10(result_tab['flux_fit'] - result_tab['flux_unc']))
+                                   -2.5 * np.log10(result_tab['flux_fit'] - result_tab['flux_unc'])) / 2.0
 
     residual_image = photometry.get_residual_image()
 
@@ -151,6 +155,13 @@ def save_fits(sources, path):
     flux = fits.Column(name='flux', format='E', array=sources['flux_fit'])
     mag_instrumental = fits.Column(name='mag_instrumental', format='E', array=sources['mag'])
 
+    '''
+    col_x = fits.Column(name='field_x', format='E', array=sources['X_IMAGE'])
+    col_y = fits.Column(name='field_y', format='E', array=sources['Y_IMAGE'])
+    flux = fits.Column(name='flux', format='E', array=sources['FLUX_BEST'])
+    mag_instrumental = fits.Column(name='mag_instrumental', format='E', array=sources['MAG_BEST'])
+    '''
+
     cols = fits.ColDefs([col_x, col_y, flux, mag_instrumental])
     tbhdu = fits.BinTableHDU.from_columns(cols)
     tbhdu.writeto(path, clobber=True)
@@ -160,9 +171,19 @@ def format_for_json_export(sources):
     field_y = sources['y_fit']
     flux = sources['flux_fit']
     flux_unc = sources['flux_unc']
-    flux_unc_pct = sources['flux_unc'] / sources['flux_fit']
+    flux_unc_pct = sources['flux_unc'] / sources['flux_fit'] * 100.0
     mag_instrumental = sources['mag']
     mag_instrumental_unc = sources['mag_unc']
+
+    '''
+    field_x = sources['X_IMAGE']
+    field_y = sources['Y_IMAGE']
+    flux = sources['FLUX_BEST']
+    flux_unc = sources['FLUXERR_BEST']
+    flux_unc_pct = sources['FLUXERR_BEST'] / sources['FLUX_BEST'] * 100.0
+    mag_instrumental = sources['MAG_BEST']
+    mag_instrumental_unc = sources['MAGERR_BEST']
+    '''
 
     out = []
     for i in xrange(len(field_x)):
@@ -172,7 +193,7 @@ def format_for_json_export(sources):
             'field_y': float(field_y[i]),
             'flux': float(flux[i]),
             'flux_unc': float(flux_unc[i]),
-            'flux_unc_pct': float(flux_unc_pct[i]) * 100.,
+            'flux_unc_pct': float(flux_unc_pct[i]),
             'mag_instrumental': float(mag_instrumental[i]),
             'mag_instrumental_unc': float(mag_instrumental_unc[i]),
         })

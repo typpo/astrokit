@@ -65,6 +65,13 @@ class PhotometryRunner(object):
         fitsobj = get_fits_from_raw(self.image_fits_data)
 
         data = point_source_extraction.extract_image_data_from_fits(fitsobj)
+        '''
+        sources, residual_image, std = \
+                point_source_extraction.compute_sextractor(self.analysis.get_or_create_photometry_settings(),
+                                                           self.image_fits_data,
+                                                           data)
+        '''
+
         sources, residual_image, std = \
                 point_source_extraction.compute_photutils(self.analysis.get_or_create_photometry_settings(),
                                                           data)
@@ -85,6 +92,7 @@ class PhotometryRunner(object):
             self.analysis.original_display_url = self.analysis.astrometry_original_display_url
 
         # Coords.
+        '''
         coords_plot_path = '%d_%d_plot.png' % (submission.subid, job.jobid)
         point_source_extraction.plot(sources, data, coords_plot_path)
         logger.info('  -> Uploading %s...' % coords_plot_path)
@@ -92,6 +100,7 @@ class PhotometryRunner(object):
             self.analysis.coords_plot_url = \
                     s3_util.upload_to_s3_via_file(coords_plot_path, \
                                                   self.get_upload_key_prefix())
+        '''
 
         coords_fits_path = '%d_%d_coords.fits' % (submission.subid, job.jobid)
         point_source_extraction.save_fits(sources, coords_fits_path)
