@@ -7,6 +7,7 @@ Usage: python point_source_extraction.py myimage.fits
 
 import logging
 import simplejson as json
+import tempfile
 import urllib
 
 from cStringIO import StringIO
@@ -26,7 +27,43 @@ from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtracted
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def compute_psf(settings, image_data):
+def compute_sextractor(settings, image_data):
+    params = [
+        'X_IMAGE',
+        'Y_IMAGE',
+        #'FLUX_RADIUS(3)',
+        'FWHM_IMAGE',
+        'FLAGS',
+        'FLUX_BEST',
+        'FLUXERR_BEST',
+        'MAG_BEST',
+        'MAGERR_BEST',
+        'FLUX_PSF',
+        'MAG_PSF',
+        'FLUX_PSF',
+        'FLUXERR_PSF',
+        'MAG_PSF',
+        'MAGERR_PSF',
+        'NITER_PSF',
+        'CHI2_PSF',
+        'FLUX_APER',
+        'FLUXERR_APER',
+        'MAG_APER',
+        'MAGERR_APER',
+    ]
+    config = {
+
+    }
+    with tempfile.TemporaryFile() as fp:
+        fp.write(image_data)
+        print fp.name
+        sew = sewpy.SEW(params=params, config=config)
+        out = sew(fp.name)
+
+        print out
+        print out['table']
+
+def compute_psf_photutils(settings, image_data):
     # Taken from photuils example http://photutils.readthedocs.io/en/stable/psf.html
     # See also http://photutils.readthedocs.io/en/stable/api/photutils.psf.DAOPhotPSFPhotometry.html#photutils.psf.DAOPhotPSFPhotometry
 
