@@ -45,7 +45,7 @@
 
 <h3>Reference Stars</h3>
 <p>
-{{analysis.data.catalog_reference_stars | length}} catalog stars recognized out of {{analysis.data.coords | length}} point sources total.
+{{analysis.data.catalog_reference_stars | length}} catalog stars recognized out of {{analysis.data.coords | length}} point sources total. <span id="num-comparison-stars">0</span> are selected as comparison stars.
 </p>
 <div class="well">
   <div class="table-wrapper">
@@ -200,16 +200,20 @@ From the <a target="_blank" href="https://www.aavso.org/apass">APASS</a> and <a 
 </div>
 {% endblock %}
 
+{% csrf_token %}
+
 {% block scripts %}
   <script>
-    window.originalImageUrl = {{analysis.urls.original_display_url | jsonify}};
+    window.analysisId = {{analysis.id | jsonify }};
     window.targetId = {{analysis.meta.target_id | jsonify }};
+    window.originalImageUrl = {{analysis.urls.original_display_url | jsonify}};
     window.pointSourceData = {{ analysis.data.coords | jsonify }};
     window.catalogData = {{ analysis.data.catalog_reference_stars | jsonify }};
     window.urat1Key = {{ analysis.meta.image_band_urat1_key | jsonify }};
   </script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/shared.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/reference_stars.js" %}" type="text/javascript"></script>
 {% endblock %}

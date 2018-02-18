@@ -49,5 +49,4 @@ function getCookie(name) {
 }
 
 $(function() {
-  setupCsrfToken(getCookie('csrftoken'));
 });

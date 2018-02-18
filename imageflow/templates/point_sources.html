@@ -244,6 +244,8 @@ wrong with the PSF.  Try again...
 </div>
 {% endblock %}
 
+{% csrf_token %}
+
 {% block scripts %}
   <script>
     window.analysisId = {{analysis.id | jsonify }};

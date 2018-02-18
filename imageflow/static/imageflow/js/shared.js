@@ -165,6 +165,7 @@ $(function() {
 
   setupTables();
   setupNotes();
+  setupCsrfToken(getCookie('csrftoken'));
 
   // Initialize tooltips.
   if ($().tooltip) {

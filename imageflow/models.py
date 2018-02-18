@@ -219,10 +219,10 @@ class Reduction(models.Model):
             max_length=50, choices=STATUSES, default=CREATED)
     analysis = models.OneToOneField(ImageAnalysis, related_name='reduction')
 
-    # Data fields
-
     # TODO(ian): rename to reduced_points, because it can contain unknown objects.
     reduced_stars = JSONField()
+    # List of ints containing ids of comparison stars.
+    comparison_star_ids = JSONField()
     color_index_1 = models.ForeignKey(ImageFilter,
                                       related_name='reduction_color_index_1_set',
                                       default=ImageFilter.objects.get_default())
