@@ -24,6 +24,8 @@ def calculate(analysis, reduction, save_graph=False):
     standard_diffs = []
     instrumental_diffs = []
     for star in analysis.catalog_reference_stars:
+        if star['id'] not in reduction.get_comparison_id_set():
+            continue
 
         star_in_companion_image = \
                 find_star_by_designation(companion_image.analysis.catalog_reference_stars,

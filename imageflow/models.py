@@ -247,6 +247,9 @@ class Reduction(models.Model):
     hidden_transform_rval = models.FloatField(null=True)
     hidden_transform_graph_url = models.CharField(max_length=1024, null=True)
 
+    def get_comparison_id_set(self):
+        return set(self.comparison_star_ids)
+
     def get_summary_obj(self):
         return {
             'urls': {
@@ -256,6 +259,7 @@ class Reduction(models.Model):
             'meta': {
                 'status': self.status,
                 'image_companion_id': self.image_companion.id,
+                'comparison_star_ids': self.comparison_star_ids,
             },
             'data': {
                 'color_index_1_band': self.color_index_1.band if self.color_index_1 else '',

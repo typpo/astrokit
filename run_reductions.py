@@ -56,6 +56,9 @@ def run_reductions(analysis):
     ci1_key = reduction.color_index_1.urat1_key
     ci2_key = reduction.color_index_2.urat1_key
 
+    # Get the set of comparison stars.  These are a subset of reduced stars.
+    comparison_ids = set(reduction.comparison_star_ids)
+
     # Now put it all together.
     for i in xrange(len(reduction.reduced_stars)):
         # Assume this star is our target (in reality, there is 1 true target
@@ -74,11 +77,17 @@ def run_reductions(analysis):
                 continue
 
             comparison_star = reduction.reduced_stars[j]
+            if comparison_star['id'] not in comparison_ids:
+                # This star isn't a comparison star.
+                continue
             if comparison_star['id'] == analysis.target_id:
                 # The data generated here is for an unknown, so don't use it
                 # for a comparison star.
                 continue
             if 'color_index_known' not in comparison_star:
+                # TODO(ian): This and the below test should cause an error,
+                # because the user chose a bad comparison star.
+
                 # This point source doesn't have a catalog color index, so we
                 # don't trust it even though we may have computed its color
                 # index.
@@ -101,6 +110,8 @@ def run_reductions(analysis):
 
             combined = term1 - term2 + term3 + mc
             estimates.append(combined)
+
+            comparison_star['is_comparison'] = True
 
         star['mag_standard'] = np.mean(estimates)
         star['mag_std'] = np.std(estimates)

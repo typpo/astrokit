@@ -180,6 +180,9 @@ In which:<br>
 <li>ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f</em>, at the airmass of the reference field.</li>
 </ul>
 </p>
+<p>
+This computation uses the {{reduction.meta.comparison_star_ids|length}} comparison stars you chose in the <a href="/analysis/reference_stars/{{analysis.id}}">previous step</a>.
+</p>
 
 <div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
