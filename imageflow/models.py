@@ -263,6 +263,7 @@ class Reduction(models.Model):
                 'comparison_star_ids': self.comparison_star_ids,
             },
             'data': {
+                'color_index_manual': self.color_index_manual,
                 'color_index_1_band': self.color_index_1.band if self.color_index_1 else '',
                 'color_index_2_band': self.color_index_2.band if self.color_index_1 else '',
 

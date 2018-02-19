@@ -166,7 +166,14 @@ def set_longitude(request, pk):
     return set_float(request, pk, 'image_longitude')
 
 def set_color_index_manual(request, pk):
-    return set_float(request, pk, 'color_index_manual')
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Astrometry is still pending',
+        })
+    analysis.get_or_create_reduction()
+    return set_float(request, pk, 'color_index_manual', on_reduction=True)
 
 def set_second_order_extinction(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
