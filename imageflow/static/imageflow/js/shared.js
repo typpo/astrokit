@@ -54,12 +54,20 @@ function plotStars(canvas, stars, rawOpts) {
     var starX = star.field_x * IMAGE_TO_PLOT_XY_CONVERSION_FACTOR;
     var starY = star.field_y * IMAGE_TO_PLOT_XY_CONVERSION_FACTOR;
 
+    // Determine color of circle.
+    var myColor = opts.color;
+    if (star.id === window.targetId) {
+      myColor = 'cyan';
+    } else if (typeof window.compareIds !== 'undefined' && compareIds.has(star.id)) {
+      myColor = '#4B0082';
+    }
+
     // Plot catalog stars over an image.
     var ctx = canvas.getContext('2d');
     ctx.beginPath();
     // Circle - defined by x, y, radius, ...
     ctx.arc(starX, starY, opts.radius, 0, Math.PI * 2);
-    ctx.strokeStyle = star.id === window.targetId ? 'cyan' : opts.color;
+    ctx.strokeStyle = myColor;
     ctx.lineWidth = 4;
     ctx.stroke();
 
@@ -123,29 +131,72 @@ function setupNotes() {
   });
 }
 
+function getLinearFit(xPoints, yPoints) {
+  var zip = [];
+  for (var i=0; i < xPoints.length; i++) {
+    zip.push([xPoints[i], yPoints[i]]);
+  }
+  var result = regression.linear(zip);
+  var slope = result.equation[0];
+  var intercept = result.equation[1];
+  return result.points;
+}
+
 function setupMagnitudeChecks($elts, type, xData, yData) {
+  var xPoints = [];
+  var yPoints = [];
+  var colors = [];
+  var texts = [];
+  for (var i=0; i < xData.length; i++) {
+    var xr = xData[i];
+    var yr = yData[i];
+    var yVal = type === 'instrumental' ? yr.mag_instrumental : yr.mag_standard;
+    var xVal = xr[window.urat1Key];
+    if (xVal && yVal) {
+      xPoints.push(xVal);
+      yPoints.push(yVal);
+      colors.push(xr.is_comparison ? '#f00' : '#337ab7');
+      texts.push('Object #' + xr.id + ': ' + xr.designation);
+    }
+  }
+  var lineFit = getLinearFit(xPoints, yPoints);
+
   // Standard and instrumental mags vs catalog mags.
   $elts.each(function() {
     var $elt = $(this);
     var chart = [
       {
-        x: xData.map(function(r) {
-          return r[window.urat1Key];
-        }),
-        y: yData.map(function(r) {
-          return type === 'instrumental' ? r.mag_instrumental : r.mag_standard;
-        }),
+        name: 'Line of Fit',
+        x: lineFit.map(function(p) { return p[0] }),
+        y: lineFit.map(function(p) { return p[1] }),
+        type: 'scatter',
+        mode: 'lines',
+        line: {
+          color: '#aaa',
+          width: 1,
+        },
+      },
+      {
+        name: 'Objects',
+        x: xPoints,
+        y: yPoints,
+        text: texts,
+        marker: {
+          color: colors,
+        },
         type: 'scatter',
         mode: 'markers',
       },
     ];
     var layout = {
+      title: 'Computed Magnitudes vs. Catalog Magnitudes',
       xaxis: {
         title: 'Standard Catalog Mag',
       },
       yaxis: {
         title: type === 'instrumental' ? 'Instrumental Mag' : 'Standard Mag (computed)',
       },
+      hovermode: 'closest',
     };
 
     Plotly.newPlot($elt[0], chart, layout);
