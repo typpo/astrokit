@@ -111,7 +111,7 @@ function setupCanvasListeners(canvas) {
 function setupTables() {
   $('.table-wrapper').on('scroll', function() {
     $(this).find('thead').css('transform', 'translate(0,' + this.scrollTop + 'px)');
-  });
+  }).find('table').stupidtable();
   $('.js-scroll-to-target').on('click', function() {
     scrollToTarget($(this).parent().prev());
     return false;
