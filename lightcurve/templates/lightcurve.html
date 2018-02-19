@@ -43,9 +43,9 @@ h1 span {
       <div id="set-latlng-success" class="alert alert-danger" style="display:none">
         Something went wrong - failed to update your setting.
       </div>
-      Latitude <input id="set-latitude" class="form-control" style="width: 30em" type="number" value="{{result.meta.latitude}}" min="-90" max="90">
+      Latitude <input id="set-latitude" class="form-control" style="width: 20em" type="number" value="{{result.meta.latitude}}" min="-90" max="90">
       <br>
-      Longitude <input id="set-longitude" class="form-control" style="width: 30em" type="number" value="{{result.meta.longitude}}" min="-180" max="180">
+      Longitude <input id="set-longitude" class="form-control" style="width: 20em" type="number" value="{{result.meta.longitude}}" min="-180" max="180">
     </div>
 
     <h4>Elevation</h4>
@@ -59,7 +59,7 @@ h1 span {
       <p>
         Above sea level, in meters
       </p>
-      <input id="set-elevation" class="form-control" style="width: 30em" type="number" value="{{result.meta.elevation}}">
+      <input id="set-elevation" class="form-control" style="width: 20em" type="number" value="{{result.meta.elevation}}">
     </div>
 
     <h4>Second-order extinction k"<sub><em>f</em></sub></h4>
@@ -73,7 +73,7 @@ h1 span {
       <p>
         Second-order extinction is nearly constant and usually only significant for B-V color index measurements. Set to 0 if you do not want to include a term for second-order extinction.
       </p>
-      <input type="text" class="form-control" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
+      <input type="text" class="form-control" style="width:20em" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
     </div>
     <div class="button-row">
       <div id="save-observation-default" class="btn btn-primary">Apply to all images</div>
