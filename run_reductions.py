@@ -84,6 +84,9 @@ def run_reductions(analysis):
                 # The data generated here is for an unknown, so don't use it
                 # for a comparison star.
                 continue
+            if comparison_star['id'] == star['id']:
+                # Don't compare a star against itself.
+                continue
             if 'color_index_known' not in comparison_star:
                 # TODO(ian): This and the below test should cause an error,
                 # because the user chose a bad comparison star.
