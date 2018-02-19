@@ -259,7 +259,7 @@ class Reduction(models.Model):
             },
             'meta': {
                 'status': self.status,
-                'image_companion_id': self.image_companion.id,
+                'image_companion_id': self.image_companion.id if self.image_companion else None,
                 'comparison_star_ids': self.comparison_star_ids,
             },
             'data': {
