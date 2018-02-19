@@ -10,6 +10,10 @@ h1 span {
   color:#286090;
 }
 
+button.cancel {
+  margin-left: 5px;
+}
+
 .user-image {
   max-width: 300px;
   max-height: 300px;
@@ -18,12 +22,17 @@ h1 span {
 .image-container {
   margin: 2em 0;
 }
+
 </style>
 {% endblock %}
 
 {% block heading %}
-  Light Curve <span>{{lightcurve.name}}</span>
-  <a href="{% url "upload_image" %}/{{lightcurve.id}}" class="btn btn-primary pull-right">Add New Images</a>
+  <form id="lightcurve_{{lightcurve.id}}_title" onsubmit="saveLightcurveChanges({{lightcurve.id}}); return false" method="post">
+    {% csrf_token %}
+    Light Curve <span class="lightcurve-name">{{lightcurve.name}}</span>
+    <button class="btn btn-xs btn-default edit-name">Edit Name</button>
+    <a href="{% url "upload_image" %}/{{lightcurve.id}}" class="btn btn-primary pull-right">Add New Images</a>
+  </form>
 {% endblock %}
 
 
