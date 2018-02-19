@@ -136,6 +136,19 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
 
 <hr/>
 
+{% if select_target %}
+  <h3 id="target-selection">Target reselection</h3>
+  <div class="alert alert-danger">
+    <strong>Your target ID may have changed. Please reselect your target.</strong>
+  </div>
+  <p>
+  {{analysis.data.coords | length}} point sources detected via
+  <a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
+  </p>
+  {% include 'partials/point_source_plot.html' %}
+{% endif %}
+
+
 <h3>Results</h3>
 <div class="well">
   <div class="table-wrapper">
@@ -224,18 +237,6 @@ wrong with the PSF.  Try again...
     <a class="js-stop-blinking" href="#" style="display:none">Stop blinking</a>
   </div>
 </div>
-
-{% if select_target %}
-  <h3 id="target-selection">Target reselection</h3>
-  <div class="alert alert-danger">
-    <strong>Your target ID may have changed. Please reselect your target.</strong>
-  </div>
-  <p>
-  {{analysis.data.coords | length}} point sources detected via
-  <a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
-  </p>
-  {% include 'partials/point_source_plot.html' %}
-{% endif %}
 
 <div style="text-align: right">
   <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>

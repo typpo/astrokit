@@ -43,7 +43,6 @@ function selectComparisonStars(cb) {
 }
 
 $(function() {
-
   setupComparisonStarSelection();
   selectComparisonStars(function() {
     // Magnitude check plot depends on knowing which ones are comparison stars.
@@ -51,6 +50,7 @@ $(function() {
                          'instrumental',
                          window.catalogData,
                          window.catalogData);
+    setupPlot();
   });
 
   // Link both reference star lists together.

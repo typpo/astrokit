@@ -205,7 +205,7 @@ function setupMagnitudeChecks($elts, type, xData, yData) {
   });
 }
 
-$(function() {
+function setupPlot() {
   var canvas = document.getElementById('star-plot');
   if (canvas) {
     var $container = $('#plot-container');
@@ -216,6 +216,9 @@ $(function() {
     setupCanvasListeners(canvas);
   }
 
+}
+
+$(function() {
   setupTables();
   setupNotes();
 

@@ -29,6 +29,8 @@ function setupListeners() {
                 $('#target-id'),
                 $('#target-id-success'),
                 $('#target-id-failure'));
+
+  setupPlot();
 }
 
 $(function() {

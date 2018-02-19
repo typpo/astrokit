@@ -22,14 +22,20 @@ function pollReductionStatus() {
 }
 
 function setupAddToLightcurve() {
+  var hasBeenAdded = false;
   $('.js-add-to-lightcurve').on('click', function() {
+    if (hasBeenAdded) {
+      return false;
+    }
     var $btn = $(this);
     $.post('/lightcurve/' + window.lightcurveId + '/add_image_toggle', {
       'analysis_id' : window.analysisId,
     }, function(data) {
       if (data.success) {
+        hasBeenAdded = true;
         $btn.text('View light curve').on('click', function() {
           window.location.href = '/lightcurve/' + window.lightcurveId + '/plot';
+          return false;
         });
       } else {
         alert('Something went wrong. Changes were not applied to this image.');

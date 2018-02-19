@@ -104,4 +104,5 @@ $(function() {
   setupListeners();
   setupRunPhotometry();
   setupBlinking();
+  setupPlot();
 });
