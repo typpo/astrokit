@@ -27,7 +27,7 @@ function plotImage($container, canvas, imageUrl, opts) {
         color: 'red',
         radius: 9,
         text: function(star) {
-          return star.designation;
+          return star.id;
         }
       });
     }
@@ -152,11 +152,13 @@ function setupMagnitudeChecks($elts, type, xData, yData) {
     var yr = yData[i];
     var yVal = type === 'instrumental' ? yr.mag_instrumental : yr.mag_standard;
     var xVal = xr[window.urat1Key];
+    var isComparisonStar = xr.is_comparison ||
+        (typeof window.compareIds !== 'undefined' && compareIds.has(xr.id));
     if (xVal && yVal) {
       xPoints.push(xVal);
       yPoints.push(yVal);
-      colors.push(xr.is_comparison ? '#f00' : '#337ab7');
-      texts.push('Object #' + xr.id + ': ' + xr.designation);
+      colors.push(isComparisonStar ? '#f00' : '#337ab7');
+      texts.push('Object ' + xr.id + ': ' + xr.designation);
     }
   }
   var lineFit = getLinearFit(xPoints, yPoints);
