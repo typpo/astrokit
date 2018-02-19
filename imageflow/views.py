@@ -166,6 +166,9 @@ def set_longitude(request, pk):
     return set_float(request, pk, 'image_longitude')
 
 def set_second_order_extinction(request, pk):
+    return set_float(request, pk, 'color_index_manual')
+
+def set_second_order_extinction(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({

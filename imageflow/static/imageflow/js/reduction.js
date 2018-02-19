@@ -67,6 +67,11 @@ $(function() {
                 $('#second-order-extinction-success'),
                 $('#second-order-extinction-failure'));
 
+  setupListener('set_color_index_manual',
+                $('#color-index-manual'),
+                $('#color-index-manual-success'),
+                $('#color-index-manual-failure'));
+
   setupRunReductions();
   setupAddToLightcurve();
 

@@ -140,10 +140,16 @@ This page will walk you through several steps in order to calculate M<sub>t.
     </div>
     <hr/>
     <div>
+      <div id="color-index-manual-success" class="alert alert-success" style="display:none">
+        Color index successfully updated.
+      </div>
+      <div id="color-index-manual-failure" class="alert alert-danger" style="display:none">
+        Something went wrong - failed to update your setting.
+      </div>
       <p>
         or, manually enter a color index:
       </p>
-      <input id="color-index-manual" class="form-control" style="width:6em" type="number" placeholder="0.0" />
+      <input id="color-index-manual" class="form-control" style="width:6em" type="number" placeholder="0.0" value="{{reduction.data.color_index_manual}}"/>
     </div>
   </form>
 </div>
