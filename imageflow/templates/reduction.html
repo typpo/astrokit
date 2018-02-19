@@ -36,12 +36,19 @@
   </div>
 {% endif %}
 <p>
-Let's convert our raw instrumental magnitudes to standard magnitudes per the following equation:
+The reduction process followed here is adapted from <a href="http://www.minorplanetobserver.com/PDO/bdwbio.htm">Brian Warner</a>'s <a href="http://www.minorplanetobserver.com/pgbook/PracticalGuide.htm">Practical Guide to Lightcurve Photometry and Analysis</a>.
+The goal of the photometry reduction process is to convert our raw instrumental observations to a standard magnitude system, correcting for atmospheric distortion and other factors along the way.
+</p>
+<p>
+The equation for reduction of instrumental magnitudes to standard magnitudes is:
 </p>
 <p>
 <blockquote>
 M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>t</sub> (CI<sub>t</sub> - CI<sub>c</sub>) + T<sub><em>f</em></sub> (CI<sub>t</sub> - CI<sub>c</sub>) + M<sub>c</sub>
 </blockquote>
+</p>
+<p>
+This page will walk you through several steps in order to calculate M<sub>t.
 </p>
 
 <h3>Input: Color index setup</h3>
@@ -200,6 +207,9 @@ This computation uses the {{reduction.meta.comparison_star_ids|length}} comparis
 </div>
 
 <h3>Step 2: Compute airmass X<sub>t</sub></h3>
+<p>
+The <a href="https://en.wikipedia.org/wiki/Air_mass_(astronomy)">airmass</a> parameter corrects for light attenuation by atmospheric scattering and absorption.
+</p>
 
 <div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
@@ -250,6 +260,9 @@ This computation uses the {{reduction.meta.comparison_star_ids|length}} comparis
 </div>
 
 <h3>Step 3: Find the hidden transform</h3>
+<p>
+The <em>hidden transform</em> is the equation that allows us to compute the color index for each object.
+</p>
 <div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask">
@@ -268,10 +281,10 @@ This computation uses the {{reduction.meta.comparison_star_ids|length}} comparis
 
 {% if not no_reduction and reduction.meta.status != 'CREATED' %}
 <h4>Checking the hidden transform</h4>
+<p>
+  This table compares values generated using the formula derived above with known catalog values for your color index.
+</p>
 <div class="well">
-    <p>
-      This table compares values generated using the formula derived above with known catalog values for your color index.
-    </p>
     <p>
       Your target id: {{analysis.meta.target_id}}
     </p>
@@ -313,7 +326,12 @@ This computation uses the {{reduction.meta.comparison_star_ids|length}} comparis
 {% endif %}
 
 <h3>Step 4: Apply the formula to get M<sub><em>t</em></sub></h3>
-
+<p>
+  Given the formula:
+  <blockquote>
+  Standard mag = M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>t</sub> (CI<sub>t</sub> - CI<sub>c</sub>) + T<sub><em>f</em></sub> (CI<sub>t</sub> - CI<sub>c</sub>) + M<sub>c</sub>
+  </blockquote>
+</p>
 <div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
     <p class="run-reductions-mask">
@@ -321,12 +339,6 @@ This computation uses the {{reduction.meta.comparison_star_ids|length}} comparis
       <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
     </p>
   {% else %}
-    <p>
-      Given the formula:
-      <blockquote>
-      M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>t</sub> (CI<sub>t</sub> - CI<sub>c</sub>) + T<sub><em>f</em></sub> (CI<sub>t</sub> - CI<sub>c</sub>) + M<sub>c</sub>
-      </blockquote>
-    </p>
     <p>
       All magnitudes are in band {{analysis.meta.image_band}}.
     </p>
@@ -351,6 +363,8 @@ This computation uses the {{reduction.meta.comparison_star_ids|length}} comparis
             <td>
               {% if star.id == analysis.meta.target_id %}
                 TARGET
+              {% elif star.is_comparison %}
+                <strong>COMPARISON</strong><br>
               {% endif %}
               <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
             </td>
@@ -372,6 +386,9 @@ This computation uses the {{reduction.meta.comparison_star_ids|length}} comparis
 </div>
 
 <h2>Final linearity test</h2>
+<p>
+This linearity test shows how accurate your reduction is when compared to known values.
+</p>
 <div class="well">
   <div class="plot-container"></div>
 </div>

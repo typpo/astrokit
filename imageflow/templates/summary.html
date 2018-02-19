@@ -13,7 +13,7 @@
 {% endwith %}
 
 <p>
-  <textarea class="form-control js-notes" placeholder="Use this space to record notes about this image.">{{analysis.meta.notes}}</textarea>
+  <textarea class="form-control js-notes" placeholder="Use this space to record notes about this image. These notes will be visible on the lightcurve page.">{{analysis.meta.notes}}</textarea>
 </p>
 
 <h3>Original image</h3>
@@ -31,8 +31,9 @@
 
 <h3 id="target-selection">Target selection</h3>
 <p>
-{{analysis.data.coords | length}} point sources detected via
-<a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
+{{analysis.data.coords | length}} point sources detected via the
+<a href="http://stsdas.stsci.edu/cgi-bin/gethelp.cgi?daofind">DAOFind</a> algorithm.
+Select the point source you are interested in creating a lightcurve for.
 </p>
 
 {% include 'partials/point_source_plot.html' %}
