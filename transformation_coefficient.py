@@ -21,6 +21,8 @@ def calculate(analysis, reduction, save_graph=False):
     colors_1 = []
     colors_2 = []
     for star in analysis.catalog_reference_stars:
+        if star['id'] not in reduction.get_comparison_id_set():
+            continue
         if not (filter_key in star and ci1_key in star and ci2_key in star):
             print 'Rejecting star because it does not have the required standard magnitudes:', star
             continue

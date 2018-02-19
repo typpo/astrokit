@@ -257,7 +257,7 @@ def analysis_status(request, pk):
             'status': analysis.status,
         })
 
-def set_photometry_param(request, pk):
+def photometry_params(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
@@ -296,6 +296,29 @@ def set_photometry_param(request, pk):
     return JsonResponse({
         'success': True,
     })
+
+def comparison_stars(request, pk):
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Astrometry is still pending',
+        })
+    reduction = analysis.get_or_create_reduction()
+
+    if request.method == 'POST':
+        ids = [int(x) for x in request.POST.getlist('ids[]')]
+        reduction.comparison_star_ids = ids
+        reduction.save()
+        return JsonResponse({
+            'success': True,
+            'ids': ids,
+        })
+    else:
+        return JsonResponse({
+            'success': True,
+            'ids': reduction.comparison_star_ids,
+        })
 
 def point_sources(request, pk):
     # TODO(ian): Dedup this with above code.
