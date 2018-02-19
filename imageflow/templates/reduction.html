@@ -180,6 +180,9 @@ In which:<br>
 <li>ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f</em>, at the airmass of the reference field.</li>
 </ul>
 </p>
+<p>
+This computation uses the {{reduction.meta.comparison_star_ids|length}} comparison stars you chose in the <a href="/analysis/reference_stars/{{analysis.id}}">previous step</a>.
+</p>
 
 <div class="well">
   {% if no_reduction or reduction.meta.status == 'CREATED' %}
@@ -399,6 +402,7 @@ In which:<br>
   </script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="{% static "imageflow/js/csrf.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/shared.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/reduction.js" %}" type="text/javascript"></script>
