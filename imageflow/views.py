@@ -165,7 +165,7 @@ def set_latitude(request, pk):
 def set_longitude(request, pk):
     return set_float(request, pk, 'image_longitude')
 
-def set_second_order_extinction(request, pk):
+def set_color_index_manual(request, pk):
     return set_float(request, pk, 'color_index_manual')
 
 def set_second_order_extinction(request, pk):

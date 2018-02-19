@@ -232,7 +232,7 @@ class Reduction(models.Model):
 
     image_companion = models.ForeignKey(UserUploadedImage, null=True, blank=True)
 
-    color_index_manual = models.FloatFiled(null=True)
+    color_index_manual = models.FloatField(null=True)
     second_order_extinction = models.FloatField(default=0)
 
     # Transformation coefficient calculation.
