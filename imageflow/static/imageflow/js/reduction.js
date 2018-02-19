@@ -14,6 +14,7 @@ function pollReductionStatus() {
   $.get('/analysis/' + window.analysisId + '/get_reduction_status', function(data) {
     if (data.status === 'COMPLETE') {
       $('.page-loader').hide();
+      alert('Your reduction has completed. Press OK to refresh.');
       window.location.reload();
     } else {
       setTimeout(pollReductionStatus, 1000);
@@ -72,5 +73,6 @@ $(function() {
   setupMagnitudeChecks($('.plot-container'),
                        'standard',
                        window.reducedStars,
-                       window.reducedStars);
+                       window.reducedStars,
+                       true /* comparisonStarsOnly*/ );
 });
