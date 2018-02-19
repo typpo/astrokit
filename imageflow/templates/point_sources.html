@@ -81,7 +81,7 @@ where Φ<sup>−1</sup> * (P) is the normal inverse cumulative distribution func
         PSF Sigma
       </label>
       <div class="col-sm-2">
-        <input id="photometry-sigma" class="form-control" type="number" value="{{phot_settings.sigma_psf}}" />
+        <input id="photometry-sigma" class="form-control" type="number" value="{{phot_settings.sigma_psf}}" step="any" />
       </div>
       <div class="col-sm-5">
         The semi-major axis of the Gaussian convolution kernel used to computed the density enhancement and mean density images in Gaussian sigma.  The FWHM and sigma radius supplied to the algorithm is 2.3548 * sigma_psf.
@@ -92,7 +92,7 @@ where Φ<sup>−1</sup> * (P) is the normal inverse cumulative distribution func
         Threshold
       </label>
       <div class="col-sm-2">
-        <input id="photometry-threshold" class="form-control" type="number" value="{{phot_settings.threshold}}" />
+        <input id="photometry-threshold" class="form-control" type="number" value="{{phot_settings.threshold}}" step="any" />
       </div>
       <div class="col-sm-5">
         The object detection threshold above local background in units of standard deviation (calculated above).
@@ -103,7 +103,7 @@ where Φ<sup>−1</sup> * (P) is the normal inverse cumulative distribution func
         Critical Separation
       </label>
       <div class="col-sm-2">
-        <input id="photometry-separation" class="form-control" type="number" value="{{phot_settings.crit_separation}}" />
+        <input id="photometry-separation" class="form-control" type="number" value="{{phot_settings.crit_separation}}" step="any" />
       </div>
       <div class="col-sm-5">
         If two stars in a group have centroids separated by a critical distance, their photocentric position and combined magnitude is assigned to the brighter of the two and the fainter is eliminated.
@@ -125,7 +125,7 @@ where Φ<sup>−1</sup> * (P) is the normal inverse cumulative distribution func
         Iterations
       </label>
       <div class="col-sm-2">
-        <input id="photometry-iters" class="form-control" type="number" step="1" min="1" value="{{phot_settings.iters}}" />
+        <input id="photometry-iters" class="form-control" type="number" step="1" min="1" value="{{phot_settings.iters}}" step="any" />
       </div>
       <div class="col-sm-5">
         Number of iterations to perform the DAOPHOT loop FIND, GROUP, SUBTRACT, NSTAR.
