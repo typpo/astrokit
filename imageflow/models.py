@@ -177,13 +177,14 @@ class ImageAnalysis(models.Model):
         n_1 = maxlen - n_2 - 3
         return '%s...%s' % (name[:n_1], name[-n_2:])
 
-    def save(self, *args, **kwargs):
-        orig = ImageAnalysis.objects.get(pk=self.pk)
-        if self.user != orig.user:
-            raise PermissionDenied('User not the creater of this object.')
+    def save(self, user, *args, **kwargs):
+        if user:
+          if user == self.user:
+                super(ImageAnalysis, self).save(*args, **kwargs)
+          else:
+              raise PermissionDenied('User not the creater of this object.')
         else:
-            super(ImageAnalysis, self).save(*args, **kwargs)
-
+          raise ObjectDoesNotExist('Save() was called without passing in user')
 
     def __str__(self):
         return '#%d %s: %s - Sub %d Job %d, Band %s @ %s' % \
