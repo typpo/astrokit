@@ -173,7 +173,8 @@ def set_color_index_manual(request, pk):
             'msg': 'Astrometry is still pending',
         })
     analysis.get_or_create_reduction()
-    return set_float(request, pk, 'color_index_manual', on_reduction=True)
+    return set_float(request, pk, 'color_index_manual',
+                     on_reduction=True, allow_null=True)
 
 def set_second_order_extinction(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
@@ -185,7 +186,7 @@ def set_second_order_extinction(request, pk):
     analysis.get_or_create_reduction()
     return set_float(request, pk, 'second_order_extinction', on_reduction=True)
 
-def set_float(request, pk, attrname, on_reduction=False):
+def set_float(request, pk, attrname, on_reduction=False, allow_null=False):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
@@ -194,7 +195,11 @@ def set_float(request, pk, attrname, on_reduction=False):
         })
 
     try:
-        val = float(request.POST.get('val'))
+        rawval = request.POST.get('val')
+        if rawval == '' and allow_null:
+            val = None
+        else:
+            val = float(rawval)
     except ValueError:
         return JsonResponse({
             'success': False,

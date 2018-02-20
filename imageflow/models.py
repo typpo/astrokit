@@ -261,6 +261,7 @@ class Reduction(models.Model):
                 'status': self.status,
                 'image_companion_id': self.image_companion.id if self.image_companion else None,
                 'comparison_star_ids': self.comparison_star_ids,
+                'color_index_manual_enabled': self.color_index_manual is not None,
             },
             'data': {
                 'color_index_manual': self.color_index_manual,
