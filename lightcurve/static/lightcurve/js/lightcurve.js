@@ -46,15 +46,14 @@ function toggleAddToLightcurve(toggleButton) {
 
 function saveLightcurveChanges(lightcurveId) {
   form_name = "#lightcurve_" + lightcurveId + "_title"
-  $.post('/lightcurve/' + lightcurveId + '/save_lightcurve_changes', $(form_name).serialize()
-  , function(data) {
-    if (data.success) {
-      alert('Settings applied to lightcurve.');
-      window.location.reload();
-    } else {
-      alert('Something went wrong. Settings were not applied to lightcurve.');
-    }
-  });
+  $.post('/lightcurve/' + lightcurveId + '/save_lightcurve_changes', $(form_name).serialize())
+  .done(function() {
+    alert('Settings applied to lightcurve.');
+    window.location.reload();
+  })
+  .fail(function() {
+    alert('Something went wrong. Settings were not applied to lightcurve.');
+  })
 }
 
 $(function() {
