@@ -1,8 +1,11 @@
 from __future__ import unicode_literals
+import pprint
+pp = pprint.PrettyPrinter(depth=3)
 
 from django.contrib import admin
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
 
 # Django's JSONField requires postgres, but this 3rd-party library provides a
 # shim for databases without native json support.
@@ -174,6 +177,14 @@ class ImageAnalysis(models.Model):
         n_1 = maxlen - n_2 - 3
         return '%s...%s' % (name[:n_1], name[-n_2:])
 
+    def save(self, *args, **kwargs):
+        orig = ImageAnalysis.objects.get(pk=self.pk)
+        if self.user != orig.user:
+            raise PermissionDenied('User not the creater of this object.')
+        else:
+            super(ImageAnalysis, self).save(*args, **kwargs)
+
+
     def __str__(self):
         return '#%d %s: %s - Sub %d Job %d, Band %s @ %s' % \
                 (self.id,
@@ -198,9 +209,14 @@ class UserUploadedImage(models.Model):
     submission = models.ForeignKey(AstrometrySubmission, blank=True, null=True)
     analysis = models.ForeignKey(ImageAnalysis, blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        if self.user != self.lightcurve.user:
+            raise PermissionDenied('User not the creater of this object.')
+        else:
+            super(UserUploadedImage, self).save(*args, **kwargs)
+
     def __str__(self):
         return '%s submission #%d' % (self.original_filename, self.submission.subid)
-
 
 class Reduction(models.Model):
     CREATED = 'CREATED'
