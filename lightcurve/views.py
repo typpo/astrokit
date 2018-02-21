@@ -2,6 +2,7 @@ from astropy.time import Time
 from django.http import JsonResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
 from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
@@ -90,7 +91,7 @@ def save_observation_default(request, lightcurve_id):
             reduction = image.get_reduction_or_create()
             reduction.second_order_extinction = float(extinction)
             reduction.save()
-        image.save()
+        image.save(request.user)
 
     return JsonResponse({
         'success': True,
@@ -106,7 +107,7 @@ def add_image_toggle(request, lightcurve_id):
         image.status = ImageAnalysis.REDUCTION_COMPLETE
     elif image.status == ImageAnalysis.REDUCTION_COMPLETE:
         image.status = ImageAnalysis.ADDED_TO_LIGHT_CURVE
-    image.save()
+    image.save(request.user)
 
     return JsonResponse({
         'added': image.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE,

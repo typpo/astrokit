@@ -73,7 +73,7 @@ def set_datetime(request, pk):
         })
 
     analysis.image_datetime = parsed_dt
-    analysis.save()
+    analysis.save(request.user)
 
     return JsonResponse({
         'success': True,
@@ -89,7 +89,7 @@ def set_target_point_source(request, pk):
         })
 
     analysis.target_id = request.POST.get('val')
-    analysis.save()
+    analysis.save(request.user)
     return JsonResponse({
         'success': True,
     })
@@ -97,7 +97,7 @@ def set_target_point_source(request, pk):
 def set_filter_band(request, pk):
     analysis, filter_band = resolve_band(request, pk)
     analysis.image_filter = filter_band
-    analysis.save()
+    analysis.save(request.user)
     return JsonResponse({
         'success': True,
         'msg': 'Resolved input to %s' % str(filter_band)
@@ -196,7 +196,7 @@ def set_float(request, pk, attrname, on_reduction=False):
         analysis.reduction.save()
     else:
         setattr(analysis, attrname, val)
-        analysis.save()
+        analysis.save(request.user)
 
     return JsonResponse({
         'success': True,
@@ -241,7 +241,7 @@ def analysis_status(request, pk):
         status = request.POST.get('status')
         if status == 'PHOTOMETRY_PENDING':
             analysis.status = ImageAnalysis.PHOTOMETRY_PENDING
-            analysis.save()
+            analysis.save(request.user)
             return JsonResponse({
                 'success': True,
                 'message': 'Photometry status set to pending',
@@ -286,7 +286,7 @@ def photometry_params(request, pk):
                 'success': False,
                 'msg': 'Did not recognize param',
             })
-        params.save()
+        params.save(request.user)
     except ValueError:
         return JsonResponse({
             'success': False,
@@ -396,7 +396,7 @@ def notes(request, pk):
     # TODO(ian): Verify owner of reduction for all these ImageAnalysis fetches.
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
     analysis.notes = request.POST.get('val')
-    analysis.save()
+    analysis.save(request.user)
     return JsonResponse({
         'success': True,
     })
