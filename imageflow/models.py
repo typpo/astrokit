@@ -70,6 +70,8 @@ class ImageAnalysis(models.Model):
 
     # ID of point source target.
     target_id = models.IntegerField(default=0)
+    target_x = models.IntegerField(default=-1)
+    target_y = models.IntegerField(default=-1)
 
     # Reference stars and magnitudes:
 

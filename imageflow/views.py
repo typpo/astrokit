@@ -89,6 +89,8 @@ def set_target_point_source(request, pk):
         })
 
     analysis.target_id = request.POST.get('val')
+    analysis.target_x = request.POST.get('x')
+    analysis.target_y = request.POST.get('y')
     analysis.save()
     return JsonResponse({
         'success': True,
