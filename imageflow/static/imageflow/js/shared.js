@@ -27,7 +27,7 @@ function plotImage($container, canvas, imageUrl, opts) {
         color: 'red',
         radius: 9,
         text: function(star) {
-          return star.designation;
+          return star.id;
         }
       });
     }
@@ -54,12 +54,20 @@ function plotStars(canvas, stars, rawOpts) {
     var starX = star.field_x * IMAGE_TO_PLOT_XY_CONVERSION_FACTOR;
     var starY = star.field_y * IMAGE_TO_PLOT_XY_CONVERSION_FACTOR;
 
+    // Determine color of circle.
+    var myColor = opts.color;
+    if (star.id === window.targetId) {
+      myColor = 'cyan';
+    } else if (typeof window.compareIds !== 'undefined' && compareIds.has(star.id)) {
+      myColor = '#4B0082';
+    }
+
     // Plot catalog stars over an image.
     var ctx = canvas.getContext('2d');
     ctx.beginPath();
     // Circle - defined by x, y, radius, ...
     ctx.arc(starX, starY, opts.radius, 0, Math.PI * 2);
-    ctx.strokeStyle = star.id === window.targetId ? 'cyan' : opts.color;
+    ctx.strokeStyle = myColor;
     ctx.lineWidth = 4;
     ctx.stroke();
 
@@ -101,9 +109,12 @@ function setupCanvasListeners(canvas) {
 }
 
 function setupTables() {
-  $('.table-wrapper').on('scroll', function() {
+  var $tableWrapper = $('.table-wrapper').on('scroll', function() {
     $(this).find('thead').css('transform', 'translate(0,' + this.scrollTop + 'px)');
   });
+  if ($().stupidtable) {
+    $tableWrapper.find('table').stupidtable();
+  }
   $('.js-scroll-to-target').on('click', function() {
     scrollToTarget($(this).parent().prev());
     return false;
@@ -123,36 +134,89 @@ function setupNotes() {
   });
 }
 
-function setupMagnitudeChecks($elts, type, xData, yData) {
+function getLinearFit(xPoints, yPoints) {
+  var zip = [];
+  for (var i=0; i < xPoints.length; i++) {
+    zip.push([xPoints[i], yPoints[i]]);
+  }
+  var result = regression.linear(zip);
+  var slope = result.equation[0];
+  var intercept = result.equation[1];
+  return {
+    points: result.points,
+    r2: result.r2,
+    slope: result.equation[0],
+  };
+}
+
+function setupMagnitudeChecks($elts, type, xData, yData, comparisonStarsOnly) {
+  var xPoints = [];
+  var yPoints = [];
+  var colors = [];
+  var texts = [];
+  for (var i=0; i < xData.length; i++) {
+    var xr = xData[i];
+    var yr = yData[i];
+    var yVal = type === 'instrumental' ? yr.mag_instrumental : yr.mag_standard;
+    var xVal = xr[window.urat1Key];
+    var isComparisonStar = xr.is_comparison ||
+        (typeof window.compareIds !== 'undefined' && compareIds.has(xr.id));
+    if (!isComparisonStar && comparisonStarsOnly) {
+      continue;
+    }
+    if (xVal && yVal) {
+      xPoints.push(xVal);
+      yPoints.push(yVal);
+      colors.push(isComparisonStar ? '#f00' : '#337ab7');
+      texts.push('Object ' + xr.id + ': ' + xr.designation);
+    }
+  }
+  var lineFit = getLinearFit(xPoints, yPoints);
+
   // Standard and instrumental mags vs catalog mags.
   $elts.each(function() {
     var $elt = $(this);
     var chart = [
       {
-        x: xData.map(function(r) {
-          return r[window.urat1Key];
-        }),
-        y: yData.map(function(r) {
-          return type === 'instrumental' ? r.mag_instrumental : r.mag_standard;
-        }),
+        name: 'Line of Fit',
+        x: lineFit.points.map(function(p) { return p[0] }),
+        y: lineFit.points.map(function(p) { return p[1] }),
+        type: 'scatter',
+        mode: 'lines',
+        line: {
+          color: '#aaa',
+          width: 1,
+        },
+      },
+      {
+        name: 'Objects',
+        x: xPoints,
+        y: yPoints,
+        text: texts,
+        marker: {
+          color: colors,
+        },
         type: 'scatter',
         mode: 'markers',
       },
     ];
     var layout = {
+      title: 'Computed Magnitudes vs. Catalog Magnitudes<br>r<sup>2</sup>=' + lineFit.r2.toFixed(2) + ', slope=' + lineFit.slope.toFixed(2),
       xaxis: {
         title: 'Standard Catalog Mag',
       },
       yaxis: {
         title: type === 'instrumental' ? 'Instrumental Mag' : 'Standard Mag (computed)',
       },
+      hovermode: 'closest',
+      showlegend: false,
     };
 
     Plotly.newPlot($elt[0], chart, layout);
   });
 }
 
-$(function() {
+function setupPlot() {
   var canvas = document.getElementById('star-plot');
   if (canvas) {
     var $container = $('#plot-container');
@@ -163,6 +227,9 @@ $(function() {
     setupCanvasListeners(canvas);
   }
 
+}
+
+$(function() {
   setupTables();
   setupNotes();
 

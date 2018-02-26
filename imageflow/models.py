@@ -70,6 +70,8 @@ class ImageAnalysis(models.Model):
 
     # ID of point source target.
     target_id = models.IntegerField(default=0)
+    target_x = models.IntegerField(default=-1)
+    target_y = models.IntegerField(default=-1)
 
     # Reference stars and magnitudes:
 
@@ -232,6 +234,7 @@ class Reduction(models.Model):
 
     image_companion = models.ForeignKey(UserUploadedImage, null=True, blank=True)
 
+    color_index_manual = models.FloatField(null=True)
     second_order_extinction = models.FloatField(default=0)
 
     # Transformation coefficient calculation.
@@ -258,10 +261,12 @@ class Reduction(models.Model):
             },
             'meta': {
                 'status': self.status,
-                'image_companion_id': self.image_companion.id,
+                'image_companion_id': self.image_companion.id if self.image_companion else None,
                 'comparison_star_ids': self.comparison_star_ids,
+                'color_index_manual_enabled': self.color_index_manual is not None,
             },
             'data': {
+                'color_index_manual': self.color_index_manual,
                 'color_index_1_band': self.color_index_1.band if self.color_index_1 else '',
                 'color_index_2_band': self.color_index_2.band if self.color_index_1 else '',
 

@@ -14,6 +14,7 @@ function pollReductionStatus() {
   $.get('/analysis/' + window.analysisId + '/get_reduction_status', function(data) {
     if (data.status === 'COMPLETE') {
       $('.page-loader').hide();
+      alert('Your reduction has completed. Press OK to refresh.');
       window.location.reload();
     } else {
       setTimeout(pollReductionStatus, 1000);
@@ -22,14 +23,20 @@ function pollReductionStatus() {
 }
 
 function setupAddToLightcurve() {
+  var hasBeenAdded = false;
   $('.js-add-to-lightcurve').on('click', function() {
+    if (hasBeenAdded) {
+      return false;
+    }
     var $btn = $(this);
     $.post('/lightcurve/' + window.lightcurveId + '/add_image_toggle', {
       'analysis_id' : window.analysisId,
     }, function(data) {
       if (data.success) {
+        hasBeenAdded = true;
         $btn.text('View light curve').on('click', function() {
           window.location.href = '/lightcurve/' + window.lightcurveId + '/plot';
+          return false;
         });
       } else {
         alert('Something went wrong. Changes were not applied to this image.');
@@ -60,11 +67,17 @@ $(function() {
                 $('#second-order-extinction-success'),
                 $('#second-order-extinction-failure'));
 
+  setupListener('set_color_index_manual',
+                $('#color-index-manual'),
+                $('#color-index-manual-success'),
+                $('#color-index-manual-failure'));
+
   setupRunReductions();
   setupAddToLightcurve();
 
   setupMagnitudeChecks($('.plot-container'),
                        'standard',
                        window.reducedStars,
-                       window.reducedStars);
+                       window.reducedStars,
+                       true /* comparisonStarsOnly*/ );
 });

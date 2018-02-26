@@ -38,6 +38,16 @@ ol.breadcrumb > li.active a {
   height: 400px;
 }
 
+.table-wrapper th[data-sort] {
+  cursor: ns-resize;
+}
+.table-wrapper th.sorting-asc:after {
+  content: ' ↑';
+}
+.table-wrapper th.sorting-desc:after {
+  content: ' ↓';
+}
+
 .table-actions {
   margin-top: 1.5em;
 }

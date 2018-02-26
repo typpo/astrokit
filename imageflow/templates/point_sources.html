@@ -27,35 +27,42 @@ blockquote.smallquote {
 
 <h2>Flux and Magnitudes</h2>
 <p>
-Calculate the background RMS in an array as using the median absolute deviation (MAD).
+Flux is estimated using the <a href="http://stsdas.stsci.edu/cgi-bin/gethelp.cgi?allstar.hlp">DAOPHOT</a> algorithm.  DAOPHOT is a general term for a suite of software writteny by Peter Stetson designed to do stellar photometry on digital images.
+</p>
+<p>
+Stetson's algorithm was developed in the 80s and 90s but is still something of an "industry standard" today.  DAOPHOT photometry routines are part of <a href="http://iraf.noao.edu/">IRAF</a>, a popular suite of tools for photometry and image reduction.  Astrokit uses the astropy photutils <a href="http://photutils.readthedocs.io/en/stable/api/photutils.psf.DAOPhotPSFPhotometry.html">adaptation</a> of the algorithm.
+</p>
+<p>
+  <strong>
+    The DAOPHOT fitting algorithm is run automatically with default parameters, but you can use the outputs on this page to tune your photometry.
+  </strong>
+</p>
+<hr>
+<p>
+The algorithm requires a handful of parameters.  First, we compute the background standard deviation of the image using the <a href="https://en.wikipedia.org/wiki/Median_absolute_deviation">median absolute deviation</a>.
 </p>
 <p>
 The standard deviation estimator is given by:
 </p>
 <p>
-σ≈{MAD}Φ−1(3/4)≈1.4826 {MAD}<br>
-σ≈{MAD}Φ−1(3/4)≈1.4826 {MAD}
-</p>
-<p>
-where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function evaluated at probability P=3/4P=3/4.
-</p>
-<p>
-  Sigma clipping is a common way to estimate the background of an image and eliminate background noise.  Outliers above and below 3 sigma are masked.
-</p>
-<p>
   <blockquote class="smallquote">
-    sigma-clipped median (background) = {{analysis.data.sigma_clipped_median|floatformat:3}}
-    <br>
+    σ ≈ {MAD} / (Φ<sup>−1</sup> * (3/4)) ≈ 1.4826 * {MAD}
+  </blockquote>
+</p>
+<p>
+where Φ<sup>−1</sup> * (P) is the normal inverse cumulative distribution function evaluated at probability P=3/4.
+</p>
+<p>
+  Sigma clipping is a common way to estimate the background of an image and eliminate background noise, and is used in this background calculation.  Outliers above and below 3 sigma are masked.
+</p>
+<p>
+  The result is:
+  <blockquote class="smallquote">
     sigma-clipped std = {{analysis.data.sigma_clipped_std|floatformat:3}}
   </blockquote>
 </p>
 <p>
-  After adjusting for background noise, flux and magnitude are estimated using <a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a> with the following parameters.
-  <blockquote class="smallquote">
-    fwhm = 2.0
-    <br>
-    threshold (above background) = 5-sigma
-  </blockquote>
+  After adjusting for background noise, flux and magnitude are estimated using the DAOPHOT algorithm with the following parameters:
 </p>
 
 <h3>Parameters</h3>
@@ -74,10 +81,10 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
         PSF Sigma
       </label>
       <div class="col-sm-2">
-        <input id="photometry-sigma" class="form-control" type="number" value="{{phot_settings.sigma_psf}}" />
+        <input id="photometry-sigma" class="form-control" type="number" value="{{phot_settings.sigma_psf}}" step="any" />
       </div>
       <div class="col-sm-5">
-        The semi-major axis of the Gaussian convolution kernel used to computed the density enhancement and mean density images in Gaussian sigma. This semi- major axis is equal to min (2.0, 0.42466 * nsigma * datapars.fwhmpsf / datapars.scale ) pixels.
+        The semi-major axis of the Gaussian convolution kernel used to computed the density enhancement and mean density images in Gaussian sigma.  The FWHM and sigma radius supplied to the algorithm is 2.3548 * sigma_psf.
       </div>
     </div>
     <div class="form-group">
@@ -85,18 +92,21 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
         Threshold
       </label>
       <div class="col-sm-2">
-        <input id="photometry-threshold" class="form-control" type="number" value="{{phot_settings.threshold}}" />
+        <input id="photometry-threshold" class="form-control" type="number" value="{{phot_settings.threshold}}" step="any" />
       </div>
       <div class="col-sm-5">
-        The object detection threshold above local background in units of datapars.sigma .
+        The object detection threshold above local background in units of standard deviation (calculated above).
       </div>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-1" for="photometry-separation">
-        Separation
+        Critical Separation
       </label>
       <div class="col-sm-2">
-        <input id="photometry-separation" class="form-control" type="number" value="{{phot_settings.crit_separation}}" />
+        <input id="photometry-separation" class="form-control" type="number" value="{{phot_settings.crit_separation}}" step="any" />
+      </div>
+      <div class="col-sm-5">
+        If two stars in a group have centroids separated by a critical distance, their photocentric position and combined magnitude is assigned to the brighter of the two and the fainter is eliminated.
       </div>
     </div>
     <div class="form-group">
@@ -106,15 +116,22 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
       <div class="col-sm-2">
         <input id="photometry-fitshape" class="form-control" type="number" step="1" min="1" value="{{phot_settings.box_size}}" />
       </div>
+      <div class="col-sm-5">
+        Rectangular shape around the center of a star which will be used to collect the data to do the fitting. <strong>Must be an odd number.</strong>
+      </div>
     </div>
     <div class="form-group">
       <label class="control-label col-sm-1" for="photometry-iters">
         Iterations
       </label>
       <div class="col-sm-2">
-        <input id="photometry-iters" class="form-control" type="number" step="1" min="1" value="{{phot_settings.iters}}" />
+        <input id="photometry-iters" class="form-control" type="number" step="1" min="1" value="{{phot_settings.iters}}" step="any" />
+      </div>
+      <div class="col-sm-5">
+        Number of iterations to perform the DAOPHOT loop FIND, GROUP, SUBTRACT, NSTAR.
       </div>
     </div>
+{% comment %}
     <div class="form-group">
       <label class="control-label col-sm-1" for="photometry-iters">
         Sigma radius
@@ -126,6 +143,7 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
         The truncation radius of the Gaussian kernel in units of sigma (standard deviation) [1 sigma = FWHM / (2.0*sqrt(2.0*log(2.0)))].
       </div>
     </div>
+{% endcomment %}
   </form>
 </div>
 
@@ -136,20 +154,36 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
 
 <hr/>
 
+{% if select_target %}
+  <h3 id="target-selection">Target reselection</h3>
+  <div class="alert alert-danger">
+    <strong>Your target ID may have changed. Please reselect your target.</strong>
+  </div>
+  <p>
+  {{analysis.data.coords | length}} point sources detected via
+  <a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
+  </p>
+  {% include 'partials/point_source_plot.html' %}
+{% endif %}
+
+
 <h3>Results</h3>
+<p>
+This table shows detected point sources and DAOPHOT outputs.  Pay special attention to the instrumental magnitude uncertainty of your target point source.
+</p>
 <div class="well">
   <div class="table-wrapper">
     <table class="table table-striped">
       <thead>
         <tr>
-          <th><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
-          <th>Field X</th>
-          <th>Field Y</th>
-          <th>Flux</th>
-          <th>Flux uncertainty (±)</th>
-          <th>Flux uncertainty %</th>
-          <th>Instrumental mag</th>
-          <th>Mag uncertainty (±)</th>
+          <th data-sort="int"><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
+          <th data-sort="float">Field X</th>
+          <th data-sort="float">Field Y</th>
+          <th data-sort="float">Flux</th>
+          <th data-sort="float">Flux uncertainty (±)</th>
+          <!--<th data-sort="float">Flux uncertainty %</th>-->
+          <th data-sort="float">Instrumental mag</th>
+          <th data-sort="float">Mag uncertainty (±)</th>
         </tr>
       </thead>
       <tbody>
@@ -160,9 +194,9 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
             <td>{{point_source.field_y|floatformat:2}}</td>
             <td>{{point_source.flux|floatformat:3}}</td>
             <td>{{point_source.flux_unc|floatformat:3}}</td>
-            <td>{{point_source.flux_unc_pct|floatformat:3}}</td>
+            <!--<td>{{point_source.flux_unc_pct|floatformat:3}}</td>-->
             <td><strong>{{point_source.mag_instrumental|floatformat:3}}</strong></td>
-            <td>{{point_source.mag_instrumental_unc|floatformat:3}}</td>
+            <td><strong>{{point_source.mag_instrumental_unc|floatformat:3}}</strong></td>
           </tr>
         {% endfor %}
       </tbody>
@@ -202,40 +236,28 @@ where Φ−1(P)Φ−1(P) is the normal inverse cumulative distribution function 
 
 <h3>Residual image (left) vs original (right)</h3>
 <p>
-The residual ("subtracted") image shows the picture with all the PSF-fitted stars removed.
-Look at this image very carefully.  Are the faint stars cleanly removed with no
-residual traces?  (The very brightest stars may show noisy junk around their
-locations, which is normal.)
+The residual ("subtracted") image shows the picture with all the PSF-fitted
+stars removed.  Use this image to check your PSF.  Are the faint stars
+cleanly removed with no residual traces?  The brightest stars may show noisy
+junk around their locations, which is normal.
 </p>
 <p>
-If something looks consistently abnormal,
-like little holes or doughnuts everywhere there was a star, then something is
-wrong with the PSF.  Try again...
+If something looks consistently abnormal, like little holes or donuts
+everywhere there was a star, then something is wrong with the PSF and you
+should continue to tune your inputs.
 </p>
 <div class="well">
+  <div style="margin-bottom:1em">
+    <a class="btn btn-default js-start-blinking" href="#">Start blink comparison</a>
+    <a class="btn btn-default js-stop-blinking" href="#" style="display:none">Stop blink comparison</a>
+  </div>
   <a href="{{analysis.urls.psf_residual_image_url}}">
     <img src="{{analysis.urls.psf_residual_image_url}}" class="js-blinkable" style="display:inline-block" />
   </a>
   <a href="{{analysis.urls.original_display_url}}">
     <img src="{{analysis.urls.original_display_url}}" class="js-blinkable" style="display:inline-block" />
   </a>
-  <div>
-    <a class="js-start-blinking" href="#">Start blinking</a>
-    <a class="js-stop-blinking" href="#" style="display:none">Stop blinking</a>
-  </div>
 </div>
-
-{% if select_target %}
-  <h3 id="target-selection">Target reselection</h3>
-  <div class="alert alert-danger">
-    <strong>Your target ID may have changed. Please reselect your target.</strong>
-  </div>
-  <p>
-  {{analysis.data.coords | length}} point sources detected via
-  <a href="http://iraf.net/irafhelp.php?val=starfind&help=Help+Page">IRAF Starfind</a>.
-  </p>
-  {% include 'partials/point_source_plot.html' %}
-{% endif %}
 
 <div style="text-align: right">
   <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
@@ -254,6 +276,7 @@ wrong with the PSF.  Try again...
     window.pointSourceData = {{ analysis.data.coords | jsonify }};
   </script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="{% static "imageflow/js/lib/stupidtable.min.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/csrf.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/shared.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>

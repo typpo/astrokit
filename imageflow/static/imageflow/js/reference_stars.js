@@ -10,7 +10,7 @@ function updateStar(starId, checked) {
   } else {
     compareIds.delete(starId);
   }
-  $('#num-comparison-stars').text(compareIds.size);
+  $('.num-comparison-stars').text(compareIds.size);
 }
 
 function setupComparisonStarSelection() {
@@ -33,22 +33,25 @@ function setupComparisonStarSelection() {
 
 }
 
-function selectComparisonStars() {
+function selectComparisonStars(cb) {
   $.get('/analysis/' + window.analysisId + '/comparison_stars', function(data) {
     if (data.success) {
       data.ids.forEach(function(starId) { updateStar(starId, true) });
+      cb();
     }
   });
 }
 
 $(function() {
-  setupMagnitudeChecks($('.plot-container'),
-                       'instrumental',
-                       window.catalogData,
-                       window.catalogData);
-
   setupComparisonStarSelection();
-  selectComparisonStars();
+  selectComparisonStars(function() {
+    // Magnitude check plot depends on knowing which ones are comparison stars.
+    setupMagnitudeChecks($('.plot-container'),
+                         'instrumental',
+                         window.catalogData,
+                         window.catalogData);
+    setupPlot();
+  });
 
   // Link both reference star lists together.
   var scrollTimer = null;
