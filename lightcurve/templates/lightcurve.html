@@ -10,10 +10,6 @@ h1 span {
   color:#286090;
 }
 
-button.cancel {
-  margin-left: 5px;
-}
-
 .user-image {
   max-width: 300px;
   max-height: 300px;
@@ -27,14 +23,14 @@ button.cancel {
 {% endblock %}
 
 {% block heading %}
-  <form id="lightcurve_{{lightcurve.id}}_title" onsubmit="saveLightcurveChanges({{lightcurve.id}}); return false" method="post">
-    {% csrf_token %}
+  <form onsubmit="saveLightcurveChanges({{lightcurve.id}}); return false;" method="post">
     Light Curve <span class="lightcurve-name">{{lightcurve.name}}</span>
-    <button class="btn btn-xs btn-default edit-name">Edit Name</button>
+    <button type="button" class="btn btn-xs btn-default js-edit-name" style="display:inline-block">Edit Name</button>
+    <button type="submit" class="btn btn-sm btn-primary submit-name" style="display:none">Save</button>
+    <button type="button" class="btn btn-sm btn-default js-cancel" style="display:none">Cancel</button>
     <a href="{% url "upload_image" %}/{{lightcurve.id}}" class="btn btn-primary pull-right">Add New Images</a>
   </form>
 {% endblock %}
-
 
 {% block content-interior %}
 <a href="plot" class="btn btn-default">Standard Magnitudes Plot</a>

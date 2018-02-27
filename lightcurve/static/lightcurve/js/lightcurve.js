@@ -45,8 +45,7 @@ function toggleAddToLightcurve(toggleButton) {
 }
 
 function saveLightcurveChanges(lightcurveId) {
-  form_name = "#lightcurve_" + lightcurveId + "_title"
-  $.post('/lightcurve/' + lightcurveId + '/save_lightcurve_changes', $(form_name).serialize())
+  $.post('/lightcurve/' + lightcurveId + '/save_lightcurve_changes', $('form').serialize())
   .done(function() {
     alert('Settings applied to lightcurve.');
     window.location.reload();
@@ -74,18 +73,20 @@ $(function() {
     return false;
   });
 
-  $(document).on('click', '.edit-name', function(e) {
-    e.preventDefault();
+  $('.js-edit-name').on('click', function() {
     var filename = $(this).prev(".lightcurve-name").text();
     $( $(this).prev(".lightcurve-name") ).replaceWith( "<input type='name' class='input_name' name='input_name' value='" + filename + "'>" );
-    $(this).replaceWith("<button type='submit' class='btn btn-sm btn-primary submit-name'>Save</button><button class='btn btn-sm btn-default cancel'>Cancel</button>");
+    $(this).css('display', 'none');
+    $(this).nextAll('button').css('display', 'inline-block');
+    return false;
   });
 
-  $(document).on('click', '.cancel', function() {
+  $('.js-cancel').on('click', function() {
     var filename = $(this).parent().find('.input_name').val();
     $( $(this).parent().find('.input_name') ).replaceWith( "<span class='lightcurve-name'>" + filename + "</span>" );
-    $( $(this).prev('.submit-name') ).replaceWith("<button class='btn btn-xs btn-default edit-name'>Edit Name</button>");
-    $(this).remove();
+    $(this).css('display', 'none');
+    $(this).prevAll('button').css('display', 'none');
+    return false;
   });
 
 });
