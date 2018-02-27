@@ -171,6 +171,9 @@ where Φ<sup>−1</sup> * (P) is the normal inverse cumulative distribution func
 <p>
 This table shows detected point sources and DAOPHOT outputs.  Pay special attention to the instrumental magnitude uncertainty of your target point source.
 </p>
+<p>
+Rows highlighted green might be good comparison stars due to 75 &lt; SNR &lt;= 200.
+</p>
 <div class="well">
   <div class="table-wrapper">
     <table class="table table-striped">
@@ -182,18 +185,20 @@ This table shows detected point sources and DAOPHOT outputs.  Pay special attent
           <th data-sort="float">Flux</th>
           <th data-sort="float">Flux uncertainty (±)</th>
           <!--<th data-sort="float">Flux uncertainty %</th>-->
+          <th data-sort="float">SNR</th>
           <th data-sort="float">Instrumental mag</th>
           <th data-sort="float">Mag uncertainty (±)</th>
         </tr>
       </thead>
       <tbody>
         {% for point_source in analysis.data.coords %}
-          <tr {% if point_source.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+          <tr class="{% if point_source.id == analysis.meta.target_id %}highlight{% elif point_source.snr >= 75 and point_source.snr <= 200 %}success{% endif %}">
             <td>{{point_source.id}}</td>
             <td>{{point_source.field_x|floatformat:2}}</td>
             <td>{{point_source.field_y|floatformat:2}}</td>
             <td>{{point_source.flux|floatformat:3}}</td>
             <td>{{point_source.flux_unc|floatformat:3}}</td>
+            <td>{{point_source.snr|floatformat:3}}</td>
             <!--<td>{{point_source.flux_unc_pct|floatformat:3}}</td>-->
             <td><strong>{{point_source.mag_instrumental|floatformat:3}}</strong></td>
             <td><strong>{{point_source.mag_instrumental_unc|floatformat:3}}</strong></td>
