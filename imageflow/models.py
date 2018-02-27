@@ -40,6 +40,8 @@ class ImageAnalysis(models.Model):
 
     # Meta data.
     image_datetime = models.DateTimeField(null=True)
+    # Light-time corrected datetime, in JD.
+    image_jd_corrected = models.FloatField(null=True)
     image_filter = models.ForeignKey(ImageFilter, default=ImageFilter.objects.get_default())
     image_latitude = models.FloatField(default=0)
     image_longitude = models.FloatField(default=0)
