@@ -23,7 +23,7 @@ h1 span {
 {% endblock %}
 
 {% block heading %}
-  <form onsubmit="saveLightcurveChanges({{lightcurve.id}}); return false;" method="post">
+  <form class="js-edit-name-form" onsubmit="saveLightcurveChanges({{lightcurve.id}}); return false;" method="post">
     Light Curve
     <span class="lightcurve-name">{{lightcurve.name}}</span>
     <input type='name' class='input_name' name='input_name' style="display:none" value='{{lightcurve.name}}'>
