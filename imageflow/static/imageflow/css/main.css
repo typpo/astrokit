@@ -89,3 +89,7 @@ tr.highlight {
 .well img {
   display: block;
 }
+
+.well {
+  border: 1px solid #c5b7b7;
+}
