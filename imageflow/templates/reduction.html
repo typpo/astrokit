@@ -408,6 +408,15 @@ This linearity test shows how accurate your reduction is when compared to known 
   <div class="plot-container"></div>
 </div>
 
+{% if analysis.meta.jd_corrected %}
+  <h2>Light-time correction</h2>
+  <div style="margin-bottom:2em">
+    <p>
+      We have corrected the JD date of this observation to <strong>{{analysis.meta.jd_corrected}}</strong>, accounting for light-time travel between the target <strong>{{analysis.meta.target_name}}</strong> and Earth.
+    </p>
+  </div>
+{% endif %}
+
 <div style="text-align: right">
   <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
   <a href="/lightcurve/{{analysis.lightcurve_id}}/edit" class="btn btn-lg btn-default">Return to Light curve</a>
