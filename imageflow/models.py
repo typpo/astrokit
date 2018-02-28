@@ -127,6 +127,7 @@ class ImageAnalysis(models.Model):
                 'image_name_short': self.get_short_name(),
                 'notes': self.notes,
                 'datetime': self.image_datetime,
+                'jd_corrected': self.image_jd_corrected,
                 'latitude': self.image_latitude,
                 'longitude': self.image_longitude,
                 'elevation': self.image_elevation,
