@@ -133,6 +133,9 @@ h1 span {
       {% elif image.submission %}
         <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary disabled">Analysis Pending</a>
       {% endif %}
+
+      <div class="btn btn-default" data-analysis-id="{{image.analysis.id}}">Select comparison image</div>
+
       {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
         <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
       {% elif image.analysis and image.analysis.status == 'ADDED_TO_LIGHT_CURVE' %}
