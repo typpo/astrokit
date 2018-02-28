@@ -15,8 +15,9 @@ sys.path.insert(0, os.getcwd())
 django.setup()
 
 import airmass
+import corrections
+import hidden_transform
 import transformation_coefficient as tf
-import hidden_transform as hidden_transform
 
 from imageflow.models import Reduction, ImageAnalysis, ImageFilter
 
@@ -24,7 +25,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def supporting_calculations(analysis, reduction):
-    '''Compute airmass and transformation coefficient.
+    '''Compute a variety of terms for the main photometry reduction equation.
     '''
     reduction.reduced_stars = analysis.annotated_point_sources[:]
 
@@ -40,6 +41,7 @@ def supporting_calculations(analysis, reduction):
     reduction.zpf = zpf
     reduction.tf_graph_url = tf_graph_url
 
+    # Hidden transform
     if reduction.color_index_manual is None:
         ht, ht_intercept, ht_std, ht_r, ht_url = hidden_transform.calculate(analysis, reduction, save_graph=True)
         reduction.hidden_transform = ht
@@ -49,6 +51,9 @@ def supporting_calculations(analysis, reduction):
         reduction.hidden_transform_graph_url = ht_url
 
         hidden_transform.annotate_color_index(analysis, reduction)
+
+    # Compute lighttime correction.
+    analysis.image_jd_corrected = corrections.get_lighttime_correction(analysis)
 
 def run_reductions(analysis):
     '''Run reductions on a given ImageAnalysis.
@@ -133,13 +138,14 @@ def run_reductions(analysis):
             star['mag_catalog'] = star[filter_key]
             star['mag_error'] = star['mag_standard'] - star['mag_catalog']
         else:
-            logger.info('No filter %s in star %s' % (filter_key, star))
+            #logger.info('No filter %s in star %s' % (filter_key, star))
+            pass
 
     reduction.status = Reduction.COMPLETE
     reduction.save()
 
-    reduction.analysis.status = ImageAnalysis.REDUCTION_COMPLETE
-    reduction.analysis.save()
+    analysis.status = ImageAnalysis.REDUCTION_COMPLETE
+    analysis.save()
 
     logger.info('Completed reduction %d for analysis %d' % (reduction.id, analysis.id))
 
