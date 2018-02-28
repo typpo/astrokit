@@ -71,6 +71,7 @@ class ImageAnalysis(models.Model):
     sigma_clipped_std = models.FloatField(default=0)
 
     # ID of point source target.
+    target_name = models.CharField(max_length=50)
     target_id = models.IntegerField(default=0)
     target_x = models.IntegerField(default=-1)
     target_y = models.IntegerField(default=-1)
