@@ -16,7 +16,8 @@ function saveObservationDefault() {
     'lat': $('#set-latitude').val(),
     'lng': $('#set-longitude').val(),
     'elevation': $('#set-elevation').val(),
-    'extinction': $('#second-order-extinction').val()
+    'extinction': $('#second-order-extinction').val(),
+    'target': $('#target-name').val(),
   }, function(data) {
     if (data.success) {
       alert('Settings applied to all images.');

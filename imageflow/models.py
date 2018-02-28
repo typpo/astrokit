@@ -136,6 +136,7 @@ class ImageAnalysis(models.Model):
                 # TODO(ian): Don't pass an object - can't be serialized to json.
                 'uploaded_image': self.get_uploaded_image_or_none(),
                 'target_id': self.target_id,
+                'target_name': self.target_name,
             },
             'urls': {
                 'astrometry_original_display_url': self.astrometry_original_display_url,
