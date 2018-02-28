@@ -74,18 +74,18 @@ $(function() {
   });
 
   $('.js-edit-name').on('click', function() {
-    var filename = $(this).prev(".lightcurve-name").text();
-    $( $(this).prev(".lightcurve-name") ).replaceWith( "<input type='name' class='input_name' name='input_name' value='" + filename + "'>" );
-    $(this).css('display', 'none');
-    $(this).nextAll('button').css('display', 'inline-block');
+    $('.lightcurve-name').hide();
+    $('.input_name').css('display', 'inline-block');
+    $(this).hide();
+    $('.submit-name, .js-cancel').css('display', 'inline-block');
     return false;
   });
 
   $('.js-cancel').on('click', function() {
-    var filename = $(this).parent().find('.input_name').val();
-    $( $(this).parent().find('.input_name') ).replaceWith( "<span class='lightcurve-name'>" + filename + "</span>" );
-    $(this).css('display', 'none');
-    $(this).prevAll('button').css('display', 'none');
+    $('.input_name').hide();
+    $('.lightcurve-name').css('display', 'inline-block');
+    $('.js-edit-name').css('display', 'inline-block');
+    $('.submit-name, .js-cancel').hide();
     return false;
   });
 
