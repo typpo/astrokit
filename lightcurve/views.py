@@ -79,6 +79,7 @@ def save_observation_default(request, lightcurve_id):
     lng = request.POST.get('lng')
     elevation = request.POST.get('elevation')
     extinction = request.POST.get('extinction')
+    target_name = request.POST.get('target')
 
     for image in images:
         if lat:
@@ -91,6 +92,9 @@ def save_observation_default(request, lightcurve_id):
             reduction = image.get_reduction_or_create()
             reduction.second_order_extinction = float(extinction)
             reduction.save()
+        if target_name:
+            # This target is looked up during the reduction step.
+            image.target_name = target_name
         image.save()
 
     return JsonResponse({
