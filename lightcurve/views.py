@@ -118,8 +118,8 @@ def add_image_toggle(request, lightcurve_id):
         'success': True,
     })
 
-def save_lightcurve_changes(request, lightcurve_id):
-    name = request.POST.get('lightcurve-name')
+def edit_lightcurve_name(request, lightcurve_id):
+    name = request.POST.get('lightcurve_name')
     lc = LightCurve.objects.get(id=lightcurve_id)
     lc.name = name
     lc.save()
