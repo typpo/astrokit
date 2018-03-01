@@ -23,7 +23,25 @@ h1 span {
 
 <h1>Light Curve <span>{{lightcurve.name}}</span></h1>
 
-<div>
+<div class="row">
+  <div class="well">
+    <h4>Display Options</h4>
+    <form class="form form-horizontal">
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="lightcurve-period">
+          Period (JD)
+        </label>
+        <div class="col-sm-2">
+          <input id="lightcurve-period" class="form-control" type="number" value="" step="any" />
+        </div>
+        <div class="col-sm-5" style="padding-top:7px">
+          Enter a period to fold the light curve.
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="row">
   <div id="plot-container"></div>
 </div>
 {% endblock %}
