@@ -45,14 +45,14 @@ function toggleAddToLightcurve(toggleButton) {
   });
 }
 
-function saveLightcurveChanges(lightcurveId) {
-  $.post('/lightcurve/' + lightcurveId + '/save_lightcurve_changes', $('form').serialize())
+function editLightCurveName(lightcurveId) {
+  $.post('/lightcurve/' + lightcurveId + '/edit_lightcurve_name',
+         $('.js-edit-name-form').serialize())
   .done(function() {
-    alert('Settings applied to lightcurve.');
     window.location.reload();
   })
   .fail(function() {
-    alert('Something went wrong. Settings were not applied to lightcurve.');
+    alert('Something went wrong. Lightcurve name was not updated.');
   })
 }
 
@@ -76,7 +76,7 @@ $(function() {
 
   $('.js-edit-name-form').on('submit', function() {
     var lightcurve_id = $(this).data('lightcurve-id');
-    saveLightcurveChanges(lightcurve_id);
+    editLightCurveName(lightcurve_id);
     return false;
   });
 
