@@ -12,6 +12,7 @@ from reduction.util import find_point_by_id
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
     images = UserUploadedImage.objects.filter(lightcurve=lc)
+
     context = {
         'lightcurve': lc,
         'images': images,
@@ -114,6 +115,16 @@ def add_image_toggle(request, lightcurve_id):
 
     return JsonResponse({
         'added': image.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE,
+        'success': True,
+    })
+
+def save_lightcurve_changes(request, lightcurve_id):
+    name = request.POST.get('lightcurve-name')
+    lc = LightCurve.objects.get(id=lightcurve_id)
+    lc.name = name
+    lc.save()
+
+    return JsonResponse({
         'success': True,
     })
 

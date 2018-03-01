@@ -45,6 +45,17 @@ function toggleAddToLightcurve(toggleButton) {
   });
 }
 
+function saveLightcurveChanges(lightcurveId) {
+  $.post('/lightcurve/' + lightcurveId + '/save_lightcurve_changes', $('form').serialize())
+  .done(function() {
+    alert('Settings applied to lightcurve.');
+    window.location.reload();
+  })
+  .fail(function() {
+    alert('Something went wrong. Settings were not applied to lightcurve.');
+  })
+}
+
 $(function() {
   checkStatus();
 
@@ -62,4 +73,29 @@ $(function() {
     window.location.reload();
     return false;
   });
+
+  $('.js-edit-name-form').on('submit', function() {
+    var lightcurve_id = $(this).data('lightcurve-id');
+    saveLightcurveChanges(lightcurve_id);
+    return false;
+  });
+
+  $('.js-edit-name').on('click', function() {
+    $('span.lightcurve-name').hide();
+    $('input.lightcurve-name').css('display', 'inline-block');
+    $(this).hide();
+    $('.js-submit-name, .js-cancel').css('display', 'inline-block');
+    return false;
+  });
+
+  $('.js-cancel').on('click', function() {
+    var name = $('span.lightcurve-name').text();
+    $('input.lightcurve-name').val(name);
+    $('input.lightcurve-name').hide();
+    $('span.lightcurve-name').css('display', 'inline-block');
+    $('.js-edit-name').css('display', 'inline-block');
+    $('.js-submit-name, .js-cancel').hide();
+    return false;
+  });
+
 });
