@@ -73,19 +73,27 @@ $(function() {
     return false;
   });
 
+  $('.js-edit-name-form').on('submit', function() {
+    var lightcurve_id = $(this).data('lightcurve-id');
+    saveLightcurveChanges(lightcurve_id);
+    return false;
+  });
+
   $('.js-edit-name').on('click', function() {
-    $('.lightcurve-name').hide();
-    $('.input_name').css('display', 'inline-block');
+    $('span.lightcurve-name').hide();
+    $('input.lightcurve-name').css('display', 'inline-block');
     $(this).hide();
-    $('.submit-name, .js-cancel').css('display', 'inline-block');
+    $('.js-submit-name, .js-cancel').css('display', 'inline-block');
     return false;
   });
 
   $('.js-cancel').on('click', function() {
-    $('.input_name').hide();
-    $('.lightcurve-name').css('display', 'inline-block');
+    var name = $('span.lightcurve-name').text();
+    $('input.lightcurve-name').val(name);
+    $('input.lightcurve-name').hide();
+    $('span.lightcurve-name').css('display', 'inline-block');
     $('.js-edit-name').css('display', 'inline-block');
-    $('.submit-name, .js-cancel').hide();
+    $('.js-submit-name, .js-cancel').hide();
     return false;
   });
 
