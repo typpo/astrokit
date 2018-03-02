@@ -13,7 +13,7 @@ import imageflow.s3_util as s3_util
 def create_new_lightcurve(user, imgs):
     date = datetime.datetime.today().strftime('%Y-%m-%d')
     lc = LightCurve(user=user, name='%s %s' % (user.username, date))
-    lc.save(user)
+    lc.save()
 
     for img in imgs:
         url = s3_util.upload_to_s3(img.read(), 'raw', img.name)
@@ -21,7 +21,7 @@ def create_new_lightcurve(user, imgs):
         UserUploadedImage(user=user,
                           image_url=url,
                           original_filename=img.name,
-                          lightcurve=lc).save(user)
+                          lightcurve=lc).save()
 
     return lc
 
@@ -34,5 +34,5 @@ def edit_lightcurve(user, imgs, lightcurve_id):
         UserUploadedImage(user=user,
                           image_url=url,
                           original_filename=img.name,
-                          lightcurve=lc).save(user)
+                          lightcurve=lc).save()
     return lc

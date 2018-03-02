@@ -3,8 +3,6 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
-
 
 from photometry.models import ImageFilter
 

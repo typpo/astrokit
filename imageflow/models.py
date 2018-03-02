@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
 
 # Django's JSONField requires postgres, but this 3rd-party library provides a
 # shim for databases without native json support.
