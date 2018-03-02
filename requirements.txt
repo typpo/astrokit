@@ -46,3 +46,4 @@ simplejson==3.11.1
 six==1.10.0
 South==1.0.2
 webencodings==0.5.1
+callhorizons==1.0.12

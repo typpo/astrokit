@@ -73,7 +73,7 @@ def set_datetime(request, pk):
         })
 
     analysis.image_datetime = parsed_dt
-    analysis.save(request.user)
+    analysis.save()
 
     return JsonResponse({
         'success': True,
@@ -89,7 +89,9 @@ def set_target_point_source(request, pk):
         })
 
     analysis.target_id = request.POST.get('val')
-    analysis.save(request.user)
+    analysis.target_x = request.POST.get('x')
+    analysis.target_y = request.POST.get('y')
+    analysis.save()
     return JsonResponse({
         'success': True,
     })
@@ -97,7 +99,7 @@ def set_target_point_source(request, pk):
 def set_filter_band(request, pk):
     analysis, filter_band = resolve_band(request, pk)
     analysis.image_filter = filter_band
-    analysis.save(request.user)
+    analysis.save()
     return JsonResponse({
         'success': True,
         'msg': 'Resolved input to %s' % str(filter_band)
@@ -165,6 +167,17 @@ def set_latitude(request, pk):
 def set_longitude(request, pk):
     return set_float(request, pk, 'image_longitude')
 
+def set_color_index_manual(request, pk):
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
+        return JsonResponse({
+            'success': False,
+            'msg': 'Astrometry is still pending',
+        })
+    analysis.get_or_create_reduction()
+    return set_float(request, pk, 'color_index_manual',
+                     on_reduction=True, allow_null=True)
+
 def set_second_order_extinction(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
@@ -175,7 +188,7 @@ def set_second_order_extinction(request, pk):
     analysis.get_or_create_reduction()
     return set_float(request, pk, 'second_order_extinction', on_reduction=True)
 
-def set_float(request, pk, attrname, on_reduction=False):
+def set_float(request, pk, attrname, on_reduction=False, allow_null=False):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
@@ -184,7 +197,11 @@ def set_float(request, pk, attrname, on_reduction=False):
         })
 
     try:
-        val = float(request.POST.get('val'))
+        rawval = request.POST.get('val')
+        if rawval == '' and allow_null:
+            val = None
+        else:
+            val = float(rawval)
     except ValueError:
         return JsonResponse({
             'success': False,
@@ -196,7 +213,7 @@ def set_float(request, pk, attrname, on_reduction=False):
         analysis.reduction.save()
     else:
         setattr(analysis, attrname, val)
-        analysis.save(request.user)
+        analysis.save()
 
     return JsonResponse({
         'success': True,
@@ -241,7 +258,7 @@ def analysis_status(request, pk):
         status = request.POST.get('status')
         if status == 'PHOTOMETRY_PENDING':
             analysis.status = ImageAnalysis.PHOTOMETRY_PENDING
-            analysis.save(request.user)
+            analysis.save()
             return JsonResponse({
                 'success': True,
                 'message': 'Photometry status set to pending',
@@ -286,7 +303,7 @@ def photometry_params(request, pk):
                 'success': False,
                 'msg': 'Did not recognize param',
             })
-        params.save(request.user)
+        params.save()
     except ValueError:
         return JsonResponse({
             'success': False,
@@ -396,7 +413,7 @@ def notes(request, pk):
     # TODO(ian): Verify owner of reduction for all these ImageAnalysis fetches.
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
     analysis.notes = request.POST.get('val')
-    analysis.save(request.user)
+    analysis.save()
     return JsonResponse({
         'success': True,
     })

@@ -41,6 +41,8 @@ class ImageAnalysis(models.Model):
 
     # Meta data.
     image_datetime = models.DateTimeField(null=True)
+    # Light-time corrected datetime, in JD.
+    image_jd_corrected = models.FloatField(null=True)
     image_filter = models.ForeignKey(ImageFilter, default=ImageFilter.objects.get_default())
     image_latitude = models.FloatField(default=0)
     image_longitude = models.FloatField(default=0)
@@ -70,7 +72,10 @@ class ImageAnalysis(models.Model):
     sigma_clipped_std = models.FloatField(default=0)
 
     # ID of point source target.
+    target_name = models.CharField(max_length=50)
     target_id = models.IntegerField(default=0)
+    target_x = models.IntegerField(default=-1)
+    target_y = models.IntegerField(default=-1)
 
     # Reference stars and magnitudes:
 
@@ -123,6 +128,7 @@ class ImageAnalysis(models.Model):
                 'image_name_short': self.get_short_name(),
                 'notes': self.notes,
                 'datetime': self.image_datetime,
+                'jd_corrected': self.image_jd_corrected,
                 'latitude': self.image_latitude,
                 'longitude': self.image_longitude,
                 'elevation': self.image_elevation,
@@ -132,6 +138,7 @@ class ImageAnalysis(models.Model):
                 # TODO(ian): Don't pass an object - can't be serialized to json.
                 'uploaded_image': self.get_uploaded_image_or_none(),
                 'target_id': self.target_id,
+                'target_name': self.target_name,
             },
             'urls': {
                 'astrometry_original_display_url': self.astrometry_original_display_url,
@@ -175,15 +182,6 @@ class ImageAnalysis(models.Model):
         n_1 = maxlen - n_2 - 3
         return '%s...%s' % (name[:n_1], name[-n_2:])
 
-    def save(self, user, *args, **kwargs):
-        if user:
-          if user == self.user:
-                super(ImageAnalysis, self).save(*args, **kwargs)
-          else:
-              raise PermissionDenied('User not the creater of this object.')
-        else:
-          raise ObjectDoesNotExist('Save() was called without passing in user')
-
     def __str__(self):
         return '#%d %s: %s - Sub %d Job %d, Band %s @ %s' % \
                 (self.id,
@@ -207,12 +205,6 @@ class UserUploadedImage(models.Model):
     lightcurve = models.ForeignKey(LightCurve, blank=True, null=True)
     submission = models.ForeignKey(AstrometrySubmission, blank=True, null=True)
     analysis = models.ForeignKey(ImageAnalysis, blank=True, null=True)
-
-    def save(self, *args, **kwargs):
-        if self.user != self.lightcurve.user:
-            raise PermissionDenied('User not the creater of this object.')
-        else:
-            super(UserUploadedImage, self).save(*args, **kwargs)
 
     def __str__(self):
         return '%s submission #%d' % (self.original_filename, self.submission.subid)
@@ -247,6 +239,7 @@ class Reduction(models.Model):
 
     image_companion = models.ForeignKey(UserUploadedImage, null=True, blank=True)
 
+    color_index_manual = models.FloatField(null=True)
     second_order_extinction = models.FloatField(default=0)
 
     # Transformation coefficient calculation.
@@ -273,10 +266,12 @@ class Reduction(models.Model):
             },
             'meta': {
                 'status': self.status,
-                'image_companion_id': self.image_companion.id,
+                'image_companion_id': self.image_companion.id if self.image_companion else None,
                 'comparison_star_ids': self.comparison_star_ids,
+                'color_index_manual_enabled': self.color_index_manual is not None,
             },
             'data': {
+                'color_index_manual': self.color_index_manual,
                 'color_index_1_band': self.color_index_1.band if self.color_index_1 else '',
                 'color_index_2_band': self.color_index_2.band if self.color_index_1 else '',
 

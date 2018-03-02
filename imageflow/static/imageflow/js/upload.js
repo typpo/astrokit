@@ -17,8 +17,15 @@ $(function() {
     previewsContainer: '.upload-files .row',
     dictRemoveFile: '',
     previewTemplate: `
-    <div class="col-sm-2">
-      <figure class="upload-files__image">
+    <div class="col-sm-12">
+      <span data-dz-name>default name</span>
+      <span data-dz-size>default size</span>
+    </div><!-- /.col-sm-12 -->
+    <div data-dz-uploadprogress></div>
+    <div data-dz-errormessage></div>
+    `,
+    /*
+    <figure class="upload-files__image">
         <img data-dz-thumbnail>
 
         <a href="#">
@@ -31,11 +38,8 @@ $(function() {
           <p><span data-dz-size>default size</span></p>
         </div><!-- /.caption -->
       </figure><!-- /.upload-files__image -->
-    </div><!-- /.col-sm-2 -->
-    <div data-dz-uploadprogress></div>
-    <div data-dz-errormessage></div>
-    `,
-    success: function(file, response) {
+    */
+      success: function(file, response) {
       redirectUrl = response['redirect_url']
     },
     init: function() {

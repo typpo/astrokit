@@ -16,7 +16,8 @@ function saveObservationDefault() {
     'lat': $('#set-latitude').val(),
     'lng': $('#set-longitude').val(),
     'elevation': $('#set-elevation').val(),
-    'extinction': $('#second-order-extinction').val()
+    'extinction': $('#second-order-extinction').val(),
+    'target': $('#target-name').val(),
   }, function(data) {
     if (data.success) {
       alert('Settings applied to all images.');
@@ -44,6 +45,17 @@ function toggleAddToLightcurve(toggleButton) {
   });
 }
 
+function editLightCurveName(lightcurveId) {
+  $.post('/lightcurve/' + lightcurveId + '/edit_lightcurve_name',
+         $('.js-edit-name-form').serialize())
+  .done(function() {
+    window.location.reload();
+  })
+  .fail(function() {
+    alert('Something went wrong. Lightcurve name was not updated.');
+  })
+}
+
 $(function() {
   checkStatus();
 
@@ -61,4 +73,29 @@ $(function() {
     window.location.reload();
     return false;
   });
+
+  $('.js-edit-name-form').on('submit', function() {
+    var lightcurve_id = $(this).data('lightcurve-id');
+    editLightCurveName(lightcurve_id);
+    return false;
+  });
+
+  $('.js-edit-name').on('click', function() {
+    $('span.lightcurve-name').hide();
+    $('input.lightcurve-name').css('display', 'inline-block');
+    $(this).hide();
+    $('.js-submit-name, .js-cancel').css('display', 'inline-block');
+    return false;
+  });
+
+  $('.js-cancel').on('click', function() {
+    var name = $('span.lightcurve-name').text();
+    $('input.lightcurve-name').val(name);
+    $('input.lightcurve-name').hide();
+    $('span.lightcurve-name').css('display', 'inline-block');
+    $('.js-edit-name').css('display', 'inline-block');
+    $('.js-submit-name, .js-cancel').hide();
+    return false;
+  });
+
 });

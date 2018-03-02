@@ -18,62 +18,54 @@ h1 span {
 .image-container {
   margin: 2em 0;
 }
+
 </style>
 {% endblock %}
 
 {% block heading %}
-  Light Curve <span>{{lightcurve.name}}</span>
-  <a href="{% url "upload_image" %}/{{lightcurve.id}}" class="btn btn-primary pull-right">Add New Images</a>
+  <form class="js-edit-name-form" data-lightcurve-id={{lightcurve.id}} method="post">
+    Light Curve
+    <span class="lightcurve-name">{{lightcurve.name}}</span>
+    <input type="name" class="lightcurve-name" name="lightcurve_name" style="display:none" value="{{lightcurve.name}}">
+    <button type="button" class="btn btn-xs btn-default js-edit-name" style="display:inline-block">Edit Name</button>
+    <button type="submit" class="btn btn-sm btn-primary js-submit-name" style="display:none">Save</button>
+    <button type="button" class="btn btn-sm btn-default js-cancel" style="display:none">Cancel</button>
+    <a href="{% url "upload_image" %}/{{lightcurve.id}}" class="btn btn-primary pull-right">Add New Images</a>
+  </form>
 {% endblock %}
-
 
 {% block content-interior %}
 <a href="plot" class="btn btn-default">Standard Magnitudes Plot</a>
 <a href="plot?type=instrumental" class="btn btn-default">Instrumental Magnitudes Plot</a>
 <a href="#" class="btn btn-default">Download as XLSX</a>
+<a href="#" class="btn btn-default">Download as ALCDEF</a>
 <div>
   <h3>Observation Metadata</h3>
   <p>These settings apply to all images.  You can change these values for individual images later.</p>
   <div class="well">
+    <h4>Target</h4>
+    <div class="well">
+      Name (<a href="https://ssd.jpl.nasa.gov/horizons.cgi">JPL Horizons</a>) <input type="text" class="form-control" style="width:20em" id="target-name" value="{{analysis.meta.target_name}}" />
+    </div>
     <h4>Coordinates</h4>
     <div class="well">
-      <div id="set-latlng-success" class="alert alert-success" style="display:none">
-        Coordinates successfully updated.
-      </div>
-      <div id="set-latlng-success" class="alert alert-danger" style="display:none">
-        Something went wrong - failed to update your setting.
-      </div>
-      Latitude <input id="set-latitude" class="form-control" style="width: 30em" type="number" value="{{result.meta.latitude}}" min="-90" max="90">
+      Latitude <input id="set-latitude" class="form-control" style="width: 20em" type="number" value="{{result.meta.latitude}}" min="-90" max="90">
       <br>
-      Longitude <input id="set-longitude" class="form-control" style="width: 30em" type="number" value="{{result.meta.longitude}}" min="-180" max="180">
+      Longitude <input id="set-longitude" class="form-control" style="width: 20em" type="number" value="{{result.meta.longitude}}" min="-180" max="180">
     </div>
 
     <h4>Elevation</h4>
     <div class="well">
-      <div id="set-elevation-success" class="alert alert-success" style="display:none">
-        Elevation successfully updated.
-      </div>
-      <div id="set-elevation-success" class="alert alert-danger" style="display:none">
-        Something went wrong - failed to update your setting.
-      </div>
-      <p>
-        Above sea level, in meters
-      </p>
-      <input id="set-elevation" class="form-control" style="width: 30em" type="number" value="{{result.meta.elevation}}">
+      Above sea level (meters)
+      <input id="set-elevation" class="form-control" style="width: 20em" type="number" value="{{result.meta.elevation}}">
     </div>
 
     <h4>Second-order extinction k"<sub><em>f</em></sub></h4>
     <div class="well">
-      <div id="second-order-extinction-success" class="alert alert-success" style="display:none">
-        k'' successfully updated.
-      </div>
-      <div id="second-order-extinction-success" class="alert alert-danger" style="display:none">
-        Something went wrong - failed to update your setting.
-      </div>
       <p>
         Second-order extinction is nearly constant and usually only significant for B-V color index measurements. Set to 0 if you do not want to include a term for second-order extinction.
       </p>
-      <input type="text" class="form-control" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
+      <input type="text" class="form-control" style="width:20em" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
     </div>
     <div class="button-row">
       <div id="save-observation-default" class="btn btn-primary">Apply to all images</div>
@@ -141,6 +133,9 @@ h1 span {
       {% elif image.submission %}
         <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary disabled">Analysis Pending</a>
       {% endif %}
+
+      <div class="btn btn-default" data-analysis-id="{{image.analysis.id}}">Select comparison image</div>
+
       {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
         <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
       {% elif image.analysis and image.analysis.status == 'ADDED_TO_LIGHT_CURVE' %}

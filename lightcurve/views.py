@@ -1,4 +1,3 @@
-from astropy.time import Time
 from django.http import JsonResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -6,6 +5,7 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 
 from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
+from corrections import get_jd_for_analysis
 from imageflow.models import ImageAnalysis, Reduction, UserUploadedImage
 from lightcurve.models import LightCurve
 from reduction.util import find_point_by_id
@@ -13,6 +13,7 @@ from reduction.util import find_point_by_id
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
     images = UserUploadedImage.objects.filter(lightcurve=lc)
+
     context = {
         'lightcurve': lc,
         'images': images,
@@ -41,7 +42,7 @@ def plot_lightcurve_json(request, lightcurve_id):
             ret.append({
                 'analysisId': analysis.id,
                 'timestamp': analysis.image_datetime,
-                'timestampJd': Time(analysis.image_datetime).jd,
+                'timestampJd': get_jd_for_analysis(analysis),
                 'result': result,
             })
     else:
@@ -59,7 +60,7 @@ def plot_lightcurve_json(request, lightcurve_id):
                 'analysisId': reduction.analysis.id,
                 'reductionId': reduction.id,
                 'timestamp': reduction.analysis.image_datetime,
-                'timestampJd': Time(reduction.analysis.image_datetime).jd,
+                'timestampJd': get_jd_for_analysis(reduction.analysis),
                 # TODO(ian): Maybe one day we can bake the target id into the URL.
                 # That way you can compare your target light curve to any light
                 # curve from a known object!
@@ -79,6 +80,7 @@ def save_observation_default(request, lightcurve_id):
     lng = request.POST.get('lng')
     elevation = request.POST.get('elevation')
     extinction = request.POST.get('extinction')
+    target_name = request.POST.get('target')
 
     for image in images:
         if lat:
@@ -91,7 +93,10 @@ def save_observation_default(request, lightcurve_id):
             reduction = image.get_reduction_or_create()
             reduction.second_order_extinction = float(extinction)
             reduction.save()
-        image.save(request.user)
+        if target_name:
+            # This target is looked up during the reduction step.
+            image.target_name = target_name
+        image.save()
 
     return JsonResponse({
         'success': True,
@@ -107,10 +112,20 @@ def add_image_toggle(request, lightcurve_id):
         image.status = ImageAnalysis.REDUCTION_COMPLETE
     elif image.status == ImageAnalysis.REDUCTION_COMPLETE:
         image.status = ImageAnalysis.ADDED_TO_LIGHT_CURVE
-    image.save(request.user)
+    image.save()
 
     return JsonResponse({
         'added': image.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE,
+        'success': True,
+    })
+
+def edit_lightcurve_name(request, lightcurve_id):
+    name = request.POST.get('lightcurve_name')
+    lc = LightCurve.objects.get(id=lightcurve_id)
+    lc.name = name
+    lc.save()
+
+    return JsonResponse({
         'success': True,
     })
 

@@ -19,15 +19,6 @@ class LightCurve(models.Model):
                                 related_name='lightcurve_magband_set',
                                 default=ImageFilter.objects.get_default())
 
-    def save(self, user, *args, **kwargs):
-        if user:
-          if user == self.user:
-                super(LightCurve, self).save(*args, **kwargs)
-          else:
-              raise PermissionDenied('User not the creater of this object.')
-        else:
-          raise ObjectDoesNotExist('Save() was called without passing in user')
-
     def to_alcdef(self):
         return 'NYI'
 

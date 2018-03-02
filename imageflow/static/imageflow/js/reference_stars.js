@@ -10,7 +10,7 @@ function updateStar(starId, checked) {
   } else {
     compareIds.delete(starId);
   }
-  $('#num-comparison-stars').text(compareIds.size);
+  $('.num-comparison-stars').text(compareIds.size);
 }
 
 function setupComparisonStarSelection() {

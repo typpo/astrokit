@@ -126,6 +126,10 @@ def compute_photutils(settings, image_data):
     result_tab['mag_unc'] = np.abs(-2.5 * np.log10(result_tab['flux_fit'] + result_tab['flux_unc']) - \
                                    -2.5 * np.log10(result_tab['flux_fit'] - result_tab['flux_unc'])) / 2.0
 
+    # http://www.ucolick.org/~bolte/AY257/s_n.pdf
+    #result_tab['snr'] = 1.0875 / result_tab['mag_unc']
+    result_tab['snr'] = 1.0 / (np.power(10, (result_tab['mag_unc']/2.5)) -1 )
+
     residual_image = photometry.get_residual_image()
 
     return result_tab, residual_image, std
@@ -174,6 +178,7 @@ def format_for_json_export(sources):
     flux_unc_pct = sources['flux_unc'] / sources['flux_fit'] * 100.0
     mag_instrumental = sources['mag']
     mag_instrumental_unc = sources['mag_unc']
+    snr = sources['snr']
 
     '''
     field_x = sources['X_IMAGE']
@@ -196,6 +201,7 @@ def format_for_json_export(sources):
             'flux_unc_pct': float(flux_unc_pct[i]),
             'mag_instrumental': float(mag_instrumental[i]),
             'mag_instrumental_unc': float(mag_instrumental_unc[i]),
+            'snr': float(snr[i]),
         })
     return out
 

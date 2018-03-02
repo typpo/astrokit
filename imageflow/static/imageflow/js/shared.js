@@ -109,9 +109,12 @@ function setupCanvasListeners(canvas) {
 }
 
 function setupTables() {
-  $('.table-wrapper').on('scroll', function() {
+  var $tableWrapper = $('.table-wrapper').on('scroll', function() {
     $(this).find('thead').css('transform', 'translate(0,' + this.scrollTop + 'px)');
   });
+  if ($().stupidtable) {
+    $tableWrapper.find('table').stupidtable();
+  }
   $('.js-scroll-to-target').on('click', function() {
     scrollToTarget($(this).parent().prev());
     return false;
@@ -139,10 +142,14 @@ function getLinearFit(xPoints, yPoints) {
   var result = regression.linear(zip);
   var slope = result.equation[0];
   var intercept = result.equation[1];
-  return result.points;
+  return {
+    points: result.points,
+    r2: result.r2,
+    slope: result.equation[0],
+  };
 }
 
-function setupMagnitudeChecks($elts, type, xData, yData) {
+function setupMagnitudeChecks($elts, type, xData, yData, comparisonStarsOnly) {
   var xPoints = [];
   var yPoints = [];
   var colors = [];
@@ -154,6 +161,9 @@ function setupMagnitudeChecks($elts, type, xData, yData) {
     var xVal = xr[window.urat1Key];
     var isComparisonStar = xr.is_comparison ||
         (typeof window.compareIds !== 'undefined' && compareIds.has(xr.id));
+    if (!isComparisonStar && comparisonStarsOnly) {
+      continue;
+    }
     if (xVal && yVal) {
       xPoints.push(xVal);
       yPoints.push(yVal);
@@ -169,8 +179,8 @@ function setupMagnitudeChecks($elts, type, xData, yData) {
     var chart = [
       {
         name: 'Line of Fit',
-        x: lineFit.map(function(p) { return p[0] }),
-        y: lineFit.map(function(p) { return p[1] }),
+        x: lineFit.points.map(function(p) { return p[0] }),
+        y: lineFit.points.map(function(p) { return p[1] }),
         type: 'scatter',
         mode: 'lines',
         line: {
@@ -191,7 +201,7 @@ function setupMagnitudeChecks($elts, type, xData, yData) {
       },
     ];
     var layout = {
-      title: 'Computed Magnitudes vs. Catalog Magnitudes',
+      title: 'Computed Magnitudes vs. Catalog Magnitudes<br>r<sup>2</sup>=' + lineFit.r2.toFixed(2) + ', slope=' + lineFit.slope.toFixed(2),
       xaxis: {
         title: 'Standard Catalog Mag',
       },
@@ -199,6 +209,7 @@ function setupMagnitudeChecks($elts, type, xData, yData) {
         title: type === 'instrumental' ? 'Instrumental Mag' : 'Standard Mag (computed)',
       },
       hovermode: 'closest',
+      showlegend: false,
     };
 
     Plotly.newPlot($elt[0], chart, layout);
