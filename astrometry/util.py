@@ -6,6 +6,8 @@ import subprocess
 import tempfile
 import time
 
+from django.shortcuts import get_object_or_404
+
 from imageflow.models import UserUploadedImage
 from lightcurve.models import LightCurve
 import imageflow.s3_util as s3_util
@@ -26,7 +28,7 @@ def create_new_lightcurve(user, imgs):
     return lc
 
 def edit_lightcurve(user, imgs, lightcurve_id):
-    lc = LightCurve.objects.get(id=lightcurve_id)
+    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=user)
 
     for img in imgs:
         url = s3_util.upload_to_s3(img.read(), 'raw', img.name)

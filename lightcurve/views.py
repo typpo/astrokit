@@ -11,7 +11,7 @@ from lightcurve.models import LightCurve
 from reduction.util import find_point_by_id
 
 def edit_lightcurve(request, lightcurve_id):
-    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user)
+    lc = LightCurve.objects.get(id=lightcurve_id)
     images = UserUploadedImage.objects.filter(lightcurve=lc)
 
     context = {
@@ -73,7 +73,7 @@ def plot_lightcurve_json(request, lightcurve_id):
     })
 
 def save_observation_default(request, lightcurve_id):
-    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user)
+    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     images = lc.imageanalysis_set.all()
 
     lat = request.POST.get('lat')
@@ -105,7 +105,7 @@ def save_observation_default(request, lightcurve_id):
 def add_image_toggle(request, lightcurve_id):
     analysis_id = request.POST.get('analysis_id')
 
-    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user)
+    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     image = lc.imageanalysis_set.get(id=analysis_id)
 
     if image.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE:
@@ -121,7 +121,7 @@ def add_image_toggle(request, lightcurve_id):
 
 def edit_lightcurve_name(request, lightcurve_id):
     name = request.POST.get('lightcurve_name')
-    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user)
+    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     lc.name = name
     lc.save()
 
