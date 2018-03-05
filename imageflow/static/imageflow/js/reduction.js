@@ -50,17 +50,17 @@ $(function() {
   setupListener('set_color_index_1',
                 $('#select-color-index-1'),
                 $('#select-color-index-success'),
-                $('#select-color-index-failure'));
+                $('#select-comparison-image-failure'));
 
   setupListener('set_color_index_2',
                 $('#select-color-index-2'),
                 $('#select-color-index-success'),
-                $('#select-color-index-failure'));
+                $('#select-comparison-image-failure'));
 
   setupListener('set_image_companion',
                 $('input[name="image-companion"]'),
-                $('#select-color-index-success'),
-                $('#select-color-index-failure'));
+                $('#select-comparison-image-success'),
+                $('#select-comparison-image-failure'));
 
   setupListener('set_second_order_extinction',
                 $('#second-order-extinction'),
