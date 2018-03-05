@@ -208,7 +208,6 @@ class UserUploadedImage(models.Model):
     def __str__(self):
         return '%s submission #%d' % (self.original_filename, self.submission.subid)
 
-
 class Reduction(models.Model):
     CREATED = 'CREATED'
     PENDING = 'PENDING'

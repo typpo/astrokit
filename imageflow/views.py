@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
@@ -50,7 +49,7 @@ def astrometry(request, pk):
             context_instance=RequestContext(request))
 
 def set_datetime(request, pk):
-    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    analysis = get_object_or_404(ImageAnalysis, pk=pk, user=request.user.id)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
             'success': False,
@@ -81,7 +80,7 @@ def set_datetime(request, pk):
     })
 
 def set_target_point_source(request, pk):
-    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    analysis = get_object_or_404(ImageAnalysis, pk=pk, user=request.user.id)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
             'success': False,
@@ -126,7 +125,7 @@ def set_color_index_2(request, pk):
     })
 
 def set_image_companion(request, pk):
-    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    analysis = get_object_or_404(ImageAnalysis, pk=pk, user=request.user.id)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
             'success': False,
@@ -189,7 +188,7 @@ def set_second_order_extinction(request, pk):
     return set_float(request, pk, 'second_order_extinction', on_reduction=True)
 
 def set_float(request, pk, attrname, on_reduction=False, allow_null=False):
-    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    analysis = get_object_or_404(ImageAnalysis, pk=pk, user=request.user.id)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return JsonResponse({
             'success': False,
@@ -252,7 +251,7 @@ def get_reduction_status(request, pk):
 
 def analysis_status(request, pk):
     # TODO(ian): Constrain by user.
-    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    analysis = get_object_or_404(ImageAnalysis, pk=pk, user=request.user.id)
 
     if request.method == 'POST':
         status = request.POST.get('status')
@@ -411,7 +410,7 @@ def api_get_analysis_results(request, subid):
 
 def notes(request, pk):
     # TODO(ian): Verify owner of reduction for all these ImageAnalysis fetches.
-    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    analysis = get_object_or_404(ImageAnalysis, pk=pk, user=request.user.id)
     analysis.notes = request.POST.get('val')
     analysis.save()
     return JsonResponse({

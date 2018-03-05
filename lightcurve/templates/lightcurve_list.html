@@ -90,13 +90,17 @@ article a {
             </article>
           </div>
         {% endfor %}
+        {% if user == context.lightcurve.user %}
         <a href="{% url "upload_image" %}/{{context.lightcurve.id}}" class="btn btn-primary pull-right">Add Images</a>
         <div style="clear: both"></div>
+        {% endif %}
 
       {% else %}
         <br>
         <article>No images uploaded</article>
+        {% if user == context.lightcurve.user %}
         <a href="{% url "upload_image" %}/{{context.lightcurve.id}}" class="btn btn-primary pull-right upload">Upload Images</a>
+        {% endif %}
       {% endif %}
 
     </div>
