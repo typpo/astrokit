@@ -4,7 +4,7 @@
 
 {% block title %}Analysis #{{analysis.id}} Reduction{% endblock %}
 
-{% block heading %}Reduction{% endblock %}
+{% block heading %}Comparison Image{% endblock %}
 
 {% block styles %}
 <style>
@@ -22,9 +22,22 @@
 
 {% block content-interior %}
 
-{% with active_crumb='reduction' %}
-  {% include 'imageflow_breadcrumbs.html' %}
-{% endwith %}
+<p>
+Comparison images are used to perform reductions to light curves.
+</p>
+<p>
+You are selecting a comparison image for:
+<ul>
+  <li>File: {{analysis.meta.uploaded_image.original_filename}}</li>
+  <li>Filter: {{analysis.meta.image_band}}</li>
+  <li>Target: {{analysis.meta.target_id}}</li>
+</ul>
+</p>
+
+<hr/>
+<p>
+  <strong>Comparison Image</strong>
+</p>
 
 {% include 'partials/comparison_image_selector.html' %}
 

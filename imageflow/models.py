@@ -156,7 +156,6 @@ class ImageAnalysis(models.Model):
                 'psf_residual_image_url': self.psf_residual_image_url,
             },
             'data': {
-                #'coords': sorted(self.coords, key=lambda x: x['flux_unc_pct']),
                 'coords': self.coords,
                 'catalog_reference_stars': self.catalog_reference_stars,
                 'unknown_stars': self.image_unknown_stars,

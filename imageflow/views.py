@@ -401,6 +401,25 @@ def reduction(request, pk):
         return render_to_response('reduction.html', template_args,
                 context_instance=RequestContext(request))
 
+def comparison_image(request, pk):
+    # TODO(ian): Dedup this with above code.
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
+        return render_to_response('submission_pending.html', {},
+                context_instance=RequestContext(request))
+
+    # Other images in this light curve.
+    potential_image_companions = analysis.lightcurve.useruploadedimage_set.all()
+
+    template_args = {
+        'analysis': analysis.get_summary_obj(),
+        'image_filters': ImageFilter.objects.all(),
+
+        'potential_image_companions': potential_image_companions,
+    }
+    return render_to_response('comparison_image.html', template_args,
+            context_instance=RequestContext(request))
+
 def api_get_analysis_results(request, subid):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
     return JsonResponse({
