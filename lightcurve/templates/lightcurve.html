@@ -75,80 +75,89 @@ h1 span {
   <h3>Images</h3>
   <p>
     <span id="num-images-processed">0</span> of {{ images | length }} images have been processed.
+    <select id="select-sort-images" class="form-control pull-right" style="display:inline-block; width: auto">
+      <option value="#" selected>--- Sort ---</option>
+      <option value="original_filename">Filename</option>
+      <option value="analysis__image_datetime">Timestamp</option>
+      <option value="analysis__status">Status</option>
+    </select>
   </p>
   <p>
     <button style="display:none" class="btn btn-success js-reload js-new-results">Load new results</button>
   </p>
-  {% for image in images %}
-  <div id="image-{{forloop.counter0}}" class="well">
-    <strong><a href="/analysis/{{image.analysis.id}}">Analysis #{{image.analysis.id}}</a></strong><br>
-    Filename:
-    <a download href="{{image.image_url}}">
-      {{image.original_filename}}
-    </a><br>
-    Timestamp: {{image.analysis.image_datetime}}<br>
 
-    Status:
-    {% if image.analysis %}
-      {% if image.analysis.status == 'ASTROMETRY_PENDING'  %}
-        <span style="color:#ff1493"><strong>Stage 1 - Astrometry: performing analysis</strong></span>
-      {% elif image.analysis.status == 'PHOTOMETRY_PENDING'  %}
-        <span style="color:#ff1493"><strong>Stage 2 - Photometry: performing analysis</strong></span>
-      {% elif image.analysis.status == 'REVIEW_PENDING'  %}
-        <span style="color:#ff1493"><strong>Stage 3 - Review: analysis complete, review pending</strong></span>
-      {% elif image.analysis.status == 'REVIEW_COMPLETE'  %}
-        <span style="color:#215022"><strong>Stage 4 - Reduction: analysis reviewed, reduction pending</strong></span>
-      {% elif image.analysis.status == 'REDUCTION_COMPLETE'  %}
-        <span style="color:#215022"><strong>Stage 4 - Reduction: complete</strong></span>
-      {% elif image.analysis.status == 'ADDED_TO_LIGHT_CURVE'  %}
-        <span style="color:#215022"><strong>Stage 5 - Added to light curve</strong></span>
-      {% endif %}
-    {% elif image.submission %}
-      {% if image.submission.status == 'FAILED_TO_SUBMIT' %}
-        <span style="color:red"><strong>Stage 1 - Astrometry: service failed, try upload image again</strong></span>
-      {% elif image.submission.status == 'FAILED_TO_PROCESS' %}
-        <span style="color:red"><strong>Stage 1 - Astrometry: failed to solve image</strong></span>
-      {% elif image.submission.status == 'SUBMITTED' %}
-        <span style="color:#ff1493">Stage 1 - Astrometry: solving</span>
-      {% endif %}
-    {% else %}
-      <span style="color:purple">Stage 0: Uploaded, astrometry starting...</span>
-    {% endif %}
+  <div id="image-list">
+    {% for image in images %}
+    <div id="image-{{forloop.counter0}}" class="well">
+      <strong><a href="/analysis/{{image.analysis.id}}">Analysis #{{image.analysis.id}}</a></strong><br>
+      Filename:
+      <a download href="{{image.image_url}}">
+        {{image.original_filename}}
+      </a><br>
+      Timestamp: {{image.analysis.image_datetime}}<br>
 
-    {% if image.analysis.notes %}
-        <br>Note: <em>{{image.analysis.notes}}</em>
-    {% endif %}
-
-    <div class="image-container">
-      {% if image.analysis.original_display_url %}
-        <a href="/analysis/{{image.analysis.id}}">
-          <img src="{{image.analysis.original_display_url}}" class="user-image" />
-        </a>
-      {% endif %}
-    </div>
-
-    <div class="button-row">
-      {% if image.submission and image.submission.status == 'COMPLETE' %}
-        <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary">Review Analysis</a>
+      Status:
+      {% if image.analysis %}
+        {% if image.analysis.status == 'ASTROMETRY_PENDING'  %}
+          <span style="color:#ff1493"><strong>Stage 1 - Astrometry: performing analysis</strong></span>
+        {% elif image.analysis.status == 'PHOTOMETRY_PENDING'  %}
+          <span style="color:#ff1493"><strong>Stage 2 - Photometry: performing analysis</strong></span>
+        {% elif image.analysis.status == 'REVIEW_PENDING'  %}
+          <span style="color:#ff1493"><strong>Stage 3 - Review: analysis complete, review pending</strong></span>
+        {% elif image.analysis.status == 'REVIEW_COMPLETE'  %}
+          <span style="color:#215022"><strong>Stage 4 - Reduction: analysis reviewed, reduction pending</strong></span>
+        {% elif image.analysis.status == 'REDUCTION_COMPLETE'  %}
+          <span style="color:#215022"><strong>Stage 4 - Reduction: complete</strong></span>
+        {% elif image.analysis.status == 'ADDED_TO_LIGHT_CURVE'  %}
+          <span style="color:#215022"><strong>Stage 5 - Added to light curve</strong></span>
+        {% endif %}
       {% elif image.submission %}
-        <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary disabled">Analysis Pending</a>
+        {% if image.submission.status == 'FAILED_TO_SUBMIT' %}
+          <span style="color:red"><strong>Stage 1 - Astrometry: service failed, try upload image again</strong></span>
+        {% elif image.submission.status == 'FAILED_TO_PROCESS' %}
+          <span style="color:red"><strong>Stage 1 - Astrometry: failed to solve image</strong></span>
+        {% elif image.submission.status == 'SUBMITTED' %}
+          <span style="color:#ff1493">Stage 1 - Astrometry: solving</span>
+        {% endif %}
+      {% else %}
+        <span style="color:purple">Stage 0: Uploaded, astrometry starting...</span>
       {% endif %}
 
-      <div class="btn btn-default" data-analysis-id="{{image.analysis.id}}">Select comparison image</div>
+      {% if image.analysis.notes %}
+          <br>Note: <em>{{image.analysis.notes}}</em>
+      {% endif %}
 
-      {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
-        <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
-      {% elif image.analysis and image.analysis.status == 'ADDED_TO_LIGHT_CURVE' %}
-        <div class="btn btn-warning js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Remove from lightcurve</div>
-      {% elif image.submission %}
-        <!--<div class="btn btn-default disabled">Add to lightcurve</div>-->
-      {% endif %}
-      {% if image.submission %}
-        <a href="http://35.202.61.141/status/{{image.analysis.astrometry_job.jobid}}" class="btn btn-default">View Astrometry job</a>
-      {% endif %}
+      <div class="image-container">
+        {% if image.analysis.original_display_url %}
+          <a href="/analysis/{{image.analysis.id}}">
+            <img src="{{image.analysis.original_display_url}}" class="user-image" />
+          </a>
+        {% endif %}
+      </div>
+
+      <div class="button-row">
+        {% if image.submission and image.submission.status == 'COMPLETE' %}
+          <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary">Review Analysis</a>
+        {% elif image.submission %}
+          <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary disabled">Analysis Pending</a>
+        {% endif %}
+
+        <div class="btn btn-default" data-analysis-id="{{image.analysis.id}}">Select comparison image</div>
+
+        {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
+          <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
+        {% elif image.analysis and image.analysis.status == 'ADDED_TO_LIGHT_CURVE' %}
+          <div class="btn btn-warning js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Remove from lightcurve</div>
+        {% elif image.submission %}
+          <!--<div class="btn btn-default disabled">Add to lightcurve</div>-->
+        {% endif %}
+        {% if image.submission %}
+          <a href="http://35.202.61.141/status/{{image.analysis.astrometry_job.jobid}}" class="btn btn-default">View Astrometry job</a>
+        {% endif %}
+      </div>
     </div>
+    {% endfor %}
   </div>
-  {% endfor %}
   <div>
     <p>
       <button style="display:none" class="btn btn-success js-reload js-new-results">Load new results</button>

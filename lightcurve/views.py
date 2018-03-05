@@ -12,6 +12,10 @@ from reduction.util import find_point_by_id
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
     images = UserUploadedImage.objects.filter(lightcurve=lc)
+    sort = request.GET.get('sort')
+
+    if sort:
+        images = images.order_by("-" + sort)
 
     context = {
         'lightcurve': lc,
