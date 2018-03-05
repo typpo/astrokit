@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.shortcuts import get_object_or_404
 
 from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
@@ -76,7 +77,7 @@ def plot_lightcurve_json(request, lightcurve_id):
     })
 
 def save_observation_default(request, lightcurve_id):
-    lc = LightCurve.objects.get(id=lightcurve_id)
+    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     images = lc.imageanalysis_set.all()
 
     lat = request.POST.get('lat')
@@ -108,7 +109,7 @@ def save_observation_default(request, lightcurve_id):
 def add_image_toggle(request, lightcurve_id):
     analysis_id = request.POST.get('analysis_id')
 
-    lc = LightCurve.objects.get(id=lightcurve_id)
+    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     image = lc.imageanalysis_set.get(id=analysis_id)
 
     if image.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE:
@@ -124,7 +125,7 @@ def add_image_toggle(request, lightcurve_id):
 
 def edit_lightcurve_name(request, lightcurve_id):
     name = request.POST.get('lightcurve_name')
-    lc = LightCurve.objects.get(id=lightcurve_id)
+    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     lc.name = name
     lc.save()
 
