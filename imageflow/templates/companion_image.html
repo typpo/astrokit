@@ -6,7 +6,7 @@
 
 {% block nav %}{% endblock %}
 
-{% block heading %}Comparison Image - Analysis #{{analysis.id}}{% endblock %}
+{% block heading %}Companion Image - Analysis #{{analysis.id}}{% endblock %}
 
 {% block styles %}
 <style>
@@ -30,10 +30,10 @@
 {% block content-interior %}
 
 <p>
-Comparison images are used to perform reductions to light curves.
+Companion images are used to perform reductions to light curves.  Your companion image should be the same, except with a different filter.
 </p>
 <p>
-You are selecting a comparison image for:
+You are selecting a companion image for:
 <ul>
   <li>File: {{analysis.meta.uploaded_image.original_filename}}</li>
   <li>Filter: {{analysis.meta.image_band}}</li>
