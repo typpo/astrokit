@@ -136,7 +136,7 @@ h1 span {
         <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary disabled">Analysis Pending</a>
       {% endif %}
 
-      <div class="btn btn-default" data-analysis-id="{{image.analysis.id}}">Select comparison image</div>
+      <div class="btn btn-default js-select-comparison-image" data-analysis-id="{{image.analysis.id}}">Select comparison image</div>
 
       {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
         <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
@@ -157,6 +157,11 @@ h1 span {
     </p>
   </div>
 </div>
+
+<div class="comparison-image-modal">
+  {% include 'partials/modal.html' %}
+</div>
+
 {% endblock %}
 
 {% csrf_token %}
@@ -165,6 +170,7 @@ h1 span {
   <script>
     window.lightcurveId = {{lightcurve.id | jsonify}};
   </script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="{% static "imageflow/js/csrf.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>
   <script src="{% static "lightcurve/js/lightcurve.js" %}" type="text/javascript"></script>

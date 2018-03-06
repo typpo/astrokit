@@ -56,24 +56,7 @@ function editLightCurveName(lightcurveId) {
   })
 }
 
-$(function() {
-  checkStatus();
-
-  $('#save-observation-default').on('click', function() {
-    saveObservationDefault();
-    return false;
-  });
-
-  $('.js-toggle-lightcurve').on('click', function() {
-    toggleAddToLightcurve(this);
-    return false;
-  });
-
-  $('.js-reload').on('click', function() {
-    window.location.reload();
-    return false;
-  });
-
+function setupEditNameHandlers() {
   $('.js-edit-name-form').on('submit', function() {
     var lightcurve_id = $(this).data('lightcurve-id');
     editLightCurveName(lightcurve_id);
@@ -97,5 +80,38 @@ $(function() {
     $('.js-submit-name, .js-cancel').hide();
     return false;
   });
+}
 
+function setupMiscHandlers() {
+  $('#save-observation-default').on('click', function() {
+    saveObservationDefault();
+    return false;
+  });
+
+  $('.js-toggle-lightcurve').on('click', function() {
+    toggleAddToLightcurve(this);
+    return false;
+  });
+
+  $('.js-reload').on('click', function() {
+    window.location.reload();
+    return false;
+  });
+}
+
+function setupModals() {
+  $('.js-select-comparison-image').on('click', function() {
+    var analysisId = $(this).data('analysis-id');
+    $('.comparison-image-modal iframe')
+        .attr('src', '/analysis/companion_image_modal/' + analysisId);
+    $('.comparison-image-modal .modal').modal();
+  });
+}
+
+$(function() {
+  checkStatus();
+
+  setupEditNameHandlers();
+  setupMiscHandlers();
+  setupModals();
 });

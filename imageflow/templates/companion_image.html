@@ -4,7 +4,9 @@
 
 {% block title %}Analysis #{{analysis.id}} Reduction{% endblock %}
 
-{% block heading %}Comparison Image{% endblock %}
+{% block nav %}{% endblock %}
+
+{% block heading %}Comparison Image - Analysis #{{analysis.id}}{% endblock %}
 
 {% block styles %}
 <style>
@@ -16,6 +18,11 @@
 .plot-container {
   width: 100%;
   height: 400px;
+}
+
+/* Don't wrap for modal */
+.table-wrapper {
+  height: auto;
 }
 </style>
 {% endblock %}
@@ -39,7 +46,14 @@ You are selecting a comparison image for:
   <strong>Comparison Image</strong>
 </p>
 
-{% include 'partials/comparison_image_selector.html' %}
+{% include 'partials/companion_image_selector.html' %}
+
+<!--
+  <div style="text-align: right; margin-top: 3em">
+    <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
+    <a href="/lightcurve/{{analysis.lightcurve_id}}/edit" class="btn btn-lg btn-primary">Done</a>
+  </div>
+-->
 
 {% endblock %}
 
