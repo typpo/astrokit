@@ -60,10 +60,10 @@ function sortImages(option) {
   $.get('/lightcurve/' + window.lightcurveId + '/edit',
          {'sort': $(option).val()} )
   .done(function(data) {
-    console.log($(data).find('#image-list'))
+    $('#image-list').replaceWith($(data).find('#image-list'));
   })
   .fail(function() {
-    alert('Something went wrong. Lightcurve name was not updated.');
+    alert('Something went wrong. Image list was not updated.');
   })
 }
 
