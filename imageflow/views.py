@@ -413,6 +413,7 @@ def comparison_image(request, pk):
 
     template_args = {
         'analysis': analysis.get_summary_obj(),
+        'reduction': analysis.get_or_create_reduction().get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
 
         'potential_image_companions': potential_image_companions,
