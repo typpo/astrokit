@@ -5,11 +5,10 @@ function checkStatus() {
     $('#num-images-companion').text(data.numCompanion);
     $('#num-images-reviewed').text(data.numReviewed);
     $('#num-images-lightcurve').text(data.numLightcurve);
-    if (data.complete && !firstCheck) {
+    if (data.numImages === data.numProcessed && !firstCheck) {
       $('.js-new-results').show();
-    } else if (!data.complete) {
-      setTimeout(checkStatus, 5000);
     }
+    setTimeout(checkStatus, 5000);
     firstCheck = false;
   });
 }

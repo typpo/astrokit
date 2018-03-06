@@ -145,7 +145,7 @@ def get_status(request, lightcurve_id):
         'numCompanion': num_companion,
         'numReviewed': num_reviewed,
         'numLightcurve': num_lightcurve,
-        'complete': num_processed == len(images),
+        'numImages': len(images),
     })
 
 def my_lightcurve(request):
