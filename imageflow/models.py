@@ -180,6 +180,11 @@ class ImageAnalysis(models.Model):
         n_1 = maxlen - n_2 - 3
         return '%s...%s' % (name[:n_1], name[-n_2:])
 
+    def is_reviewed(self):
+        '''Returns whether this image has been reviewed.
+        '''
+        return self.status in [ImageAnalysis.REDUCTION_COMPLETE, ImageAnalysis.ADDED_TO_LIGHT_CURVE]
+
     def __str__(self):
         return '#%d %s: %s - Sub %d Job %d, Band %s @ %s' % \
                 (self.id,
