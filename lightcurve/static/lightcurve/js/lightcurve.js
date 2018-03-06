@@ -100,7 +100,7 @@ function setupMiscHandlers() {
 }
 
 function setupModals() {
-  $('.js-select-comparison-image').on('click', function() {
+  $('.js-select-companion-image').on('click', function() {
     var analysisId = $(this).data('analysis-id');
     $('.comparison-image-modal iframe')
         .attr('src', '/analysis/companion_image_modal/' + analysisId);
