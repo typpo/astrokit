@@ -2,11 +2,13 @@ var firstCheck = true;
 function checkStatus() {
   $.get('/lightcurve/' + window.lightcurveId + '/status', function(data) {
     $('#num-images-processed').text(data.numProcessed);
-    if (data.complete && !firstCheck) {
+    $('#num-images-companion').text(data.numCompanion);
+    $('#num-images-reviewed').text(data.numReviewed);
+    $('#num-images-lightcurve').text(data.numLightcurve);
+    if (data.numImages === data.numProcessed && !firstCheck) {
       $('.js-new-results').show();
-    } else if (!data.complete) {
-      setTimeout(checkStatus, 2000);
     }
+    setTimeout(checkStatus, 5000);
     firstCheck = false;
   });
 }
@@ -56,24 +58,7 @@ function editLightCurveName(lightcurveId) {
   })
 }
 
-$(function() {
-  checkStatus();
-
-  $('#save-observation-default').on('click', function() {
-    saveObservationDefault();
-    return false;
-  });
-
-  $('.js-toggle-lightcurve').on('click', function() {
-    toggleAddToLightcurve(this);
-    return false;
-  });
-
-  $('.js-reload').on('click', function() {
-    window.location.reload();
-    return false;
-  });
-
+function setupEditNameHandlers() {
   $('.js-edit-name-form').on('submit', function() {
     var lightcurve_id = $(this).data('lightcurve-id');
     editLightCurveName(lightcurve_id);
@@ -97,5 +82,38 @@ $(function() {
     $('.js-submit-name, .js-cancel').hide();
     return false;
   });
+}
 
+function setupMiscHandlers() {
+  $('#save-observation-default').on('click', function() {
+    saveObservationDefault();
+    return false;
+  });
+
+  $('.js-toggle-lightcurve').on('click', function() {
+    toggleAddToLightcurve(this);
+    return false;
+  });
+
+  $('.js-reload').on('click', function() {
+    window.location.reload();
+    return false;
+  });
+}
+
+function setupModals() {
+  $('.js-select-companion-image').on('click', function() {
+    var analysisId = $(this).data('analysis-id');
+    $('.comparison-image-modal iframe')
+        .attr('src', '/analysis/companion_image_modal/' + analysisId);
+    $('.comparison-image-modal .modal').modal();
+  });
+}
+
+$(function() {
+  checkStatus();
+
+  setupEditNameHandlers();
+  setupMiscHandlers();
+  setupModals();
 });

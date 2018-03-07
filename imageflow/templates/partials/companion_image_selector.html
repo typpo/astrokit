@@ -1,0 +1,75 @@
+<div style="margin-top:1em">
+  <div id="select-comparison-image-success" class="alert alert-success" style="display:none">
+    Comparison image successfully updated.
+  </div>
+  <div id="select-color-index-success" class="alert alert-success" style="display:none">
+    Color index successfully updated.
+  </div>
+  <div id="select-comparison-image-failure" class="alert alert-danger" style="display:none">
+    Something went wrong - failed to update your setting.
+  </div>
+</div>
+<div style="margin-left: 2em">
+  <div class="form-group">
+    <label for="select-color-index-2">Filter</label>
+    <select id="select-color-index-2" class="form-control" style="display:inline-block; width: auto">
+      {% for filter in image_filters %}
+        <option value="{{filter.band}}" {% if filter.band == reduction.data.color_index_2_band %}selected{% endif %}>
+          {{filter.band}} ({{filter.system}})
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <strong>Image</strong>
+    <div class="table-wrapper">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Analysis ID</th>
+            <th>Filter</th>
+            <th>Filename</th>
+            <th>Target ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <input type="radio" name="image-companion" value="0" checked />
+            </td>
+            <td>0</td>
+            <td>-</td>
+            <td>None selected</td>
+            <td>-</td>
+          </tr>
+          {% for image in potential_image_companions %}
+            {% if reduction.meta.image_companion_id == image.id %}
+              <tr class="highlight">
+            {% elif image.analysis.target_id %}
+              <tr style="background-color: #e5ffe0">
+            {% else %}
+              <tr>
+            {% endif %}
+              <td>
+                {% if image.analysis.target_id %}
+                  <input type="radio" name="image-companion" value="{{image.id}}" {% if reduction.meta.image_companion_id == image.id %}checked{% endif %} />
+                {% endif %}
+              </td>
+              <td><a href="/analysis/{{image.analysis.id}}">{{image.analysis.id}}</a></td>
+              <td>{{image.analysis.image_filter.band}}</td>
+              <td><a href="/analysis/{{image.analysis.id}}">{{image.original_filename | truncatechars:40}}</a></td>
+              <td>
+                {% if image.analysis.target_id %}
+                  {{image.analysis.target_id}}
+                {% else %}
+                  <span style="color:red">No target</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
