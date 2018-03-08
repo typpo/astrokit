@@ -11,7 +11,6 @@ class ImageFilterManager(models.Manager):
     def get_default_2(self):
         return self.get(band='V').pk
 
-
 class ImageFilter(models.Model):
     objects = ImageFilterManager()
 
@@ -26,12 +25,14 @@ class ImageFilter(models.Model):
     def __unicode__(self):
         return u'%s (%s)' % (self.band, self.system)
 
+'''
 class ColorIndex(models.Model):
-    filter1 = models.ForeignKey(ImageFilter)
-    filter2 = models.ForeignKey(ImageFilter)
+    filter1 = models.ForeignKey(ImageFilter, related_name='filter1')
+    filter2 = models.ForeignKey(ImageFilter, related_name='filter2')
 
     def __str__(self):
         return '%s - %s' % (self.filter1.band, self.filter2.band)
+'''
 
 class PhotometrySettings(models.Model):
     sigma_psf = models.FloatField(default=2.0)

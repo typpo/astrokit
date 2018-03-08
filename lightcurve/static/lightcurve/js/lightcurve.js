@@ -105,17 +105,30 @@ function setupMiscHandlers() {
   });
 }
 
-function setupModals() {
-  $('.js-select-companion-image').on('click', function() {
-    var analysisId = $(this).data('analysis-id');
-    $('.image-modal iframe').attr('src', '/analysis/companion_image_modal/' + analysisId);
-    $('.image-modal .modal').modal();
+function setupImageSelection() {
+  var $selectingElt = null;
+  $('.js-select-image').on('click', function() {
+    $selectingElt = $(this);
+    $('.select-image-modal .modal').modal();
   });
 
+  $('.js-select-image-update').on('click', function() {
+    var analysisId = $('input[name="image-companion"]:checked').val();
+    if ($selectingElt) {
+      if (analysisId !== 'NONE') {
+        $selectingElt.text('Image #' + analysisId);
+      } else {
+        $selectingElt.text('Select Image');
+      }
+    }
+  });
+}
+
+function setupModals() {
   $('.js-select-target').on('click', function() {
     var analysisId = $(this).data('analysis-id');
-    $('.image-modal iframe').attr('src', '/analysis/select_target_modal/' + analysisId);
-    $('.image-modal .modal').modal();
+    $('.iframe-modal iframe').attr('src', '/analysis/select_target_modal/' + analysisId);
+    $('.iframe-modal .modal').modal();
   });
 }
 
@@ -124,5 +137,6 @@ $(function() {
 
   setupEditNameHandlers();
   setupMiscHandlers();
+  setupImageSelection();
   setupModals();
 });
