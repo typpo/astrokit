@@ -220,11 +220,15 @@ function setupPlot() {
   var canvas = document.getElementById('star-plot');
   if (canvas) {
     var $container = $('#plot-container');
-    plotImage($container, canvas, window.originalImageUrl, {
-      width: $container.width(),
-      height: $container.height(),
-    });
-    setupCanvasListeners(canvas);
+    // Set a timeout here because the plot sometimes fades in in a modal. This
+    // transition takes 150ms.
+    setTimeout(function() {
+      plotImage($container, canvas, window.originalImageUrl, {
+        width: $container.width(),
+        height: $container.height(),
+      });
+      setupCanvasListeners(canvas);
+    }, 200);
   }
 
 }

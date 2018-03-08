@@ -1,5 +1,4 @@
 body {
-  background-color: #252525;
   font-family: "proxima-nova",Helvetica,sans-serif;
 }
 
@@ -107,6 +106,7 @@ tr.highlight {
 
 .fullscreen .modal-body {
   height: 80vh;
+  padding: 0;
 }
 
 .modal iframe {
