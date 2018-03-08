@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
 from corrections import get_jd_for_analysis
-from imageflow.models import ImageAnalysis, Reduction, UserUploadedImage
+from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
 from lightcurve.models import LightCurve
 from reduction.util import find_point_by_id
 
@@ -17,6 +17,7 @@ def edit_lightcurve(request, lightcurve_id):
     context = {
         'lightcurve': lc,
         'images': images,
+        'image_filters': ImageFilter.objects.all(),
     }
     return render_to_response('lightcurve.html', context,
             context_instance=RequestContext(request))
@@ -81,6 +82,7 @@ def save_observation_default(request, lightcurve_id):
     elevation = request.POST.get('elevation')
     extinction = request.POST.get('extinction')
     target_name = request.POST.get('target')
+    magband = request.POST.get('magband')
 
     for image in images:
         if lat:
@@ -96,6 +98,9 @@ def save_observation_default(request, lightcurve_id):
         if target_name:
             # This target is looked up during the reduction step.
             image.target_name = target_name
+        if magband:
+            lc.magband = ImageFilter.objects.get(band=band)
+            lc.save()
         image.save()
 
     return JsonResponse({

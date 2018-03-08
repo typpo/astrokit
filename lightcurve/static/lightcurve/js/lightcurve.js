@@ -20,6 +20,7 @@ function saveObservationDefault() {
     'elevation': $('#set-elevation').val(),
     'extinction': $('#second-order-extinction').val(),
     'target': $('#target-name').val(),
+    'magband': $('#select-magband').val(),
   }, function(data) {
     if (data.success) {
       alert('Settings applied to all images.');
