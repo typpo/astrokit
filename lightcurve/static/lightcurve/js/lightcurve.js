@@ -86,7 +86,9 @@ $(function() {
   });
 
   $('#select-sort-images').on('change', function() {
-    sortImages(this);
+    if ($(this).val()) {
+      sortImages(this);
+    }
     return false;
   })
 

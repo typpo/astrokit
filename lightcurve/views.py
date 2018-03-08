@@ -1,7 +1,7 @@
 from django.http import JsonResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.shortcuts import get_object_or_404
+from django.db.models import Case, Value, When, IntegerField
 
 from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
@@ -16,14 +16,27 @@ def edit_lightcurve(request, lightcurve_id):
 
     sort = request.GET.get('sort')
     if sort:
-        images = images.order_by(sort)
+        if sort == "analysis__status":
+            images = images.annotate( status_sort = Case(
+                When(analysis__status='ASTROMETRY_PENDING', then=Value(0)),
+                When(analysis__status='PHOTOMETRY_PENDING', then=Value(1)),
+                When(analysis__status='REVIEW_PENDING', then=Value(2)),
+                When(analysis__status='REDUCTION_COMPLETE', then=Value(3)),
+                When(analysis__status='ADDED_TO_LIGHT_CURVE', then=Value(4)),
+                When(analysis__status='FAILED', then=Value(5)),
+                output_field=IntegerField(), )
+            ).order_by('status_sort')
+        else:
+            images = images.order_by(sort)
 
     context = {
         'lightcurve': lc,
         'images': images,
     }
+
     return render_to_response('lightcurve.html', context,
             context_instance=RequestContext(request))
+
 
 def plot_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
