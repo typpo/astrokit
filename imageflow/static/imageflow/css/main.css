@@ -93,3 +93,24 @@ tr.highlight {
 .well {
   border: 1px solid #c5b7b7;
 }
+
+.fullscreen .modal-dialog {
+  width: 90%;
+  height: 90%;
+}
+
+.fullscreen .modal-content {
+  height: auto;
+  min-height: 90%;
+  border-radius: 0;
+}
+
+.fullscreen .modal-body {
+  height: 80vh;
+}
+
+.modal iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}

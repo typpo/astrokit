@@ -149,12 +149,20 @@ def edit_lightcurve_name(request, lightcurve_id):
 def get_status(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
     images = lc.useruploadedimage_set.all()
+
     num_processed = sum([image.submission.is_done() for image in images if image.submission])
+    num_companion = sum([image.analysis.get_or_create_reduction().image_companion is not None for image in images if image.analysis])
+
+    num_reviewed = sum([image.analysis.is_reviewed() for image in images if image.analysis])
+    num_lightcurve = sum([image.analysis.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE for image in images if image.analysis])
 
     return JsonResponse({
         'success': True,
         'numProcessed': num_processed,
-        'complete': num_processed == len(images),
+        'numCompanion': num_companion,
+        'numReviewed': num_reviewed,
+        'numLightcurve': num_lightcurve,
+        'numImages': len(images),
     })
 
 def my_lightcurve(request):

@@ -41,10 +41,11 @@ h1 span {
 <a href="plot?type=instrumental" class="btn btn-default">Instrumental Magnitudes Plot</a>
 <a href="#" class="btn btn-default">Download as XLSX</a>
 <a href="#" class="btn btn-default">Download as ALCDEF</a>
+
 <div>
   <h3>Observation Metadata</h3>
   <p>These settings apply to all images.  You can change these values for individual images later.</p>
-  <div class="well">
+  <div>
     <h4>Target</h4>
     <div class="well">
       Name (<a href="https://ssd.jpl.nasa.gov/horizons.cgi">JPL Horizons</a>) <input type="text" class="form-control" style="width:20em" id="target-name" value="{{analysis.meta.target_name}}" />
@@ -74,17 +75,24 @@ h1 span {
     </div>
   </div>
 
+  <hr/>
+
   <h3>Images</h3>
-  <p class="clearfix">
+  <p>
+    Image processing checklist:<br>
+    ☑ Initial processing of astrometry and photometry (<span id="num-images-processed">0</span> of {{ images | length }})<br>
+    ☐ Select companion image (<span id="num-images-companion">?</span> of {{ images | length}})<br>
+    ☐ Review analysis (<span id="num-images-reviewed">?</span> of {{ images | length}})<br>
+    ☐ Add to light curve (<span id="num-images-lightcurve">?</span> of {{ images | length}})<br>
     <span id="num-images-processed">0</span> of {{ images | length }} images have been processed.
+  </p>
+  <p class="clearfix">
     <select id="select-sort-images" class="form-control pull-right" style="display:inline-block; width: auto">
       <option value="" selected>--- Sort ---</option>
       <option value="original_filename">Filename</option>
       <option value="analysis__image_datetime">Timestamp</option>
       <option value="analysis__status">Status</option>
     </select>
-  </p>
-  <p>
     <button style="display:none" class="btn btn-success js-reload js-new-results">Load new results</button>
   </p>
 
@@ -166,6 +174,11 @@ h1 span {
     </p>
   </div>
 </div>
+
+<div class="comparison-image-modal">
+  {% include 'partials/modal.html' %}
+</div>
+
 {% endblock %}
 
 {% csrf_token %}
@@ -174,6 +187,7 @@ h1 span {
   <script>
     window.lightcurveId = {{lightcurve.id | jsonify}};
   </script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="{% static "imageflow/js/csrf.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>
   <script src="{% static "lightcurve/js/lightcurve.js" %}" type="text/javascript"></script>
