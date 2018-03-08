@@ -1,15 +1,18 @@
-var firstCheck = true;
+var prevNumProcessed = -1;
 function checkStatus() {
   $.get('/lightcurve/' + window.lightcurveId + '/status', function(data) {
     $('#num-images-processed').text(data.numProcessed);
     $('#num-images-companion').text(data.numCompanion);
+    $('#num-images-target').text(data.numTarget);
     $('#num-images-reviewed').text(data.numReviewed);
     $('#num-images-lightcurve').text(data.numLightcurve);
-    if (data.numImages === data.numProcessed && !firstCheck) {
+    if (data.numImages === data.numProcessed &&
+        data.numProcessed !== prevNumProcessed &&
+        prevNumProcessed !== -1) {
       $('.js-new-results').show();
     }
     setTimeout(checkStatus, 5000);
-    firstCheck = false;
+    prevNumProcessed = data.numProcessed;
   });
 }
 

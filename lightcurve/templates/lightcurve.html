@@ -10,6 +10,10 @@ h1 span {
   color:#286090;
 }
 
+.checklist {
+  position: fixed;
+}
+
 .user-image {
   max-width: 300px;
   max-height: 300px;
@@ -18,7 +22,6 @@ h1 span {
 .image-container {
   margin: 2em 0;
 }
-
 </style>
 {% endblock %}
 
@@ -42,8 +45,8 @@ h1 span {
 <a href="#" class="btn btn-default">Download as XLSX</a>
 <a href="#" class="btn btn-default">Download as ALCDEF</a>
 
-<div>
-  <h3>Settings</h3>
+<div class="col-md-8">
+  <h2 id="settings">Settings</h2>
   <p>These settings apply to all images.  You can change these values for individual images later.</p>
   <div>
     <h4>Target</h4>
@@ -85,22 +88,15 @@ h1 span {
     </div>
 
     <div class="button-row">
-      <div id="save-observation-default" class="btn btn-primary">Apply to all images</div>
+      <div id="save-observation-default" class="btn btn-primary">Apply settings</div>
     </div>
   </div>
 
   <hr/>
 
-  <h3>Images</h3>
+  <h2 id="first-pass-selection">Target &amp; Companion Image Selection</h2>
   <p>
-    Image processing checklist:<br>
-    ☑ Initial processing of astrometry and photometry (<span id="num-images-processed">0</span> of {{ images | length }})<br>
-    ☐ Select companion image (<span id="num-images-companion">?</span> of {{ images | length}})<br>
-    ☐ Review analysis (<span id="num-images-reviewed">?</span> of {{ images | length}})<br>
-    ☐ Add to light curve (<span id="num-images-lightcurve">?</span> of {{ images | length}})<br>
-  </p>
-  <p>
-    <button style="display:none" class="btn btn-success js-reload js-new-results">Load new results</button>
+    For color index/hidden transform.
   </p>
   {% for image in images %}
   <div id="image-{{forloop.counter0}}" class="well">
@@ -142,6 +138,7 @@ h1 span {
         <br>Note: <em>{{image.analysis.notes}}</em>
     {% endif %}
 
+<!--
     <div class="image-container">
       {% if image.analysis.original_display_url %}
         <a href="/analysis/{{image.analysis.id}}">
@@ -149,34 +146,76 @@ h1 span {
         </a>
       {% endif %}
     </div>
+-->
 
     <div class="button-row">
+<!--
       {% if image.submission and image.submission.status == 'COMPLETE' %}
         <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary">Review Analysis</a>
       {% elif image.submission %}
         <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary disabled">Analysis Pending</a>
       {% endif %}
+-->
 
-      {% if image.analysis.reduction and image.analysis.reduction.image_companion %}
-        <div class="btn btn-default js-select-companion-image" data-analysis-id="{{image.analysis.id}}">Change companion image</div>
+      {% if image.analysis.target_id %}
+        <div class="btn btn-default js-select-target" data-analysis-id="{{image.analysis.id}}">Change Target</div>
       {% else %}
-        <div class="btn btn-primary js-select-companion-image" data-analysis-id="{{image.analysis.id}}">Select companion image</div>
+        <div class="btn btn-primary js-select-target" data-analysis-id="{{image.analysis.id}}">Select Target</div>
       {% endif %}
 
+      {% if image.analysis.reduction and image.analysis.reduction.image_companion %}
+        <div class="btn btn-default js-select-companion-image" data-analysis-id="{{image.analysis.id}}">Change Companion Image</div>
+      {% else %}
+        <div class="btn btn-primary js-select-companion-image" data-analysis-id="{{image.analysis.id}}">Select Companion Image</div>
+      {% endif %}
+
+<!--
       {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
         <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
       {% elif image.analysis and image.analysis.status == 'ADDED_TO_LIGHT_CURVE' %}
         <div class="btn btn-warning js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Remove from lightcurve</div>
-      {% elif image.submission %}
-        <!--<div class="btn btn-default disabled">Add to lightcurve</div>-->
       {% endif %}
+-->
+<!--
       {% if image.submission %}
         <a href="http://35.202.61.141/status/{{image.analysis.astrometry_job.jobid}}" class="btn btn-default">View Astrometry job</a>
       {% endif %}
+-->
     </div>
   </div>
   {% endfor %}
   <div>
+    <p>
+      <button style="display:none" class="btn btn-success js-reload js-new-results">Load new results</button>
+    </p>
+  </div>
+
+  <hr/>
+
+  <h2>Calculations</h2>
+  <p>
+    CI/Hidden transform
+  </p>
+
+  <hr/>
+
+  <h2>Review each image</h2>
+  <p>
+    review
+  </p>
+</div>
+<div class="col-md-4">
+  <div class="checklist">
+    <h2>Checklist</h2>
+    <p>
+      ☐ <a href="#settings">Set global settings</a><br>
+      ☑ Initial processing of astrometry and photometry (<span id="num-images-processed">0</span> of {{ images | length }})<br>
+      ☐ <a href="#first-pass-selection">Select targets</a> (<span id="num-images-target">?</span> of {{ images | length }})<br>
+      ☐ <a href="#first-pass-selection">Select companion images</a> (<span id="num-images-companion">?</span> of {{ images | length}})<br>
+      ☐ Confirm CI/transform calculations<br>
+      ☐ Review analyses (<span id="num-images-reviewed">?</span> of {{ images | length}})<br>
+      ☐ Add to light curve (<span id="num-images-lightcurve">?</span> of {{ images | length}})<br>
+    </p>
     <p>
       <button style="display:none" class="btn btn-success js-reload js-new-results">Load new results</button>
     </p>

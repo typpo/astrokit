@@ -140,6 +140,7 @@ def get_status(request, lightcurve_id):
 
     num_processed = sum([image.submission.is_done() for image in images if image.submission])
     num_companion = sum([image.analysis.get_or_create_reduction().image_companion is not None for image in images if image.analysis])
+    num_target = sum([image.analysis.target_id > 0 for image in images if image.analysis])
 
     num_reviewed = sum([image.analysis.is_reviewed() for image in images if image.analysis])
     num_lightcurve = sum([image.analysis.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE for image in images if image.analysis])
@@ -148,6 +149,7 @@ def get_status(request, lightcurve_id):
         'success': True,
         'numProcessed': num_processed,
         'numCompanion': num_companion,
+        'numTarget': num_target,
         'numReviewed': num_reviewed,
         'numLightcurve': num_lightcurve,
         'numImages': len(images),
