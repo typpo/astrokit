@@ -108,15 +108,13 @@ function setupMiscHandlers() {
 function setupModals() {
   $('.js-select-companion-image').on('click', function() {
     var analysisId = $(this).data('analysis-id');
-    $('.image-modal iframe')
-        .attr('src', '/analysis/companion_image_modal/' + analysisId);
+    $('.image-modal iframe').attr('src', '/analysis/companion_image_modal/' + analysisId);
     $('.image-modal .modal').modal();
   });
 
   $('.js-select-target').on('click', function() {
     var analysisId = $(this).data('analysis-id');
-    $('.image-modal iframe')
-        .attr('src', '/analysis/select_target_modal/' + analysisId);
+    $('.image-modal iframe').attr('src', '/analysis/select_target_modal/' + analysisId);
     $('.image-modal .modal').modal();
   });
 }

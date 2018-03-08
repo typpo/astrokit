@@ -26,6 +26,13 @@ class ImageFilter(models.Model):
     def __unicode__(self):
         return u'%s (%s)' % (self.band, self.system)
 
+class ColorIndex(models.Model):
+    filter1 = models.ForeignKey(ImageFilter)
+    filter2 = models.ForeignKey(ImageFilter)
+
+    def __str__(self):
+        return '%s - %s' % (self.filter1.band, self.filter2.band)
+
 class PhotometrySettings(models.Model):
     sigma_psf = models.FloatField(default=2.0)
     crit_separation = models.FloatField(default=5.0)

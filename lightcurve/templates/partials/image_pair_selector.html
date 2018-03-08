@@ -1,0 +1,51 @@
+<div class="filter-pair-selector">
+  <form class="form form-inline">
+    <select id="select-magband" class="form-control" style="width: 10em">
+      {% for filter in image_filters %}
+        <option value="{{filter.band}}" {% if filter.band == lightcurve.magband %}selected{% endif %}>
+          {{filter.band}} ({{filter.system}})
+        </option>
+      {% endfor %}
+    </select>
+    -
+    <select id="select-magband" class="form-control" style="width: 10em">
+      {% for filter in image_filters %}
+        <option value="{{filter.band}}" {% if filter.band == lightcurve.magband %}selected{% endif %}>
+          {{filter.band}} ({{filter.system}})
+        </option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+<div class="image-pair-selector">
+  <table class="table table-striped table-hover table-bordered">
+    <thead>
+      <tr>
+        <th style="vertical-align:middle">
+          Observation
+        </th>
+        <th>
+          Filter 1
+        </th>
+        <th>
+          Filter 2
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in '1234567890' %}
+        <tr>
+          <td>
+            {{forloop.counter}}
+          </td>
+          <td>
+            <button class="btn btn-default js-select-companion-image">Select Image</button>
+          </td>
+          <td>
+            <button class="btn btn-default js-select-companion-image">Select Image</button>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

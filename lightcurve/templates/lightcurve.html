@@ -81,24 +81,20 @@ h1 span {
       <input type="text" class="form-control" style="width:20em" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
     </div>
 
-    <h4>Light Curve</h4>
-    <div class="well">
-      Magnitude Band
-      <select id="select-magband" class="form-control" style="width: 10em">
-        {% for filter in image_filters %}
-          <option value="{{filter.band}}" {% if filter.band == lightcurve.magband %}selected{% endif %}>
-            {{filter.band}} ({{filter.system}})
-          </option>
-        {% endfor %}
-      </select>
-    </div>
-
     <div class="button-row">
       <div id="save-observation-default" class="btn btn-primary">Apply settings</div>
     </div>
   </div>
 
   <hr/>
+
+  <h2 id="pair-selection">Image Pairs</h2>
+  <p>
+    Select images in different color bands to compute color index and hidden transform.  Example color indexes: B-V, V-R, s'-g'.
+  </p>
+  <div>
+    {% include 'partials/image_pair_selector.html' %}
+  </div>
 
   <h2 id="first-pass-selection">Target &amp; Companion Image Selection</h2>
   <p>
