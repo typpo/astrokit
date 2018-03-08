@@ -175,3 +175,7 @@ def all_lightcurve(request):
 
     return render_to_response('lightcurve_list.html', {"contexts": context_list, "request_all": True},
             context_instance=RequestContext(request))
+
+
+def download_file(request):
+    pass
