@@ -1,8 +1,8 @@
 <div class="color-index-selector">
   <form class="form form-inline">
     <label for="select-color-index">Color index</label>
-    <select id="select-color-index" class="form-control" style="width: 10em">
-      <option value="None">None</option>
+    <select id="select-color-index" class="form-control js-select-color-index" style="width: 10em">
+      <option value="NONE">None</option>
       <option value="BV">BV</option>
       <option value="VR">VR</option>
       <option value="VI">VI</option>
@@ -35,10 +35,10 @@
             {{forloop.counter}}
           </td>
           <td>
-            <button class="btn btn-default js-select-image">Select Image</button>
+            <button class="btn btn-primary js-select-image" disabled>Select Image</button>
           </td>
           <td>
-            <button class="btn btn-default js-select-image">Select Image</button>
+            <button class="btn btn-primary js-select-image" disabled>Select Image</button>
           </td>
         </tr>
       {% endfor %}

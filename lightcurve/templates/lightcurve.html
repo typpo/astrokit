@@ -95,6 +95,9 @@ h1 span {
   <div>
     {% include 'partials/image_pair_selector.html' %}
   </div>
+  <div class="button-row">
+    <div class="btn btn-primary js-save-image-pairs">Save image pairs</div>
+  </div>
 
   <h2 id="first-pass-selection">Target &amp; Companion Image Selection</h2>
   <p>
@@ -251,7 +254,7 @@ h1 span {
               <tbody>
                 <tr>
                   <td>
-                    <input type="radio" name="image-companion" value="NONE" />
+                    <input type="radio" name="image-radio" value="NONE" />
                   </td>
                   <td>None</td>
                   <td>-</td>
@@ -268,7 +271,7 @@ h1 span {
                   {% endif %}
                     <td>
                       {% if image.analysis.target_id %}
-                        <input type="radio" name="image-companion" value="{{image.analysis.id}}" />
+                        <input type="radio" name="image-radio" value="{{image.analysis.id}}" />
                       {% endif %}
                     </td>
                     <td><a href="/analysis/{{image.analysis.id}}">{{image.analysis.id}}</a></td>

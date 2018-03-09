@@ -105,22 +105,64 @@ function setupMiscHandlers() {
   });
 }
 
-function setupImageSelection() {
+function setupImagePairs() {
+  // Handle color index selection.
+  var colorIndex = null;
+  $('.js-select-color-index').on('change', function() {
+    var val = $(this).val();
+    if (val === 'NONE') {
+      $('.image-pair-selector .btn').attr('disabled', 1);
+    } else {
+      $('.image-pair-selector .btn').removeAttr('disabled');
+    }
+    colorIndex = val;
+  });
+
+  // Handle pair selection.
   var $selectingElt = null;
   $('.js-select-image').on('click', function() {
     $selectingElt = $(this);
+    $('input[name="image-radio"]').prop('checked', false);
     $('.select-image-modal .modal').modal();
   });
 
   $('.js-select-image-update').on('click', function() {
-    var analysisId = $('input[name="image-companion"]:checked').val();
+    var analysisId = $('input[name="image-radio"]:checked').val();
     if ($selectingElt) {
       if (analysisId !== 'NONE') {
         $selectingElt.text('Image #' + analysisId);
+        $selectingElt.data('analysis-id', analysisId);
       } else {
         $selectingElt.text('Select Image');
       }
+      $selectingElt.toggleClass('btn-primary').toggleClass('btn-default')
     }
+  });
+
+  // Save everything.
+  $('.js-save-image-pairs').on('click', function() {
+    var data = {
+      colorIndex: colorIndex,
+      pairs: [],
+    };
+
+    $('.js-select-image').each(function(idx) {
+      var analysisId = parseInt($(this).data('analysis-id'), 0);
+      if (isNaN(analysisId)) {
+        analysisId = null;
+      }
+
+      // Build an array of pair tuples. eg.
+      // [[1,2], [3,4], [5,6]]
+      if (idx % 2 === 0) {
+        data.pairs.push([analysisId]);
+      } else {
+        data.pairs[data.pairs.length - 1].push(analysisId);
+      }
+    });
+
+    // TODO(ian): POST it all to some endpoint.
+    console.log(data);
   });
 }
 
@@ -137,6 +179,6 @@ $(function() {
 
   setupEditNameHandlers();
   setupMiscHandlers();
-  setupImageSelection();
+  setupImagePairs();
   setupModals();
 });
