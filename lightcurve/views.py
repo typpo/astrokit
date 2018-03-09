@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404
@@ -9,6 +9,7 @@ from corrections import get_jd_for_analysis
 from imageflow.models import ImageAnalysis, Reduction, UserUploadedImage
 from lightcurve.models import LightCurve
 from reduction.util import find_point_by_id
+import csv
 
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
@@ -177,5 +178,15 @@ def all_lightcurve(request):
             context_instance=RequestContext(request))
 
 
-def download_file(request):
-    pass
+def download_file(request, lightcurve_id):
+    file_type = request.GET.get('file_type')
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="LightCurve' + lightcurve_id + '.' + file_type + '"'
+
+    if file_type == "csv":
+        writer = csv.writer(response)
+        writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
+        writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+        print "returning csv response"
+
+    return response

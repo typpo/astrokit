@@ -58,11 +58,12 @@ function editLightCurveName(lightcurveId) {
   })
 }
 
-function downloadFile(type) {
-  $.get('/lightcurve/' + window.lightcurveId + '/download_file',
-      {'type' : type})
+function downloadFile(file_type) {
+  $.get('/lightcurve/' + window.lightcurveId + '/download_file', {
+    'file_type': file_type
+  })
   .done(function() {
-    //
+    alert('File download should start in a few moment.');
   })
   .fail(function() {
     alert('Something went wrong. File was not downloaded.');
@@ -111,9 +112,8 @@ function setupMiscHandlers() {
     return false;
   });
 
-  $('.download_file').on('click', function() {
+  $('.download-file').on('click', function() {
     downloadFile($(this).attr('id'));
-    return false;
   });
 }
 
