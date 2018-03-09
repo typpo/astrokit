@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 # shim for databases without native json support.
 from jsonfield import JSONField
 
+from accounts.models import UserUploadedImage
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from lightcurve.models import LightCurve
 from photometry.models import ImageFilter, PhotometrySettings
@@ -194,22 +195,6 @@ class ImageAnalysis(models.Model):
                  self.astrometry_job.jobid, \
                  str(self.image_filter.band), \
                  str(self.image_datetime))
-
-class UserUploadedImage(models.Model):
-    """
-    Model for user uploaded images
-    """
-    user = models.ForeignKey(User)
-    image_url = models.URLField(max_length=512)
-    original_filename = models.CharField(max_length=512)
-    created_at = models.DateTimeField(auto_now=True)
-
-    lightcurve = models.ForeignKey(LightCurve, blank=True, null=True)
-    submission = models.ForeignKey(AstrometrySubmission, blank=True, null=True)
-    analysis = models.ForeignKey(ImageAnalysis, blank=True, null=True)
-
-    def __str__(self):
-        return '%s submission #%d' % (self.original_filename, self.submission.subid)
 
 class Reduction(models.Model):
     CREATED = 'CREATED'

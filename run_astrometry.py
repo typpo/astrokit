@@ -18,12 +18,13 @@ sys.path.insert(0, os.getcwd())
 django.setup()
 
 import imageflow.s3_util as s3_util
+from accounts.models import UserUploadedImage
 from astrometry import astrometry_original_image_client
 from astrometry.astrometry_client import Client
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.process import process_astrometry_online
 from astrophot_util import get_fits_from_raw
-from imageflow.models import ImageAnalysis, UserUploadedImage
+from imageflow.models import ImageAnalysis
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -7,8 +7,9 @@ from django.utils.dateparse import parse_datetime
 
 from astrometry.util import create_new_lightcurve, edit_lightcurve
 
+from accounts.models import UserUploadedImage
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
-from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
+from imageflow.models import ImageAnalysis, ImageFilter, Reduction
 
 def index(request):
     return render_to_response('index.html', context_instance=RequestContext(request))

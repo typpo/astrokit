@@ -21,10 +21,7 @@ from .forms import (
     AuthenticationForm,
     ForgotPasswordForm,
     ResetPasswordForm)
-from .models import URLCode
-from imageflow.models import UserUploadedImage
-
-
+from .models import URLCode, UserUploadedImage
 
 class LoginView(FormView):
     """Login using username and password

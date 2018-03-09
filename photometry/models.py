@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.utils import OperationalError
 
 CI_BAND_TO_FILTERS = {
     'BV': ('B', 'V'),
@@ -16,10 +17,22 @@ CI_BAND_TO_FILTERS = {
 
 class ImageFilterManager(models.Manager):
     def get_default(self):
-        return self.get(band='B').pk
+        try:
+            return self.get(band='B').pk
+        except:
+            # Happens when db doesn't exist yet, get_default() is called at
+            # some imports and it should pass.
+            print 'Image filter returning NULL default'
+            return None
 
     def get_default_2(self):
-        return self.get(band='V').pk
+        try:
+            return self.get(band='V').pk
+        except:
+            # Happens when db doesn't exist yet, get_default() is called at
+            # some imports and it should pass.
+            print 'Image filter returning NULL default'
+            return None
 
     def get_from_ci_band(self, ci_band, pos):
         filters = CI_BAND_TO_FILTERS.get(ci_band)

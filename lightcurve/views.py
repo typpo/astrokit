@@ -3,10 +3,11 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.shortcuts import get_object_or_404
 
+from accounts.models import UserUploadedImage
 from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
 from corrections import get_jd_for_analysis
-from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
+from imageflow.models import ImageAnalysis, ImageFilter, Reduction
 from lightcurve.models import LightCurve
 from reduction.util import find_point_by_id
 
