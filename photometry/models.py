@@ -1,19 +1,21 @@
 from __future__ import unicode_literals
 
+from collections import OrderedDict
+
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.utils import OperationalError
 
-CI_BAND_TO_FILTERS = {
-    'BV': ('B', 'V'),
-    'VR': ('V', 'R'),
-    'VI': ('V', 'I'),
-    'SGU': ('g', 'u'),
-    'SGR': ('g', 'r'),
-    'SRI': ('r', 'i'),
-    'SIZ': ('i', 'z'),
-}
+CI_BAND_TO_FILTERS = OrderedDict([
+    ('BV', ('B', 'V')),
+    ('VR', ('V', 'R')),
+    ('VI', ('V', 'I')),
+    ('SGU', ('g', 'u')),
+    ('SGR', ('g', 'r')),
+    ('SRI', ('r', 'i')),
+    ('SIZ', ('i', 'z')),
+])
 
 class ImageFilterManager(models.Manager):
     def get_default(self):
@@ -39,6 +41,9 @@ class ImageFilterManager(models.Manager):
         if not filters or pos not in [0, 1]:
             return None
         return filters[pos]
+
+    def get_ci_bands(self):
+        return CI_BAND_TO_FILTERS.keys()
 
 class ImageFilter(models.Model):
     objects = ImageFilterManager()

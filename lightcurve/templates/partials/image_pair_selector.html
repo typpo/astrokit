@@ -3,13 +3,9 @@
     <label for="select-color-index">Color index</label>
     <select id="select-color-index" class="form-control js-select-color-index" style="width: 10em">
       <option value="NONE">None</option>
-      <option value="BV">BV</option>
-      <option value="VR">VR</option>
-      <option value="VI">VI</option>
-      <option value="SGU">SGU</option>
-      <option value="SGR">SGR</option>
-      <option value="SRI">SRI</option>
-      <option value="SIZ">SIZ</option>
+      {% for band in ci_bands %}
+        <option value="{{band}}" {% if lightcurve.ciband == band %}selected{% endif %}>{{band}}</option>
+      {% endfor %}
     </select>
   </form>
 </div>
@@ -29,16 +25,29 @@
       </tr>
     </thead>
     <tbody>
-      {% for i in '1234567890' %}
+      {% for pair in image_pairs %}
         <tr>
           <td>
             {{forloop.counter}}
           </td>
           <td>
-            <button class="btn btn-primary js-select-image" disabled>Select Image</button>
+            <button class="btn btn-default js-select-image">Image #{{pair.analysis1.id}}</button>
           </td>
           <td>
-            <button class="btn btn-primary js-select-image" disabled>Select Image</button>
+            <button class="btn btn-default js-select-image">Image #{{pair.analysis2.id}}</button>
+          </td>
+        </tr>
+      {% endfor %}
+      {% for i in '12345' %}
+        <tr>
+          <td>
+            {{forloop.counter}}
+          </td>
+          <td>
+            <button class="btn btn-primary js-select-image">Select Image</button>
+          </td>
+          <td>
+            <button class="btn btn-primary js-select-image">Select Image</button>
           </td>
         </tr>
       {% endfor %}

@@ -129,13 +129,14 @@ function setupImagePairs() {
   $('.js-select-image-update').on('click', function() {
     var analysisId = $('input[name="image-radio"]:checked').val();
     if ($selectingElt) {
-      if (analysisId !== 'NONE') {
+      if (analysisId && analysisId !== 'NONE') {
         $selectingElt.text('Image #' + analysisId);
         $selectingElt.data('analysis-id', analysisId);
+        $selectingElt.removeClass('btn-primary').addClass('btn-default')
       } else {
         $selectingElt.text('Select Image');
+        $selectingElt.addClass('btn-primary').removeClass('btn-default')
       }
-      $selectingElt.toggleClass('btn-primary').toggleClass('btn-default')
     }
   });
 
