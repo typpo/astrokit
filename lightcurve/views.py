@@ -21,7 +21,7 @@ def edit_lightcurve(request, lightcurve_id):
         'lightcurve': lc,
         'images': images,
         'image_filters': ImageFilter.objects.all(),
-        'image_pairs': ImageAnalysisPair.objects.filter(lightcurve=lc),
+        'image_pairs': list(ImageAnalysisPair.objects.filter(lightcurve=lc)) + ([None] * 5),
         'ci_bands': ImageFilter.objects.get_ci_bands(),
     }
     return render_to_response('lightcurve.html', context,

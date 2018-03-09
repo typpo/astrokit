@@ -30,25 +30,21 @@
           <td>
             {{forloop.counter}}
           </td>
-          <td>
-            <button class="btn btn-default js-select-image">Image #{{pair.analysis1.id}}</button>
-          </td>
-          <td>
-            <button class="btn btn-default js-select-image">Image #{{pair.analysis2.id}}</button>
-          </td>
-        </tr>
-      {% endfor %}
-      {% for i in '12345' %}
-        <tr>
-          <td>
-            {{forloop.counter}}
-          </td>
-          <td>
-            <button class="btn btn-primary js-select-image">Select Image</button>
-          </td>
-          <td>
-            <button class="btn btn-primary js-select-image">Select Image</button>
-          </td>
+          {% if pair %}
+            <td>
+              <button class="btn btn-default js-select-image">Image #{{pair.analysis1.id}}</button>
+            </td>
+            <td>
+              <button class="btn btn-default js-select-image">Image #{{pair.analysis2.id}}</button>
+            </td>
+          {% else %}
+            <td>
+              <button class="btn btn-primary js-select-image">Select Image</button>
+            </td>
+            <td>
+              <button class="btn btn-primary js-select-image">Select Image</button>
+            </td>
+          {% endif %}
         </tr>
       {% endfor %}
     </tbody>
