@@ -440,12 +440,15 @@ def select_target_modal(request, pk):
     # Find this analysis in both lists.
     next_analysis = None
     next_analysis_without_target = None
+    prev_analysis = None
     all_idx = None
     some_idx = None
     try:
         all_idx = all_analyses.index(analysis)
         if all_idx < len(all_analyses) - 1:
             next_analysis = all_analyses[all_idx + 1]
+        if all_idx > 0:
+            prev_analysis = all_analyses[all_idx - 1]
     except ValueError:
         pass
 
@@ -460,6 +463,7 @@ def select_target_modal(request, pk):
         'analysis': analysis.get_summary_obj(),
         'next_analysis_idx': all_idx,
         'next_analysis': next_analysis,
+        'prev_analysis': prev_analysis,
         'next_analysis_without_target_idx': some_idx,
         'next_analysis_without_target': next_analysis_without_target,
     }

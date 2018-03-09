@@ -36,12 +36,23 @@
 <p>
 {{analysis.data.coords | length}} point sources detected via the
 <a href="http://stsdas.stsci.edu/cgi-bin/gethelp.cgi?daofind">DAOFind</a> algorithm.
-Select the point source you are interested in creating a lightcurve for.
+<strong><a target="_blank" href="/analysis/point_sources/{{analysis.id}}">Adjust point source extraction</a></strong>
+</p>
+<p>
+<strong>Image details</strong><br>
+Filename: {{analysis.meta.image_name_short}}<br>
+Timestamp: {{analysis.meta.datetime}}
+</p>
+<p>
+Select the point source for which you are interested in creating a lightcurve below.
 </p>
 
 {% include 'partials/point_source_plot.html' %}
 
 <div style="text-align: right">
+  {% if prev_analysis %}
+    <a href="{{prev_analysis.id}}" class="btn btn-lg btn-default">Previous image</a>
+  {% endif %}
   {% if next_analysis_without_target %}
     <a href="{{next_analysis_without_target.id}}" class="btn btn-lg btn-primary">Next without target</a>
   {% endif %}
