@@ -17,11 +17,14 @@ def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
     images = UserUploadedImage.objects.filter(lightcurve=lc)
 
+    # Always add 5 extra empty image pairs to the list.
+    image_pairs = list(ImageAnalysisPair.objects.filter(lightcurve=lc)) + ([None] * 5)
+
     context = {
         'lightcurve': lc,
         'images': images,
         'image_filters': ImageFilter.objects.all(),
-        'image_pairs': list(ImageAnalysisPair.objects.filter(lightcurve=lc)) + ([None] * 5),
+        'image_pairs': image_pairs,
         'ci_bands': ImageFilter.objects.get_ci_bands(),
     }
     return render_to_response('lightcurve.html', context,
