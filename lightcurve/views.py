@@ -15,7 +15,7 @@ from reduction.util import find_point_by_id
 
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
-    images = UserUploadedImage.objects.filter(lightcurve=lc)
+    images = UserUploadedImage.objects.filter(lightcurve=lc).order_by('analysis__image_datetime')
 
     # Always add 5 extra empty image pairs to the list.
     image_pairs = list(ImageAnalysisPair.objects.filter(lightcurve=lc)) + ([None] * 5)

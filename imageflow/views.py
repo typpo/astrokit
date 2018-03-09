@@ -428,8 +428,40 @@ def select_target_modal(request, pk):
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
+    all_analyses = list(ImageAnalysis.objects \
+            .filter(lightcurve=analysis.lightcurve) \
+            .order_by('image_datetime'))
+
+    # Pick the analyses that need targets.
+    some_analyses = list(ImageAnalysis.objects \
+            .filter(lightcurve=analysis.lightcurve, target_id=None) \
+            .order_by('image_datetime'))
+
+    # Find this analysis in both lists.
+    next_analysis = None
+    next_analysis_without_target = None
+    all_idx = None
+    some_idx = None
+    try:
+        all_idx = all_analyses.index(analysis)
+        if all_idx < len(all_analyses) - 1:
+            next_analysis = all_analyses[all_idx + 1]
+    except ValueError:
+        pass
+
+    try:
+        some_idx = some_analyses.index(analysis)
+        if some_idx < len(some_analyses) - 1:
+            next_analysis_without_target = some_analyses[some_idx + 1]
+    except ValueError:
+        pass
+
     template_args = {
         'analysis': analysis.get_summary_obj(),
+        'next_analysis_idx': all_idx,
+        'next_analysis': next_analysis,
+        'next_analysis_without_target_idx': some_idx,
+        'next_analysis_without_target': next_analysis_without_target,
     }
     return render_to_response('select_target.html', template_args,
             context_instance=RequestContext(request))

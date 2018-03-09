@@ -73,7 +73,7 @@ class ImageAnalysis(models.Model):
 
     # ID of point source target.
     target_name = models.CharField(max_length=50)
-    target_id = models.IntegerField(default=0)
+    target_id = models.IntegerField(blank=True, null=True)
     target_x = models.IntegerField(default=-1)
     target_y = models.IntegerField(default=-1)
 

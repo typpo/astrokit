@@ -6,7 +6,7 @@
 
 {% block nav %}{% endblock %}
 
-{% block heading %}Select Target - Analysis #{{analysis.id}}{% endblock %}
+{% block heading %}Analysis #{{analysis.id}}{% endblock %}
 
 {% block styles %}
 <style>
@@ -41,12 +41,14 @@ Select the point source you are interested in creating a lightcurve for.
 
 {% include 'partials/point_source_plot.html' %}
 
-<!--
-  <div style="text-align: right; margin-top: 3em">
-    <a href="javascript:window.history.back()" class="btn btn-lg btn-default">Back</a>
-    <a href="/lightcurve/{{analysis.lightcurve_id}}/edit" class="btn btn-lg btn-primary">Done</a>
-  </div>
--->
+<div style="text-align: right">
+  {% if next_analysis_without_target %}
+    <a href="{{next_analysis_without_target.id}}" class="btn btn-lg btn-primary">Next without target</a>
+  {% endif %}
+  {% if next_analysis %}
+    <a href="{{next_analysis.id}}" class="btn btn-lg btn-default">Next image</a>
+  {% endif %}
+</div>
 
 {% endblock %}
 
