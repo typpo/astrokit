@@ -88,7 +88,7 @@ h1 span {
 
   <hr/>
 
-  <h2 id="pair-selection">Image Pairs</h2>
+  <h2 id="select-pairs">Image Pairs</h2>
   <p>
     Select images in different color bands to compute color index and hidden transform.  Example color indexes: B-V, V-R, s'-g'.
   </p>
@@ -99,7 +99,16 @@ h1 span {
     <div class="btn btn-primary js-save-image-pairs">Save image pairs</div>
   </div>
 
-  <h2 id="first-pass-selection">Target &amp; Companion Image Selection</h2>
+  <hr/>
+
+  <h2 id="calculations">Calculations</h2>
+  <p>
+    CI/Hidden transform
+  </p>
+
+  <hr/>
+
+  <h2 id="review-analyses">Review each image</h2>
   <p>
     For color index/hidden transform.
   </p>
@@ -164,12 +173,6 @@ h1 span {
         <div class="btn btn-primary js-select-target" data-analysis-id="{{image.analysis.id}}">Select Target</div>
       {% endif %}
 
-      {% if image.analysis.reduction and image.analysis.reduction.image_companion %}
-        <div class="btn btn-default js-select-companion-image" data-analysis-id="{{image.analysis.id}}">Change Companion Image</div>
-      {% else %}
-        <div class="btn btn-primary js-select-companion-image" data-analysis-id="{{image.analysis.id}}">Select Companion Image</div>
-      {% endif %}
-
       {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
         <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
       {% elif image.analysis and image.analysis.status == 'ADDED_TO_LIGHT_CURVE' %}
@@ -186,20 +189,6 @@ h1 span {
       <button style="display:none" class="btn btn-success js-reload js-new-results">Load new results</button>
     </p>
   </div>
-
-  <hr/>
-
-  <h2 id="calculations">Calculations</h2>
-  <p>
-    CI/Hidden transform
-  </p>
-
-  <hr/>
-
-  <h2>Review each image</h2>
-  <p>
-    review
-  </p>
 </div>
 <div class="col-md-4">
   <div class="checklist">
@@ -208,9 +197,9 @@ h1 span {
       ☐ <a href="#settings">Set global settings</a><br>
       ☑ Initial processing of astrometry and photometry (<span id="num-images-processed">0</span> of {{ images | length }})<br>
       ☐ <a href="#first-pass-selection">Select targets</a> (<span id="num-images-target">?</span> of {{ images | length }})<br>
-      ☐ <a href="#first-pass-selection">Select companion images</a> (<span id="num-images-companion">?</span> of {{ images | length}})<br>
+      ☐ <a href="#select-pairs">Select image pairs</a> (<span id="num-images-companion">?</span> selected)<br>
       ☐ Confirm CI/transform calculations<br>
-      ☐ Review analyses (<span id="num-images-reviewed">?</span> of {{ images | length}})<br>
+      ☐ <a href="#review-analyses">Review analyses</a> (<span id="num-images-reviewed">?</span> of {{ images | length}})<br>
       ☐ Add to light curve (<span id="num-images-lightcurve">?</span> of {{ images | length}})<br>
     </p>
     <p>

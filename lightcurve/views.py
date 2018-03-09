@@ -172,9 +172,10 @@ def edit_lightcurve_name(request, lightcurve_id):
 def get_status(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
     images = lc.useruploadedimage_set.all()
+    pairs = ImageAnalysisPair.objects.filter(lightcurve=lc)
 
     num_processed = sum([image.submission.is_done() for image in images if image.submission])
-    num_companion = sum([image.analysis.get_or_create_reduction().image_companion is not None for image in images if image.analysis])
+    num_companion = len(pairs)
     num_target = sum([image.analysis.target_id > 0 for image in images if image.analysis])
 
     num_reviewed = sum([image.analysis.is_reviewed() for image in images if image.analysis])
