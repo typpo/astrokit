@@ -12,7 +12,7 @@ class LightCurve(models.Model):
     name = models.CharField(max_length=1024)
     notes = models.TextField(default='')
 
-    #ciband = models.CharField(max_length=50)
+    ciband = models.CharField(max_length=50, default='')
 
     magband = models.ForeignKey(ImageFilter,
                                 related_name='lightcurve_magband_set',

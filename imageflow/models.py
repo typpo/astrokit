@@ -284,4 +284,3 @@ class Reduction(models.Model):
 
 admin.site.register(ImageAnalysis)
 admin.site.register(Reduction)
-admin.site.register(UserUploadedImage)

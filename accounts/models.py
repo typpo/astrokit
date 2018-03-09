@@ -1,11 +1,11 @@
 from __future__ import unicode_literals
 
+from django.contrib import admin
 from django.db import models
 from django.contrib.auth.models import User
 
 import random
 import string
-
 
 class URLCode(models.Model):
     """URLCode model generating user specific url codes
@@ -49,3 +49,5 @@ class UserUploadedImage(models.Model):
 
     def __str__(self):
         return '%s submission #%d' % (self.original_filename, self.submission.subid)
+
+admin.site.register(UserUploadedImage)
