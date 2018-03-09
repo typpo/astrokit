@@ -143,7 +143,6 @@ h1 span {
         <br>Note: <em>{{image.analysis.notes}}</em>
     {% endif %}
 
-<!--
     <div class="image-container">
       {% if image.analysis.original_display_url %}
         <a href="/analysis/{{image.analysis.id}}">
@@ -151,16 +150,13 @@ h1 span {
         </a>
       {% endif %}
     </div>
--->
 
     <div class="button-row">
-<!--
       {% if image.submission and image.submission.status == 'COMPLETE' %}
         <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary">Review Analysis</a>
       {% elif image.submission %}
         <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary disabled">Analysis Pending</a>
       {% endif %}
--->
 
       {% if image.analysis.target_id %}
         <div class="btn btn-default js-select-target" data-analysis-id="{{image.analysis.id}}">Change Target</div>
@@ -174,18 +170,14 @@ h1 span {
         <div class="btn btn-primary js-select-companion-image" data-analysis-id="{{image.analysis.id}}">Select Companion Image</div>
       {% endif %}
 
-<!--
       {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
         <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
       {% elif image.analysis and image.analysis.status == 'ADDED_TO_LIGHT_CURVE' %}
         <div class="btn btn-warning js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Remove from lightcurve</div>
       {% endif %}
--->
-<!--
       {% if image.submission %}
         <a href="http://35.202.61.141/status/{{image.analysis.astrometry_job.jobid}}" class="btn btn-default">View Astrometry job</a>
       {% endif %}
--->
     </div>
   </div>
   {% endfor %}

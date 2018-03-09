@@ -36,6 +36,8 @@ function setupComparisonStarSelection() {
 function selectComparisonStars(cb) {
   $.get('/analysis/' + window.analysisId + '/comparison_stars', function(data) {
     if (data.success) {
+      // FIXME(ian): Doesn't work on first run without any comparison stars
+      // because data.ids is undefined.
       data.ids.forEach(function(starId) { updateStar(starId, true) });
       cb();
     }
