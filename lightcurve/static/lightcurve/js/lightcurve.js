@@ -142,7 +142,7 @@ function setupImagePairs() {
   // Save everything.
   $('.js-save-image-pairs').on('click', function() {
     var data = {
-      colorIndex: colorIndex,
+      ciband: colorIndex,
       pairs: [],
     };
 
@@ -162,7 +162,13 @@ function setupImagePairs() {
     });
 
     // TODO(ian): POST it all to some endpoint.
-    console.log(data);
+    $.post('/lightcurve/' + window.lightcurveId + '/save_image_pairs', data, function(result) {
+      if (result.success) {
+        alert('Your settings have been saved.');
+      } else {
+        alert('Sorry, something went wrong and your settings were not saved.');
+      }
+    });
   });
 }
 

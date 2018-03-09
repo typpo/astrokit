@@ -107,6 +107,25 @@ def save_observation_default(request, lightcurve_id):
         'success': True,
     })
 
+def save_image_pairs(request, lightcurve_id):
+    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
+    images = lc.imageanalysis_set.all()
+
+    ciband = request.POST.get('ciband')
+    pairs = request.POST.getlist('pairs')
+
+    if ciband:
+        band1 = ImageFilter.objects.get_from_ci_band(ciband, 0)
+        band2 = ImageFilter.objects.get_from_ci_band(ciband, 1)
+
+    if pairs:
+        for pair in pairs:
+            print pair
+
+    return JsonResponse({
+        'success': True,
+    })
+
 def add_image_toggle(request, lightcurve_id):
     analysis_id = request.POST.get('analysis_id')
 

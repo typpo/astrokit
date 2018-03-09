@@ -195,7 +195,6 @@ class ImageAnalysis(models.Model):
                  str(self.image_filter.band), \
                  str(self.image_datetime))
 
-
 class UserUploadedImage(models.Model):
     """
     Model for user uploaded images
