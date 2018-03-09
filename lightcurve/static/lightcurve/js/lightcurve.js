@@ -58,18 +58,6 @@ function editLightCurveName(lightcurveId) {
   })
 }
 
-function downloadFile(file_type) {
-  $.get('/lightcurve/' + window.lightcurveId + '/download_file', {
-    'file_type': file_type
-  })
-  .done(function() {
-    alert('File download should start in a few moment.');
-  })
-  .fail(function() {
-    alert('Something went wrong. File was not downloaded.');
-  })
-}
-
 function setupEditNameHandlers() {
   $('.js-edit-name-form').on('submit', function() {
     var lightcurve_id = $(this).data('lightcurve-id');
@@ -110,10 +98,6 @@ function setupMiscHandlers() {
   $('.js-reload').on('click', function() {
     window.location.reload();
     return false;
-  });
-
-  $('.download-file').on('click', function() {
-    downloadFile($(this).attr('id'));
   });
 }
 

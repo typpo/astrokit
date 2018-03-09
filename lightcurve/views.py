@@ -187,6 +187,5 @@ def download_file(request, lightcurve_id):
         writer = csv.writer(response)
         writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
         writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
-        print "returning csv response"
 
     return response
