@@ -282,5 +282,9 @@ class Reduction(models.Model):
     def __str__(self):
         return 'Reduction for Analysis %s' % (str(self.analysis))
 
+class ImageAnalysisPair(models.Model):
+    analysis1 = models.ForeignKey(ImageAnalysis, related_name='analysis1_set')
+    analysis2 = models.ForeignKey(ImageAnalysis, related_name='analysis2_set')
+
 admin.site.register(ImageAnalysis)
 admin.site.register(Reduction)
