@@ -39,6 +39,7 @@ function plotImage($container, canvas, imageUrl, opts) {
           function(star) { return null; } : function(star) { return star.id },
       });
     }
+    window.dispatchEvent(new Event('plot complete'));;
   };
   img.src = imageUrl;
 }
@@ -230,7 +231,6 @@ function setupPlot() {
       setupCanvasListeners(canvas);
     }, 200);
   }
-
 }
 
 $(function() {
