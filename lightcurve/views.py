@@ -1,3 +1,5 @@
+import json
+
 from django.http import JsonResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -7,7 +9,7 @@ from accounts.models import UserUploadedImage
 from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
 from corrections import get_jd_for_analysis
-from imageflow.models import ImageAnalysis, ImageFilter, Reduction
+from imageflow.models import ImageAnalysis, ImageAnalysisPair, ImageFilter, Reduction
 from lightcurve.models import LightCurve
 from reduction.util import find_point_by_id
 
@@ -113,15 +115,23 @@ def save_image_pairs(request, lightcurve_id):
     images = lc.imageanalysis_set.all()
 
     ciband = request.POST.get('ciband')
-    pairs = request.POST.getlist('pairs')
+    pairs = json.loads(request.POST.get('pairs'))
 
     if ciband:
-        band1 = ImageFilter.objects.get_from_ci_band(ciband, 0)
-        band2 = ImageFilter.objects.get_from_ci_band(ciband, 1)
+        lc.ciband = ciband
+        lc.save()
 
     if pairs:
+        # Clear existing ImageAnalysisPairs
+        ImageAnalysisPair.objects.filter(lightcurve=lc).delete()
+
+        # Rebuild them
         for pair in pairs:
-            print pair
+            # Exclude Nones
+            if all(pair):
+                analysis1 = ImageAnalysis.objects.get(pk=pair[0], user=request.user.id)
+                analysis2 = ImageAnalysis.objects.get(pk=pair[1], user=request.user.id)
+                ImageAnalysisPair.objects.create(lightcurve=lc, analysis1=analysis1, analysis2=analysis2)
 
     return JsonResponse({
         'success': True,

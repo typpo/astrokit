@@ -21,4 +21,10 @@ class LightCurve(models.Model):
     def to_alcdef(self):
         return 'NYI'
 
+    def get_ci_band1(self):
+        return ImageFilter.objects.get_from_ci_band(self.ciband, 0)
+
+    def get_ci_band2(self):
+        return ImageFilter.objects.get_from_ci_band(self.ciband, 1)
+
 admin.site.register(LightCurve)

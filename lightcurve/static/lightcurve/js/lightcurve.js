@@ -143,9 +143,10 @@ function setupImagePairs() {
   $('.js-save-image-pairs').on('click', function() {
     var data = {
       ciband: colorIndex,
-      pairs: [],
+      pairsJson: null,
     };
 
+    var pairs = [];
     $('.js-select-image').each(function(idx) {
       var analysisId = parseInt($(this).data('analysis-id'), 0);
       if (isNaN(analysisId)) {
@@ -155,11 +156,13 @@ function setupImagePairs() {
       // Build an array of pair tuples. eg.
       // [[1,2], [3,4], [5,6]]
       if (idx % 2 === 0) {
-        data.pairs.push([analysisId]);
+        pairs.push([analysisId]);
       } else {
-        data.pairs[data.pairs.length - 1].push(analysisId);
+        pairs[pairs.length - 1].push(analysisId);
       }
     });
+
+    data.pairs = JSON.stringify(pairs);
 
     // TODO(ian): POST it all to some endpoint.
     $.post('/lightcurve/' + window.lightcurveId + '/save_image_pairs', data, function(result) {
