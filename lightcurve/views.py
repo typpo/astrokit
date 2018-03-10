@@ -1,3 +1,5 @@
+import csv
+
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -9,7 +11,6 @@ from corrections import get_jd_for_analysis
 from imageflow.models import ImageAnalysis, Reduction, UserUploadedImage
 from lightcurve.models import LightCurve
 from reduction.util import find_point_by_id
-import csv
 
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
@@ -178,14 +179,24 @@ def all_lightcurve(request):
             context_instance=RequestContext(request))
 
 
-def download_file(request, lightcurve_id):
+def download(request, lightcurve_id):
     file_type = request.GET.get('file_type')
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="LightCurve' + lightcurve_id + '.' + file_type + '"'
 
+    lc = LightCurve.objects.get(id=lightcurve_id)
+    analyses = ImageAnalysis.objects.filter(useruploadedimage__lightcurve=lc) \
+                                    .exclude(status=ImageAnalysis.ASTROMETRY_PENDING)
+
     if file_type == "csv":
         writer = csv.writer(response)
-        writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
-        writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
+        writer.writerow(['Datetime', 'JD', 'Mag instrumental', 'Mag standard', 'Mag std'])
+        for analysis in analyses:
+            if analysis.annotated_point_sources != "[]":
+                result = find_point_by_id(analysis.annotated_point_sources, analysis.target_id)
+                if not result:
+                    continue
+                print result
+                writer.writerow([analysis.image_datetime, get_jd_for_analysis(analysis), result["mag_instrumental"], result.get("mag_standard", None), result.get("mag_std", None)])
 
     return response
