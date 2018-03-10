@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Usage: ./reductions.py [analysis_id]
+# Usage: ./run_image_reductions.py [analysis_id]
 #
 
 import logging
@@ -10,14 +10,14 @@ import sys
 import django
 import numpy as np
 
+from django.core.exceptions import ObjectDoesNotExist
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 sys.path.insert(0, os.getcwd())
 django.setup()
 
 import airmass
 import corrections
-import hidden_transform
-import transformation_coefficient as tf
 
 from imageflow.models import Reduction, ImageAnalysis, ImageFilter
 
@@ -31,26 +31,6 @@ def supporting_calculations(analysis, reduction):
 
     # Airmass
     airmass.annotate_with_airmass(analysis, reduction)
-
-    # Transformation coefficient
-    tf_computed, zpf, tf_std, tf_graph_url = tf.calculate(analysis, reduction, save_graph=True)
-    reduction.tf = tf_computed
-    # TODO(ian): Brian Warner says 0.015 stderr is higher than preferred, and
-    # range of color index should be > .6
-    reduction.tf_std = tf_std
-    reduction.zpf = zpf
-    reduction.tf_graph_url = tf_graph_url
-
-    # Hidden transform
-    if reduction.color_index_manual is None:
-        ht, ht_intercept, ht_std, ht_r, ht_url = hidden_transform.calculate(analysis, reduction, save_graph=True)
-        reduction.hidden_transform = ht
-        reduction.hidden_transform_intercept = ht_intercept
-        reduction.hidden_transform_std = ht_std
-        reduction.hidden_transform_rval = ht_r
-        reduction.hidden_transform_graph_url = ht_url
-
-        hidden_transform.annotate_color_index(analysis, reduction)
 
     # Compute lighttime correction.
     analysis.image_jd_corrected = corrections.get_lighttime_correction(analysis)
@@ -150,8 +130,7 @@ def run_reductions(analysis):
     logger.info('Completed reduction %d for analysis %d' % (reduction.id, analysis.id))
 
 def process_pending_reductions():
-    pending = Reduction.objects.all().filter(
-            status=Reduction.PENDING)
+    pending = Reduction.objects.filter(status=Reduction.PENDING)
     for reduction in pending:
         if reduction.analysis.target_id != 0:
             run_reductions(reduction.analysis)
@@ -167,15 +146,13 @@ if __name__ == '__main__':
     from imageflow.models import ImageAnalysis
 
     if len(sys.argv) > 1:
-        subid = sys.argv[1]
+        analid = sys.argv[1]
         try:
-            result = ImageAnalysis.objects.get( \
-                    astrometry_job__submission__subid=subid, \
-                    status=ImageAnalysis.COMPLETE)
+            analysis = ImageAnalysis.objects.get(pk=analyid)
         except ObjectDoesNotExist:
-            logger.info('Could not find submission %d' % subid)
+            logger.info('Could not find analysis %d' % analid)
             sys.exit(1)
-        run_reductions(result)
+        run_reductions(analysis)
     else:
         # Run all pending reductions.
         process_pending_reductions()

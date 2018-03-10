@@ -1,0 +1,76 @@
+{% load staticfiles %}
+
+<h3>Step 3: Find the hidden transform</h3>
+<p>
+The <em>hidden transform</em> is the equation that allows us to compute the color index for each object.
+</p>
+{% if reduction.meta.color_index_manual_enabled %}
+  <div class="well">
+    This section is omitted because you entered a manual color index of {{reduction.data.color_index_manual}}.
+  </div>
+{% else %}
+  <div class="well">
+    {% if no_reduction or reduction.meta.status == 'CREATED' %}
+      <p class="run-reductions-mask">
+        <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
+        <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+      </p>
+    {% else %}
+      <p>
+        Hidden transform = {{reduction.data.hidden_transform}}<br>
+        Standard error = {{reduction.data.hidden_transform_std}}<br>
+        rval = {{reduction.data.hidden_transform_rval}}
+      </p>
+      <img src="{{reduction.urls.hidden_transform_graph}}">
+    {% endif %}
+  </div>
+
+  {% if not no_reduction and reduction.meta.status != 'CREATED' %}
+  <h4>Checking the hidden transform</h4>
+  <p>
+    This table compares values generated using the formula derived above with known catalog values for your color index.
+  </p>
+  <p>
+    <span style="color:red">Red</span> indicates comparison stars, <span style="color:blue">blue</span> indicates other catalog stars.
+  </p>
+  <div class="well">
+      <p>
+        Your target id: {{analysis.meta.target_id}}
+      </p>
+      <div class="table-wrapper">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th data-sort="int"><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
+              <th data-sort="string">Designation</th>
+              <th data-sort="float">RA (obs)</th>
+              <th data-sort="float">Dec (obs)</th>
+              <th data-sort="float"><span class="header-tooltip" data-toggle="tooltip" title="Computed with hidden transform">Color Index (computed)</span></th>
+              <th data-sort="float"><span class="header-tooltip" data-toggle="tooltip" title="From catalog">Color Index (known)</span></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for star in reduction.data.reduced_stars %}
+            <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+              <td>{{star.id}}</td>
+              <td>
+                {% if star.id == analysis.meta.target_id %}
+                  TARGET
+                {% endif %}
+                <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
+              </td>
+              <td>{{star.index_ra|floatformat:5}}</td>
+              <td>{{star.index_dec|floatformat:5}}</td>
+              <td><strong>{{star.color_index|floatformat:5}}</strong></td>
+              <td>{{star.color_index_known|floatformat:5}}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="table-actions">
+        <a href="#" class="js-scroll-to-target">&raquo; Scroll to target</a>
+      </div>
+  </div>
+  {% endif %}
+{% endif %}

@@ -22,6 +22,7 @@ def edit_lightcurve(request, lightcurve_id):
 
     context = {
         'lightcurve': lc,
+        'reduction': lc.get_or_create_reduction(),
         'images': images,
         'image_filters': ImageFilter.objects.all(),
         'image_pairs': image_pairs,
@@ -100,7 +101,7 @@ def save_observation_default(request, lightcurve_id):
         if elevation:
             image.image_elevation = float(elevation)
         if extinction:
-            reduction = image.get_reduction_or_create()
+            reduction = image.get_or_create_reduction()
             reduction.second_order_extinction = float(extinction)
             reduction.save()
         if target_name:
@@ -169,27 +170,38 @@ def edit_lightcurve_name(request, lightcurve_id):
         'success': True,
     })
 
-def get_status(request, lightcurve_id):
-    lc = LightCurve.objects.get(id=lightcurve_id)
-    images = lc.useruploadedimage_set.all()
-    pairs = ImageAnalysisPair.objects.filter(lightcurve=lc)
+def status(request, lightcurve_id):
+    lc = get_object_or_404(LightCurve, pk=lightcurve_id, user=request.user.id)
 
-    num_processed = sum([image.submission.is_done() for image in images if image.submission])
-    num_companion = len(pairs)
-    num_target = sum([image.analysis.target_id > 0 for image in images if image.analysis])
+    if request.method == 'POST':
+        val = request.POST.get('status')
+        if val == 'REDUCTION_PENDING':
+            lc.status = LightCurve.REDUCTION_PENDING
+            lc.save()
+            return JsonResponse({
+                'success': True,
+            })
+    else:
+        images = lc.useruploadedimage_set.all()
+        pairs = ImageAnalysisPair.objects.filter(lightcurve=lc)
 
-    num_reviewed = sum([image.analysis.is_reviewed() for image in images if image.analysis])
-    num_lightcurve = sum([image.analysis.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE for image in images if image.analysis])
+        num_processed = sum([image.submission.is_done() for image in images if image.submission])
+        num_companion = len(pairs)
+        num_target = sum([image.analysis.target_id > 0 for image in images if image.analysis])
 
-    return JsonResponse({
-        'success': True,
-        'numProcessed': num_processed,
-        'numCompanion': num_companion,
-        'numTarget': num_target,
-        'numReviewed': num_reviewed,
-        'numLightcurve': num_lightcurve,
-        'numImages': len(images),
-    })
+        num_reviewed = sum([image.analysis.is_reviewed() for image in images if image.analysis])
+        num_lightcurve = sum([image.analysis.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE for image in images if image.analysis])
+
+        return JsonResponse({
+            'success': True,
+            'status': lc.status,
+            'numProcessed': num_processed,
+            'numCompanion': num_companion,
+            'numTarget': num_target,
+            'numReviewed': num_reviewed,
+            'numLightcurve': num_lightcurve,
+            'numImages': len(images),
+        })
 
 def my_lightcurve(request):
     lc_list = LightCurve.objects.filter(user=request.user.id)

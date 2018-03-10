@@ -106,6 +106,7 @@ class ImageAnalysis(models.Model):
         reduction, created = Reduction.objects.get_or_create(analysis=self)
 
         if created:
+            reduction.analysis = self
             reduction.status = Reduction.CREATED
             reduction.color_index_1 = self.image_filter
             reduction.color_index_2 = self.image_filter

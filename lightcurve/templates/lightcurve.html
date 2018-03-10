@@ -111,7 +111,7 @@ h1 span {
 
   <h2 id="select-pairs">Image Pairs</h2>
   <p>
-    Select images in different color bands to compute color index and hidden transform. Select "None" to omit transforms for your reductions.
+    To compute color index and the hidden transform to standard magnitudes, pair images of the same field in different bands.  Color Index CI = Image1 - Image2.
   </p>
   <div>
     {% include 'partials/image_pair_selector.html' %}
@@ -124,8 +124,32 @@ h1 span {
 
   <h2 id="calculations">Calculations</h2>
   <p>
-    CI/Hidden transform
+  The reduction process followed here is adapted from <a href="http://www.minorplanetobserver.com/PDO/bdwbio.htm">Brian Warner</a>'s <a href="http://www.minorplanetobserver.com/pgbook/PracticalGuide.htm">Practical Guide to Lightcurve Photometry and Analysis</a>.
+  The goal of the photometry reduction process is to convert our raw instrumental observations to a standard magnitude system, correcting for atmospheric distortion and other factors along the way.
   </p>
+  <p>
+  The equation for reduction of instrumental magnitudes to standard magnitudes is:
+  </p>
+  <p>
+  <blockquote>
+  M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>t</sub> (CI<sub>t</sub> - CI<sub>c</sub>) + T<sub><em>f</em></sub> (CI<sub>t</sub> - CI<sub>c</sub>) + M<sub>c</sub>
+  </blockquote>
+  </p>
+
+  {% include 'partials/extinction.html' %}
+
+  <div>
+    <p>
+      Now we will compute the transformation coefficient T<sub>f</sub> and the hidden transforms for your image.
+    </p>
+    <div class="button-row">
+      <div class="btn btn-primary js-run-lightcurve-reductions">Run lightcurve reductions</div>
+      <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+    </div>
+  </div>
+
+  {% include 'partials/transformation_coefficient.html' %}
+  {% include 'partials/hidden_transform.html' %}
 
   <hr/>
 
@@ -313,4 +337,5 @@ h1 span {
   <script src="{% static "imageflow/js/csrf.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>
   <script src="{% static "lightcurve/js/lightcurve.js" %}" type="text/javascript"></script>
+  <script src="{% static "lightcurve/js/reduction.js" %}" type="text/javascript"></script>
 {% endblock %}
