@@ -95,9 +95,16 @@ h1 span {
 
   <hr/>
 
-  <h2 id="select-targets">Targets</h2>
+  <h2 id="select-targets">Select Targets</h2>
   <div>
     <iframe class="iframe-target" src="/analysis/select_target_modal/{{images.0.analysis.id}}"></iframe>
+  </div>
+
+  <hr/>
+
+  <h2 id="select-comp-stars">Select Comparison Stars</h2>
+  <div>
+    NYI
   </div>
 
   <hr/>
@@ -210,7 +217,8 @@ h1 span {
     <p>
       ☐ <a href="#settings">Set global settings</a><br>
       ☑ Initial processing of astrometry and photometry (<span id="num-images-processed">0</span> of {{ images | length }})<br>
-      ☐ <a href="#first-pass-selection">Select targets</a> (<span id="num-images-target">?</span> of {{ images | length }})<br>
+      ☐ <a href="#select-targets">Select targets</a> (<span id="num-images-target">?</span> of {{ images | length }})<br>
+      ☐ <a href="#select-comp-stars">Select comparison stars</a> (<span id="num-images-comparison">?</span> of {{ images | length }})<br>
       ☐ <a href="#select-pairs">Select image pairs</a> (<span id="num-images-companion">?</span> selected)<br>
       ☐ Confirm CI/transform calculations<br>
       ☐ <a href="#review-analyses">Review analyses</a> (<span id="num-images-reviewed">?</span> of {{ images | length}})<br>
