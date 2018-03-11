@@ -46,8 +46,11 @@ def run_reductions(analysis):
 
     # Get the URAT1 keys for each CI band. eg. 'Bmag', 'jmag'
     filter_key = analysis.image_filter.urat1_key
-    ci1_key = analysis.lightcurve.get_ci_band1().urat1_key
-    ci2_key = analysis.lightcurve.get_ci_band2().urat1_key
+
+    use_color_index = analysis.lightcurve.ciband != 'NONE'
+    if use_color_index:
+        ci1_key = analysis.lightcurve.get_ci_band1().urat1_key
+        ci2_key = analysis.lightcurve.get_ci_band2().urat1_key
 
     # Get the set of comparison stars.  These are a subset of reduced stars.
     comparison_stars = analysis.lightcurve.comparison_stars
@@ -70,16 +73,20 @@ def run_reductions(analysis):
             # Right now we use the color index computed for the TARGET, not
             # necessarily this star.
             # TODO(ian): Use correct color index for each star.
-            ci_target = lightcurve_reduction.color_index_manual
-            if not ci_target:
-                # No manual color index, use computed.
-                ci_target = lightcurve_reduction.color_index
+            if use_color_index:
+                ci_target = lightcurve_reduction.color_index_manual
+                if not ci_target:
+                    # No manual color index, use computed.
+                    ci_target = lightcurve_reduction.color_index
 
-            ci_comparison = comparison_star[ci1_key] - comparison_star[ci2_key]
-            ci_diff = ci_target - ci_comparison
+                ci_comparison = comparison_star[ci1_key] - comparison_star[ci2_key]
+                ci_diff = ci_target - ci_comparison
 
-            term2 = lightcurve_reduction.second_order_extinction * star['airmass'] * ci_diff
-            term3 = lightcurve_reduction.tf * ci_diff
+                term2 = lightcurve_reduction.second_order_extinction * star['airmass'] * ci_diff
+                term3 = lightcurve_reduction.tf * ci_diff
+            else:
+                term2 = 0
+                term3 = 0
             mc = comparison_star[filter_key]
 
             combined = term1 - term2 + term3 + mc

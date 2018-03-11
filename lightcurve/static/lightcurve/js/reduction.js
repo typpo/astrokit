@@ -1,18 +1,21 @@
 (function() {
-  function setupRunReductions() {
+  function setupRunLightcurveReduction() {
     $('.js-run-lightcurve-reductions').on('click', function() {
       $.post('/lightcurve/' + window.lightcurveId + '/status', {
         status: 'REDUCTION_PENDING'
       }, function(data) {
         $('.js-run-image-reductions').attr('disabled', 1);
         $('.page-loader').show();
-        pollLightcurveReductionStatus();
+        setTimeout(function() {
+          // Messy, but make sure it waits til the NEXT status poll...
+          pollLightcurveReductionStatus();
+        }, 6000);
       });
       return false;
     });
   }
 
-  function setupRunAllReductions() {
+  function setupRunImageReductions() {
     $('.js-run-image-reductions').on('click', function() {
       $('.page-loader').show();
 
@@ -56,7 +59,7 @@
   }
 
   $(function() {
-    setupRunReductions();
-    setupRunAllReductions();
+    setupRunLightcurveReduction();
+    setupRunImageReductions();
   });
 })();

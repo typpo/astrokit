@@ -15,6 +15,12 @@ logger = logging.getLogger(__name__)
 
 def run(lightcurve, reduction):
     logger.info('Finding Tf for lightcurve %d' % lightcurve.id)
+    if lightcurve.ciband == 'NONE':
+        reduction.tf_std = 0
+        reduction.zpf = 0
+        reduction.tf_graph_url = None
+        reduction.save()
+        return
 
     # Select analyses that match the lightcurve filter.
     analyses = ImageAnalysis.objects.filter(lightcurve=lightcurve,

@@ -16,6 +16,14 @@ logger = logging.getLogger(__name__)
 
 def run(lightcurve, reduction):
     logger.info('Finding hidden transform for lightcurve %d' % lightcurve.id)
+    if lightcurve.ciband == 'NONE':
+        reduction.hidden_transform = 0
+        reduction.hidden_transform_intercept = 0
+        reduction.hidden_transform_std = 0
+        reduction.hidden_transform_rval = 0
+        reduction.hidden_transform_graph_url = None
+        reduction.save()
+        return
 
     ci1 = lightcurve.get_ci_band1()
     ci2 = lightcurve.get_ci_band2()
