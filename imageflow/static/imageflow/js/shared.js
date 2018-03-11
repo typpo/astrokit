@@ -222,5 +222,4 @@ function setupPlot() {
 
 $(function() {
   setupNotes();
-
 });

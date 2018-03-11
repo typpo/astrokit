@@ -38,7 +38,10 @@ def supporting_calculations(analysis, reduction):
 def run_reductions(analysis):
     '''Run reductions on a given ImageAnalysis.
     '''
+    logger.info('Running reductions for analysis %d' % analysis.id)
+
     reduction = analysis.get_or_create_reduction()
+    lightcurve_reduction = analysis.lightcurve.get_or_create_reduction()
     supporting_calculations(analysis, reduction)
 
     # Get the URAT1 keys for each CI band. eg. 'Bmag', 'jmag'
@@ -47,7 +50,7 @@ def run_reductions(analysis):
     ci2_key = reduction.color_index_2.urat1_key
 
     # Get the set of comparison stars.  These are a subset of reduced stars.
-    comparison_ids = set(reduction.comparison_star_ids)
+    comparison_stars = analysis.lightcurve.comparison_stars
 
     # Now put it all together.
     for i in xrange(len(reduction.reduced_stars)):
@@ -55,54 +58,28 @@ def run_reductions(analysis):
         # and N reference stars)
         star = reduction.reduced_stars[i]
 
-        if 'color_index' not in star and reduction.color_index_manual is None:
-            # This point source was unknown AND it is not our target, so it
-            # doesn't have color index.
-            continue
-
         # Mt = (mt - mc) - k"f Xt (CIt - CIc) + Tf (CIt - CIc) + Mc
         estimates = []
-        for j in xrange(len(reduction.reduced_stars)):
-            if i == j:
-                continue
-
-            comparison_star = reduction.reduced_stars[j]
-            if comparison_star['id'] not in comparison_ids:
-                # This star isn't a comparison star.
-                continue
-            if comparison_star['id'] == analysis.target_id:
-                # The data generated here is for an unknown, so don't use it
-                # for a comparison star.
-                continue
-            if comparison_star['id'] == star['id']:
+        for comparison_star in comparison_stars:
+            if 'designation' in star and comparison_star['designation'] == star['designation']:
                 # Don't compare a star against itself.
-                continue
-            if 'color_index_known' not in comparison_star and reduction.color_index_manual is None:
-                # TODO(ian): This and the below test should cause an error,
-                # because the user chose a bad comparison star.
-
-                # This point source doesn't have a catalog color index, so we
-                # don't trust it even though we may have computed its color
-                # index.
-                continue
-            if filter_key not in comparison_star:
-                # This point source doesn't have data from the filter we want
-                # to convert to.
                 continue
 
             term1 = star['mag_instrumental'] - comparison_star['mag_instrumental']
 
-            # TODO(ian): Use manually entered ci value.
-            if reduction.color_index_manual is not None:
-                logger.info('Using manual color index %f' % reduction.color_index_manual)
-                ci_diff = reduction.color_index_manual
-            else:
-                ci_target = star['color_index']
-                ci_comparison = comparison_star['color_index_known']
-                ci_diff = ci_target - ci_comparison
+            # Right now we use the color index computed for the TARGET, not
+            # necessarily this star.
+            # TODO(ian): Use correct color index for each star.
+            ci_target = lightcurve_reduction.color_index_manual
+            if not ci_target:
+                # No manual color index, use computed.
+                ci_target = lightcurve_reduction.color_index
 
-            term2 = reduction.second_order_extinction * star['airmass'] * ci_diff
-            term3 = reduction.tf * ci_diff
+            ci_comparison = comparison_star[ci1_key] - comparison_star[ci2_key]
+            ci_diff = ci_target - ci_comparison
+
+            term2 = lightcurve_reduction.second_order_extinction * star['airmass'] * ci_diff
+            term3 = lightcurve_reduction.tf * ci_diff
             mc = comparison_star[filter_key]
 
             combined = term1 - term2 + term3 + mc
