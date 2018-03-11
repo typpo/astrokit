@@ -26,7 +26,7 @@ function plotImage($container, canvas, imageUrl, opts) {
       plotStars(canvas, window.catalogData, {
         color: 'red',
         compareStarColor: '#4B0082',
-        radius: 9,
+        radius: 6,
         text: function(star) {
           return star.id;
         }
@@ -36,7 +36,7 @@ function plotImage($container, canvas, imageUrl, opts) {
       plotStars(canvas, window.pointSourceData, {
         color: 'green',
         targetColor: '#32bfbf',
-        radius: 6,
+        radius: 4,
         /*
         text: window.catalogData ?
           function(star) { return null; } : function(star) { return star.id },
@@ -76,7 +76,7 @@ function plotStars(canvas, stars, rawOpts) {
     // Circle - defined by x, y, radius, ...
     ctx.arc(starX, starY, opts.radius, 0, Math.PI * 2);
     ctx.strokeStyle = myColor;
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 3;
     ctx.stroke();
 
     // Label
@@ -87,7 +87,7 @@ function plotStars(canvas, stars, rawOpts) {
 
     ctx.font = '12px Arial';
     ctx.strokeStyle= 'black';
-    ctx.lineWidth = 6;
+    ctx.lineWidth = 4;
     var labelWidth = ctx.measureText(text).width;
     var offset = starY < 14 * 2 ? 14 + 8 : -8;
     ctx.strokeText(text, starX - (labelWidth / 2), starY + offset);
