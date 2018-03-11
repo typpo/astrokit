@@ -108,26 +108,6 @@ def set_filter_band(request, pk):
         'msg': 'Resolved input to %s' % str(filter_band)
     })
 
-def set_color_index_1(request, pk):
-    analysis, filter_band = resolve_band(request, pk)
-    analysis.get_or_create_reduction()
-    analysis.reduction.color_index_1 = filter_band
-    analysis.reduction.save()
-    return JsonResponse({
-        'success': True,
-        'msg': 'Resolved input to %s' % str(filter_band)
-    })
-
-def set_color_index_2(request, pk):
-    analysis, filter_band = resolve_band(request, pk)
-    analysis.get_or_create_reduction()
-    analysis.reduction.color_index_2 = filter_band
-    analysis.reduction.save()
-    return JsonResponse({
-        'success': True,
-        'msg': 'Resolved input to %s' % str(filter_band)
-    })
-
 def resolve_band(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
@@ -152,27 +132,6 @@ def set_latitude(request, pk):
 
 def set_longitude(request, pk):
     return set_float(request, pk, 'image_longitude')
-
-def set_color_index_manual(request, pk):
-    analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
-        return JsonResponse({
-            'success': False,
-            'msg': 'Astrometry is still pending',
-        })
-    analysis.get_or_create_reduction()
-    return set_float(request, pk, 'color_index_manual',
-                     on_reduction=True, allow_null=True)
-
-def set_second_order_extinction(request, pk):
-    analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
-        return JsonResponse({
-            'success': False,
-            'msg': 'Astrometry is still pending',
-        })
-    analysis.get_or_create_reduction()
-    return set_float(request, pk, 'second_order_extinction', on_reduction=True)
 
 def set_float(request, pk, attrname, on_reduction=False, allow_null=False):
     analysis = get_object_or_404(ImageAnalysis, pk=pk, user=request.user.id)
