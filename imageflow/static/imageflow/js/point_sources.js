@@ -35,7 +35,7 @@ function setupListeners() {
                 $('#target-id-failure'));
 
   $('#target-id').on('change', function() {
-    window.targetId = $(this).val();
+    window.targetId = parseInt($(this).val(), 10);
     setupPlot();
   });
 }

@@ -30,6 +30,10 @@ function setupListeners() {
                 $('#target-id-success'),
                 $('#target-id-failure'));
 
+  $('#target-id').on('change', function() {
+    window.targetId = parseInt($(this).val(), 10);
+    setupPlot();
+  });
   setupPlot();
 }
 
