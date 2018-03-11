@@ -1,3 +1,5 @@
+(function() {
+
 var compareIds = new Set();
 
 function updateStar(starId, checked) {
@@ -67,3 +69,5 @@ $(function() {
     return false;
   });
 });
+
+})();

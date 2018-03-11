@@ -36,6 +36,7 @@ function setupListeners() {
 
   $('#target-id').on('change', function() {
     window.targetId = $(this).val();
+    setupPlot();
   });
 }
 

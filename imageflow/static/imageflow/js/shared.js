@@ -25,6 +25,7 @@ function plotImage($container, canvas, imageUrl, opts) {
     if (window.catalogData) {
       plotStars(canvas, window.catalogData, {
         color: 'red',
+        compareStarColor: '#4B0082',
         radius: 9,
         text: function(star) {
           return star.id;
@@ -34,9 +35,15 @@ function plotImage($container, canvas, imageUrl, opts) {
     if (window.pointSourceData) {
       plotStars(canvas, window.pointSourceData, {
         color: 'green',
+        targetColor: 'cyan',
         radius: 6,
+        /*
         text: window.catalogData ?
           function(star) { return null; } : function(star) { return star.id },
+        */
+        text: function(star) {
+          return star.id;
+        }
       });
     }
     window.dispatchEvent(new Event('plot complete'));;
@@ -57,10 +64,10 @@ function plotStars(canvas, stars, rawOpts) {
 
     // Determine color of circle.
     var myColor = opts.color;
-    if (star.id === window.targetId) {
-      myColor = 'cyan';
-    } else if (typeof window.compareIds !== 'undefined' && compareIds.has(star.id)) {
-      myColor = '#4B0082';
+    if (opts.targetColor && star.id === window.targetId) {
+      myColor = opts.targetColor;
+    } else if (opts.compareStarColor && typeof window.compareIds !== 'undefined' && compareIds.has(star.id)) {
+      myColor = opts.compareStarColor;
     }
 
     // Plot catalog stars over an image.
@@ -78,7 +85,7 @@ function plotStars(canvas, stars, rawOpts) {
       continue;
     }
 
-    ctx.font = '14px Arial';
+    ctx.font = '12px Arial';
     ctx.strokeStyle= 'black';
     ctx.lineWidth = 6;
     var labelWidth = ctx.measureText(text).width;
