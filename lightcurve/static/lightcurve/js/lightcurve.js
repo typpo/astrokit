@@ -36,7 +36,7 @@ function saveObservationDefault() {
 
 function toggleAddToLightcurve(toggleButton) {
   $.post('/lightcurve/' + window.lightcurveId + '/add_image_toggle', {
-    'analysis_id' : $(toggleButton).data('analysis-id')
+    analysisId: $(toggleButton).data('analysis-id')
   }, function(data) {
     if (data.success) {
       $(toggleButton).toggleClass('btn-success');

@@ -4,28 +4,21 @@
 <p>
 The <em>hidden transform</em> is the equation that allows us to compute the color index for each object.
 </p>
-{% if reduction.meta.color_index_manual_enabled %}
+{% if reduction.color_index_manual %}
   <div class="well">
-    This section is omitted because you entered a manual color index of {{reduction.data.color_index_manual}}.
+    This section is omitted because you entered a manual color index of {{reduction.color_index_manual}}.
   </div>
 {% else %}
   <div class="well">
-    {% if no_reduction or reduction.meta.status == 'CREATED' %}
-      <p class="run-reductions-mask">
-        <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
-        <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
-      </p>
-    {% else %}
-      <p>
-        Hidden transform = {{reduction.data.hidden_transform}}<br>
-        Standard error = {{reduction.data.hidden_transform_std}}<br>
-        rval = {{reduction.data.hidden_transform_rval}}
-      </p>
-      <img src="{{reduction.urls.hidden_transform_graph}}">
-    {% endif %}
+    <p>
+      Hidden transform = {{reduction.hidden_transform}}<br>
+      Standard error = {{reduction.hidden_transform_std}}<br>
+      rval = {{reduction.hidden_transform_rval}}
+    </p>
+    <img src="{{reduction.hidden_transform_graph_url}}">
   </div>
 
-  {% if not no_reduction and reduction.meta.status != 'CREATED' %}
+<!--
   <h4>Checking the hidden transform</h4>
   <p>
     This table compares values generated using the formula derived above with known catalog values for your color index.
@@ -72,5 +65,5 @@ The <em>hidden transform</em> is the equation that allows us to compute the colo
         <a href="#" class="js-scroll-to-target">&raquo; Scroll to target</a>
       </div>
   </div>
-  {% endif %}
+-->
 {% endif %}

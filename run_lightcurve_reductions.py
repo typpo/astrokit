@@ -26,6 +26,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def run_reduction(lightcurve):
+    logger.info('Running reduction for lightcurve %d' % lightcurve.id)
+
     analysis = ImageAnalysis.objects.filter(lightcurve=lightcurve)
     reduction = lightcurve.get_or_create_reduction()
 
@@ -34,6 +36,10 @@ def run_reduction(lightcurve):
 
     # Hidden transform.
     hidden_transform.run(lightcurve, reduction)
+
+    # Done!
+    lightcurve.status = LightCurve.REDUCTION_COMPLETE
+    lightcurve.save()
 
 def process_pending_reductions():
     pending = LightCurve.objects.filter(status=LightCurve.REDUCTION_PENDING)

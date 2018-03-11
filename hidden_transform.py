@@ -6,12 +6,17 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 from imageflow.s3_util import upload_to_s3
-from reduction.util import average_instrumental_mags_by_desig, find_star_by_designation
+from imageflow.models import ImageAnalysisPair
+from reduction.util import (average_instrumental_mags_by_desig,
+                            find_star_by_designation,
+                            find_point_by_id)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def run(lightcurve, reduction):
+    logger.info('Finding hidden transform for lightcurve %d' % lightcurve.id)
+
     ci1 = lightcurve.get_ci_band1()
     ci2 = lightcurve.get_ci_band2()
 
@@ -55,11 +60,13 @@ def calculate_hidden_transform(lightcurve, star_pairs, save_graph=False):
 
     standard_diffs = []
     instrumental_diffs = []
-    for i in xrange(len(pairs)):
-        star1 = stars_band1[i]
-        star2 = stars_band2[i]
+    for i in xrange(len(star_pairs)):
+        star1, star2 = star_pairs[i]
 
-        assert star['designation'] == star2['designation'], 'Star pair mismatch'
+        if star1['designation'] != star2['designation']:
+            logger.error('Star1 designation does not match Star2 designation')
+            logger.error('%s vs %s)' % (star1, star2))
+            raise RuntimeError('Mismatched star designations')
 
         standard_diffs.append(star1[ci1_key] - star1[ci2_key])
         instrumental_diffs.append(star1['mag_instrumental'] - star2['mag_instrumental'])
@@ -70,8 +77,8 @@ def calculate_hidden_transform(lightcurve, star_pairs, save_graph=False):
 
     graph_url = None
     if save_graph:
-        band1 = reduction.color_index_1.band.upper()
-        band2 = reduction.color_index_2.band.upper()
+        band1 = ci1.band.upper()
+        band2 = ci2.band.upper()
 
         # Clear any existing state
         plt.clf()
@@ -131,8 +138,8 @@ def calculate_color_index(lightcurve, reduction, image_pairs):
             cis[comp_desig].append(ci_transformed)
         '''
 
-        target1 = find_point_by_id(analysis1.target_id)
-        target2 = find_point_by_id(analysis2.target_id)
+        target1 = find_point_by_id(analysis1.annotated_point_sources, analysis1.target_id)
+        target2 = find_point_by_id(analysis2.annotated_point_sources, analysis2.target_id)
         ci = target1['mag_instrumental'] - target2['mag_instrumental']
         ci_transformed = reduction.hidden_transform * ci + reduction.hidden_transform_intercept
         target_cis.append(ci_transformed)

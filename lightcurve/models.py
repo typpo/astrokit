@@ -59,13 +59,16 @@ class LightCurve(models.Model):
         return reduction
 
     def get_common_desigs(self):
-        return [star['designation'] for star in common_stars]
+        return [star['designation'] for star in self.common_stars]
 
     def get_comparison_desigs(self):
-        return [star['designation'] for star in comparison_stars]
+        return [star['designation'] for star in self.comparison_stars]
 
     def is_photometry_complete(self):
         return self.status in [LightCurve.REDUCTION_PENDING, LightCurve.REDUCTION_COMPLETE]
+
+    def is_reduction_complete(self):
+        return self.status == LightCurve.REDUCTION_COMPLETE
 
 class LightCurveReduction(models.Model):
     lightcurve = models.OneToOneField(LightCurve)

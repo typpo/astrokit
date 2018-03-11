@@ -144,7 +144,7 @@ def save_image_pairs(request, lightcurve_id):
     })
 
 def add_image_toggle(request, lightcurve_id):
-    analysis_id = request.POST.get('analysis_id')
+    analysis_id = request.POST.get('analysisId')
 
     lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     image = lc.imageanalysis_set.get(id=analysis_id)
@@ -161,7 +161,7 @@ def add_image_toggle(request, lightcurve_id):
     })
 
 def edit_lightcurve_name(request, lightcurve_id):
-    name = request.POST.get('lightcurve_name')
+    name = request.POST.get('name')
     lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     lc.name = name
     lc.save()

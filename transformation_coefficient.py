@@ -14,6 +14,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def run(lightcurve, reduction):
+    logger.info('Finding Tf for lightcurve %d' % lightcurve.id)
+
     # Select analyses that match the lightcurve filter.
     analyses = ImageAnalysis.objects.filter(lightcurve=lightcurve,
                                             image_filter=lightcurve.filter)
@@ -92,7 +94,7 @@ def calculate_tf(apparent_mags, standard_mags, colors_1, colors_2):
     return stats.linregress(xs, ys), xs, ys
 
 def upload_graph(lightcurve, img_graph):
-    logger.info('-> Uploading tf graph for submission %d' % (submission.subid))
+    logger.info('-> Uploading tf graph for lightcurve %d' % (lightcurve.id))
 
     upload_key_prefix = 'processed/lightcurve/%d' % (lightcurve.id)
 
