@@ -154,8 +154,7 @@ function setupMagnitudeChecks($elts, type, xData, yData, comparisonStarsOnly) {
     var yr = yData[i];
     var yVal = type === 'instrumental' ? yr.mag_instrumental : yr.mag_standard;
     var xVal = xr[window.urat1Key];
-    var isComparisonStar = xr.is_comparison ||
-        (typeof window.compareIds !== 'undefined' && compareIds.has(xr.id));
+    var isComparisonStar = (typeof window.compareIds !== 'undefined' && compareIds.has(xr.id));
     if (!isComparisonStar && comparisonStarsOnly) {
       continue;
     }

@@ -212,6 +212,8 @@ This linearity test shows how accurate your reduction is when compared to known 
     window.urat1Key = {{ analysis.meta.image_band_urat1_key | jsonify }};
 
     window.reducedStars = {{ reduction.data.reduced_stars | jsonify }};
+
+    window.compareIds = new Set({{ analysis.data.comparison_star_ids | jsonify }});
   </script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>

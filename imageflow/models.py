@@ -160,6 +160,7 @@ class ImageAnalysis(models.Model):
             'data': {
                 'coords': self.coords,
                 'catalog_reference_stars': self.catalog_reference_stars,
+                'comparison_star_ids': self.get_comparison_star_ids(),
                 'unknown_stars': self.image_unknown_stars,
 
                 'sigma_clipped_std': self.sigma_clipped_std,
@@ -191,6 +192,10 @@ class ImageAnalysis(models.Model):
         '''Returns whether this image is past the photometry stage.
         '''
         return self.is_reviewed() or self.status == 'REVIEW_PENDING'
+
+    def get_comparison_star_ids(self):
+        desigs = set([star['designation'] for star in self.lightcurve.comparison_stars])
+        return [star['id'] for star in self.annotated_point_sources if star.get('designation') in desigs]
 
     def __str__(self):
         return '#%d %s: %s - Sub %d Job %d, Band %s @ %s' % \
