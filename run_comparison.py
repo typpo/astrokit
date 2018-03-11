@@ -40,7 +40,8 @@ def get_common_stars(analyses):
 def process(lightcurve):
     analyses = ImageAnalysis.objects.filter(lightcurve=lightcurve)
 
-    stars = get_common_stars(analyses)
+    stars = get_common_stars([analysis for analysis in analyses \
+            if analysis.target_id and analysis.target_id > 0])
     lightcurve.common_stars = stars
 
     # TODO(ian): Be smart about how we choose comparison stars from the common

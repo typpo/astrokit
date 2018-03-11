@@ -146,7 +146,7 @@ def save_image_pairs(request, lightcurve_id):
 def add_images(request, lightcurve_id):
     # Add all images that are currently eligible to be in the lightcurve.
     lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
-    analyses = lc.imageanalysis_set.all()
+    analyses = lc.imageanalysis_set.filter(status=ImageAnalysis.REDUCTION_COMPLETE)
 
     for analysis in analyses:
         analysis.status = ImageAnalysis.ADDED_TO_LIGHT_CURVE

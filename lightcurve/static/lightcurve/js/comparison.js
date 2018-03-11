@@ -13,6 +13,7 @@
 
   function pollReductionStatus() {
     $.get('/lightcurve/' + window.lightcurveId + '/status', function(data) {
+      // FIXME this doesn't work
       if (data.status === 'REDUCTION_PENDING') {
         $('.page-loader').hide();
         alert('Photometry has completed. Press OK to refresh.');
