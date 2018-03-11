@@ -189,7 +189,10 @@ h1 span {
 
   <h2 id="review-analyses">Review each image</h2>
   <p>
-    For color index/hidden transform.
+    Now that you've created a basic light curve, you should review each image and verify that its reduced standard magnitude data point is acceptable.
+  </p>
+  <p>
+    Once you've done that, run an <em>image-level reduction</em> to add its point to the light curve.
   </p>
   {% for image in images %}
   <div id="image-{{forloop.counter0}}" class="well">
@@ -258,7 +261,7 @@ h1 span {
         <div class="btn btn-warning js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Remove from lightcurve</div>
       {% endif %}
       {% if image.submission %}
-        <a href="http://35.202.61.141/status/{{image.analysis.astrometry_job.jobid}}" class="btn btn-default">View Astrometry job</a>
+        <a target="_blank" href="http://35.202.61.141/status/{{image.analysis.astrometry_job.jobid}}" class="btn btn-default">View Astrometry job</a>
       {% endif %}
     </div>
   </div>
