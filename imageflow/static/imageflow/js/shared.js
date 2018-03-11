@@ -35,7 +35,7 @@ function plotImage($container, canvas, imageUrl, opts) {
     if (window.pointSourceData) {
       plotStars(canvas, window.pointSourceData, {
         color: 'green',
-        targetColor: 'cyan',
+        targetColor: '#32bfbf',
         radius: 6,
         /*
         text: window.catalogData ?

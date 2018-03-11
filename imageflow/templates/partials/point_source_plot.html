@@ -1,5 +1,6 @@
 <div class="well">
-  <div>
+  {% if not disable_target_selection %}
+  <div style="margin-bottom:1.5em">
     <div id="target-id-success" class="alert alert-success" style="display:none">
       Target ID successfully updated.
     </div>
@@ -15,11 +16,21 @@
            max="{{analysis.data.coords | length}}"
            value="{{analysis.meta.target_id}}" />
   </div>
+  {% endif %}
 
-  <div style="margin-top:1.5em">
-    Field position:
-    (<span id="canvas-x-pos">0</span>,
-    <span id="canvas-y-pos">0</span>)
+  <div>
+    <p>
+      Legend:
+      <span style="font-weight:bold; color:green">Point sources</span>,
+      <span style="font-weight:bold; color:red">Reference stars</span>,
+      <span style="font-weight:bold; color:#4B0082">Selected comparison stars</span>,
+      <span style="font-weight:bold; color:#32bfbf">Selected target</span>
+    </p>
+    <p>
+      Field position:
+      (<span id="canvas-x-pos">0</span>,
+      <span id="canvas-y-pos">0</span>)
+    </p>
     <div id="plot-container" style="width: 100%; height: 800px; background-color:#ccc;">
       <canvas id="star-plot" style="cursor: crosshair" />
     </div>
