@@ -1,18 +1,16 @@
 (function() {
 
-var compareIds = new Set();
-
 function updateStar(starId, checked) {
   $('.js-reference-table')
       .find('tr[data-star-id="' + starId + '"]').toggleClass('success', checked)
       .find('input').attr('checked', checked)
 
   if (checked) {
-    compareIds.add(starId);
+    window.compareIds.add(starId);
   } else {
-    compareIds.delete(starId);
+    window.compareIds.delete(starId);
   }
-  $('.num-comparison-stars').text(compareIds.size);
+  $('.num-comparison-stars').text(window.compareIds.size);
 }
 
 function setupComparisonStarSelection() {
@@ -25,7 +23,7 @@ function setupComparisonStarSelection() {
 
     // Update backend.
     $.post('/analysis/' + window.analysisId + '/comparison_stars', {
-      ids: Array.from(compareIds),
+      ids: Array.from(window.compareIds),
     }, function(data) {
       if (!data.success) {
         alert('Sorry, something went wrong and we were not able to save your updated comparison star list.');

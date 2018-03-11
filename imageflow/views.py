@@ -327,6 +327,7 @@ def comparison_stars(request, pk):
     reduction = analysis.get_or_create_reduction()
 
     if request.method == 'POST':
+        '''
         ids = [int(x) for x in request.POST.getlist('ids[]')]
         reduction.comparison_star_ids = ids
         reduction.save()
@@ -334,10 +335,15 @@ def comparison_stars(request, pk):
             'success': True,
             'ids': ids,
         })
+        '''
+        return JsonResponse({
+            'success': False,
+            'message': 'Comparison stars must be set at the lightcurve level',
+        })
     else:
         return JsonResponse({
             'success': True,
-            'ids': reduction.comparison_star_ids,
+            'ids': analysis.get_comparison_star_ids(),
         })
 
 def point_sources(request, pk):
