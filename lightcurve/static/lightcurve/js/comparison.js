@@ -1,7 +1,7 @@
-function setupRunReductions() {
-  $('.js-run-lightcurve-reductions').on('click', function() {
+function setupComparisonRefreshHandler() {
+  $('.js-list-comparison').on('click', function() {
     $.post('/lightcurve/' + window.lightcurveId + '/status', {
-      status: 'REDUCTION_PENDING'
+      status: 'PHOTOMETRY_PENDING'
     }, function(data) {
       $('.page-loader').show();
       pollReductionStatus();
@@ -12,10 +12,10 @@ function setupRunReductions() {
 
 function pollReductionStatus() {
   $.get('/lightcurve/' + window.lightcurveId + '/status', function(data) {
-    if (data.status === 'REDUCTION_COMPLETE') {
+    if (data.status === 'REDUCTION_PENDING') {
       $('.page-loader').hide();
-      alert('Your reduction has completed. Press OK to refresh.');
-      window.location.hash = 'calculations';
+      alert('Photometry has completed. Press OK to refresh.');
+      window.location.hash = 'select-comp-stars';
       window.location.reload();
     } else {
       setTimeout(pollReductionStatus, 1000);
@@ -24,5 +24,5 @@ function pollReductionStatus() {
 }
 
 $(function() {
-  setupRunReductions();
+  setupComparisonRefreshHandler();
 });

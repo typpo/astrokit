@@ -102,9 +102,35 @@ h1 span {
 
   <hr/>
 
-  <h2 id="select-comp-stars">Select Comparison Stars</h2>
+  <h2 id="select-comp-stars">Comparison Stars</h2>
   <div>
-    NYI
+    <p>
+      Comparison stars are known stars that appear in all observations.  This software will automatically select comparison stars.
+    </p>
+    <p>
+      <strong>
+        Photometry is still pending for some images. Refresh this page when it is complete to see a full list of comparison stars.
+      </strong>
+    </p>
+
+    <div class="button-row">
+      <button class="btn btn-primary js-list-comparison">Refresh comparison stars</button>
+      <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+    </div>
+
+    {% if lightcurve.is_photometry_complete %}
+      <hr/>
+
+      {% if lightcurve.common_stars|length > 0 %}
+        <p>
+          Magnitudes shown are from the <a href="/analysis/reference_stars/{{images.0.analysis.id}}">first image</a>.
+          To review comparison stars in more detail, review the 'Reference Stars' page for each image.
+        </p>
+        {% include 'partials/comparison_stars.html' with stars=lightcurve.common_stars %}
+      {% else %}
+        Uh oh - there are no common stars.  Please tune your photometry to make sure some known stars are picked up, then try again.
+      {% endif %}
+    {% endif %}
   </div>
 
   <hr/>
@@ -240,7 +266,8 @@ h1 span {
     <h2>Checklist</h2>
     <p>
       ☐ <a href="#settings">Set global settings</a><br>
-      ☑ Initial processing of astrometry and photometry (<span id="num-images-processed">0</span> of {{ images | length }})<br>
+      ☑ Initial processing and astrometry (<span id="num-images-processed">0</span> of {{ images | length }})<br>
+      ☐ Photometry processed (<span id="num-images-photometry">?</span> of {{ images | length }})<br>
       ☐ <a href="#select-targets">Select targets</a> (<span id="num-images-target">?</span> of {{ images | length }})<br>
       ☐ <a href="#select-comp-stars">Select comparison stars</a> (<span id="num-images-comparison">?</span> of {{ images | length }})<br>
       ☐ <a href="#select-pairs">Select image pairs</a> (<span id="num-images-companion">?</span> selected)<br>
@@ -334,8 +361,10 @@ h1 span {
     window.lightcurveId = {{lightcurve.id | jsonify}};
   </script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="{% static "imageflow/js/lib/stupidtable.min.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/csrf.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>
   <script src="{% static "lightcurve/js/lightcurve.js" %}" type="text/javascript"></script>
   <script src="{% static "lightcurve/js/reduction.js" %}" type="text/javascript"></script>
+  <script src="{% static "lightcurve/js/comparison.js" %}" type="text/javascript"></script>
 {% endblock %}

@@ -29,19 +29,3 @@ def find_point_by_id(points, pid):
         if point['id'] == pid:
             return point
     return None
-
-def get_common_stars(analyses):
-    '''Returns a list of reference stars that appear in all ImageAnalyses
-    '''
-    assert len(analyses) > 0, 'Must have at least 1 analysis to get common stars'
-    common_star_desigs = set([x['designation'] for x in analyses[0].catalog_reference_stars])
-    for analysis in analyses[1:]:
-        common_star_desigs.intersection_update(\
-                [x['designation'] for x in analysis.catalog_reference_stars])
-
-    # Build data on each star to return.
-    ret = []
-    for desig in common_star_desigs:
-        star = dict(find_star_by_designation(analyses[0].catalog_reference_stars, desig))
-        ret.append(star)
-    return ret

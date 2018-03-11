@@ -52,3 +52,6 @@ if __name__ == '__main__':
     else:
         # Run all pending reductions.
         process_pending_reductions()
+
+    logger.info('Done.')
+

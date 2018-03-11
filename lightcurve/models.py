@@ -10,10 +10,12 @@ from photometry.models import ImageFilter
 
 class LightCurve(models.Model):
     CREATED = 'CREATED'
+    PHOTOMETRY_PENDING = 'PHOTOMETRY_PENDING'
     REDUCTION_PENDING = 'REDUCTION_PENDING'
     REDUCTION_COMPLETE = 'REDUCTION_COMPLETE'
     STATUSES = (
         (CREATED, 'Created'),
+        (PHOTOMETRY_PENDING, 'Photometry pending'),
         (REDUCTION_PENDING, 'Reduction pending'),
         (REDUCTION_COMPLETE, 'Reduction complete'),
     )
@@ -35,8 +37,8 @@ class LightCurve(models.Model):
                                 related_name='lightcurve_magband_set',
                                 default=ImageFilter.objects.get_default())
 
-    common_star_designations = JSONField()
-    comparison_star_designations = JSONField()
+    common_stars = JSONField()
+    comparison_stars = JSONField()
 
     def to_alcdef(self):
         return 'NYI'
@@ -55,6 +57,15 @@ class LightCurve(models.Model):
             reduction.lightcurve = self
             reduction.save()
         return reduction
+
+    def get_common_desigs(self):
+        return [star['designation'] for star in common_stars]
+
+    def get_comparison_desigs(self):
+        return [star['designation'] for star in comparison_stars]
+
+    def is_photometry_complete(self):
+        return self.status in [LightCurve.REDUCTION_PENDING, LightCurve.REDUCTION_COMPLETE]
 
 class LightCurveReduction(models.Model):
     lightcurve = models.OneToOneField(LightCurve)

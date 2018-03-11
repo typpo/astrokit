@@ -1,0 +1,57 @@
+<style>
+.star-table .header-tooltip {
+  color: #337ab7;
+  cursor: help;
+}
+</style>
+
+<div class="well">
+  <div class="table-wrapper">
+    <table class="table table-striped table-hover star-table js-reference-table">
+      <thead>
+        <tr>
+<!--
+          <th></th>
+          <th data-sort="int"><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
+-->
+          <th data-sort="string"><span class="header-tooltip" data-toggle="tooltip" title="URAT1 catalog designation">Designation</span></th>
+          <th data-sort="float" style="white-space:nowrap"><span class="header-tooltip" data-toggle="tooltip" title="Raw instrumental magnitude from first image in dataset">Magnitude</span></th>
+          <th data-sort="float" style="white-space:nowrap">Mag err (±)</th>
+          <th data-sort="float" style="white-space:nowrap">Temperature (K)</th>
+          <th data-sort="float"><span class="header-tooltip" data-toggle="tooltip" title="Johnson, 442 nm">B</span></th>
+          <th data-sort="float"><span class="header-tooltip" data-toggle="tooltip" title="Johnson, 540 nm">V</span></th>
+          <th data-sort="float"><span class="header-tooltip" data-toggle="tooltip" title="Sloan, 475 nm">g'</span></th>
+          <th data-sort="float"><span class="header-tooltip" data-toggle="tooltip" title="Sloan, 622 nm">r'</span></th>
+          <th data-sort="float"><span class="header-tooltip" data-toggle="tooltip" title="Sloan, 763 nm">i'</span></th>
+          <th data-sort="float"><span class="header-tooltip" data-toggle="tooltip" title="Sloan, 1250 nm">J</span></th>
+          <th data-sort="float"><span class="header-tooltip" data-toggle="tooltip" title="Sloan, 1650 nm">H</span></th>
+          <th data-sort="float"><span class="header-tooltip" data-toggle="tooltip" title="Sloan, 2150 nm">K</span></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for star in stars %}
+        <tr data-star-id="{{star.id}}" {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+<!--
+          <td class="table-checkbox"><input type="checkbox" /></td>
+          <td>{{star.id}}</td>
+-->
+          <td>
+            <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
+          </td>
+          <td>{{star.mag_instrumental|floatformat:3}}</td>
+          <td>{{star.mag_instrumental_unc|floatformat:3}}</td>
+          <td>{{star.temperature|floatformat:1}}</td>
+          <td>{{star.Bmag}}</td>
+          <td>{{star.Vmag}}</td>
+          <td>{{star.gmag}}</td>
+          <td>{{star.rmag}}</td>
+          <td>{{star.imag}}</td>
+          <td>{{star.Jmag}}</td>
+          <td>{{star.Hmag}}</td>
+          <td>{{star.Kmag}}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

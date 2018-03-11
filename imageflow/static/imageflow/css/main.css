@@ -34,7 +34,7 @@ ol.breadcrumb > li.active a {
 
 .table-wrapper {
   overflow: auto;
-  height: 400px;
+  max-height: 400px;
 }
 
 .table-wrapper th[data-sort] {

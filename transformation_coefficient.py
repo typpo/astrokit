@@ -20,7 +20,7 @@ def run(lightcurve, reduction):
 
     # Take the average instrumental magnitudes for common stars across these
     # analyses.
-    desig_map = average_instrumental_mags_by_desig(analyses, lightcurve.common_star_designations)
+    desig_map = average_instrumental_mags_by_desig(analyses, lightcurve.get_common_desigs())
     stars = desig_map.values()
 
     tf_computed, zpf, tf_std, tf_graph_url = calculate(lightcurve, stars, save_graph=True)

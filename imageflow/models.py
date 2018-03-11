@@ -187,6 +187,11 @@ class ImageAnalysis(models.Model):
         '''
         return self.status in [ImageAnalysis.REDUCTION_COMPLETE, ImageAnalysis.ADDED_TO_LIGHT_CURVE]
 
+    def is_photometry_complete(self):
+        '''Returns whether this image is past the photometry stage.
+        '''
+        return self.is_reviewed() or self.status == 'REVIEW_PENDING'
+
     def __str__(self):
         return '#%d %s: %s - Sub %d Job %d, Band %s @ %s' % \
                 (self.id,

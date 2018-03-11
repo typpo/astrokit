@@ -2,6 +2,7 @@ var prevNumProcessed = -1;
 function checkStatus() {
   $.get('/lightcurve/' + window.lightcurveId + '/status', function(data) {
     $('#num-images-processed').text(data.numProcessed);
+    $('#num-images-photometry').text(data.numPhotometry);
     $('#num-images-companion').text(data.numCompanion);
     $('#num-images-target').text(data.numTarget);
     $('#num-images-reviewed').text(data.numReviewed);

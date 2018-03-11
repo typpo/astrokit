@@ -45,6 +45,9 @@ class PhotometryRunner(object):
         # urls.
         self.process_magnitudes()
 
+        # ID numbering may have changed.
+        self.analysis.target_id = None
+
         # Done!
         self.analysis.status = ImageAnalysis.REVIEW_PENDING
         self.analysis.save()

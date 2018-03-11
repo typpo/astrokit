@@ -177,15 +177,24 @@ def status(request, lightcurve_id):
         val = request.POST.get('status')
         if val == 'REDUCTION_PENDING':
             lc.status = LightCurve.REDUCTION_PENDING
-            lc.save()
+        elif val == 'PHOTOMETRY_PENDING':
+            lc.status = LightCurve.PHOTOMETRY_PENDING
+        else:
             return JsonResponse({
-                'success': True,
+                'success': False,
+                'message': 'Did not recognize status %s' % val
             })
+
+        lc.save()
+        return JsonResponse({
+            'success': True,
+        })
     else:
         images = lc.useruploadedimage_set.all()
         pairs = ImageAnalysisPair.objects.filter(lightcurve=lc)
 
         num_processed = sum([image.submission.is_done() for image in images if image.submission])
+        num_photometry = sum([image.analysis.is_photometry_complete() for image in images if image.analysis])
         num_companion = len(pairs)
         num_target = sum([image.analysis.target_id > 0 for image in images if image.analysis])
 
@@ -196,6 +205,7 @@ def status(request, lightcurve_id):
             'success': True,
             'status': lc.status,
             'numProcessed': num_processed,
+            'numPhotometry': num_photometry,
             'numCompanion': num_companion,
             'numTarget': num_target,
             'numReviewed': num_reviewed,

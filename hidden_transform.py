@@ -25,10 +25,11 @@ def run(lightcurve, reduction):
 
     # Take the average instrumental magnitudes for comparison stars across
     # these analyses.
+    comparison_desigs = lightcurve.get_comparison_desigs()
     desig_map_band1 = average_instrumental_mags_by_desig(analyses_band1,
-                                                         lightcurve.comparison_star_designations)
+                                                         comparison_desigs)
     desig_map_band2 = average_instrumental_mags_by_desig(analyses_band2,
-                                                         lightcurve.comparison_star_designations)
+                                                         comparison_desigs)
     stars_band1 = desig_map_band1.values()
     stars_band2 = desig_map_band2.values()
     star_pairs = zip(stars_band1, stars_band2)
