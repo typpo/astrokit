@@ -88,7 +88,10 @@ def set_target_point_source(request, pk):
             'msg': 'Astrometry is still pending',
         })
 
-    analysis.target_id = request.POST.get('val')
+    val = request.POST.get('val')
+    if val == 0:
+        val = None
+    analysis.target_id = val
     #analysis.target_x = request.POST.get('x')
     #analysis.target_y = request.POST.get('y')
     analysis.save()
