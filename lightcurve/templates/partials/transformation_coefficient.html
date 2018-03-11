@@ -30,9 +30,9 @@ This computation uses the {{reduction.meta.comparison_star_ids|length}} comparis
       <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
     </p>
   {% else %}
-    Slope = t<sub><em>f</em></sub> = {{reduction.tf}}<br>
-    Intercept = ZP<sub><em>f</em></sub> = {{reduction.zpf}}<br>
-    Standard error = {{reduction.tf_std}}
+    Slope = t<sub><em>f</em></sub> = {{reduction.tf|floatformat:3}}<br>
+    Intercept = ZP<sub><em>f</em></sub> = {{reduction.zpf|floatformat:3}}<br>
+    Standard error = {{reduction.tf_std|floatformat:3}}
     <img src="{{reduction.tf_graph_url}}">
   {% endif %}
 </div>

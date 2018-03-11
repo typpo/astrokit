@@ -11,9 +11,9 @@ The <em>hidden transform</em> is the equation that allows us to compute the colo
 {% else %}
   <div class="well">
     <p>
-      Hidden transform = {{reduction.hidden_transform}}<br>
-      Standard error = {{reduction.hidden_transform_std}}<br>
-      rval = {{reduction.hidden_transform_rval}}
+      Hidden transform = {{reduction.hidden_transform|floatformat:3}}<br>
+      Standard error = {{reduction.hidden_transform_std|floatformat:3}}<br>
+      rval = {{reduction.hidden_transform_rval|floatformat:3}}
     </p>
     <img src="{{reduction.hidden_transform_graph_url}}">
   </div>
