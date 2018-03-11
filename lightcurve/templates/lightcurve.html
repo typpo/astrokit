@@ -107,14 +107,16 @@ h1 span {
     <p>
       Comparison stars are known stars that appear in all observations.  This software will automatically select comparison stars.
     </p>
-    <p>
-      <strong>
-        Photometry is still pending for some images. Refresh this page when it is complete to see a full list of comparison stars.
-      </strong>
-    </p>
+    {% if lightcurve.is_photometry_complete %}
+      <p>
+        <strong>
+          Photometry is still pending for some images. Refresh this page when it is complete to see a full list of comparison stars.
+        </strong>
+      </p>
+    {% endif %}
 
     <div class="button-row">
-      <button class="btn btn-primary js-list-comparison">Refresh comparison stars</button>
+      <button class="btn btn-primary js-list-comparison">Determine comparison stars</button>
       <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
     </div>
 
