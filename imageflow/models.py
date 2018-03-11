@@ -225,15 +225,12 @@ class Reduction(models.Model):
     # TODO(ian): rename to reduced_points, because it can contain unknown objects.
     reduced_stars = JSONField()
 
-    image_companion = models.ForeignKey(UserUploadedImage, null=True, blank=True)
-
     def get_summary_obj(self):
         return {
             'urls': {
             },
             'meta': {
                 'status': self.status,
-                'image_companion_id': self.image_companion.id if self.image_companion else None,
             },
             'data': {
                 'reduced_stars': self.reduced_stars,

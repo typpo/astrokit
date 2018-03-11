@@ -128,23 +128,6 @@ def set_color_index_2(request, pk):
         'msg': 'Resolved input to %s' % str(filter_band)
     })
 
-def set_image_companion(request, pk):
-    analysis = get_object_or_404(ImageAnalysis, pk=pk, user=request.user.id)
-    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
-        return JsonResponse({
-            'success': False,
-            'msg': 'Astrometry is still pending',
-        })
-    analysis.get_or_create_reduction()
-
-    imageid = request.POST.get('val')
-    analysis.reduction.image_companion = UserUploadedImage.objects.get(pk=imageid)
-    analysis.reduction.save()
-    return JsonResponse({
-        'success': True,
-        'msg': 'Resolved input'
-    })
-
 def resolve_band(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
@@ -382,9 +365,6 @@ def reduction(request, pk):
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
-    # Other images in this light curve.
-    potential_image_companions = analysis.lightcurve.useruploadedimage_set.all()
-
     # Next image for user to process in this light curve.
     next_image = ImageAnalysis.objects.filter(status=ImageAnalysis.REVIEW_PENDING,
                                               useruploadedimage__lightcurve=analysis.lightcurve) \
@@ -395,7 +375,6 @@ def reduction(request, pk):
         'analysis': analysis.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
 
-        'potential_image_companions': potential_image_companions,
         'next_image': next_image,
     }
     if hasattr(analysis, 'reduction') and analysis.reduction:
@@ -410,26 +389,6 @@ def reduction(request, pk):
         })
         return render_to_response('reduction.html', template_args,
                 context_instance=RequestContext(request))
-
-def companion_image_modal(request, pk):
-    # TODO(ian): Dedup this with above code.
-    analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
-        return render_to_response('submission_pending.html', {},
-                context_instance=RequestContext(request))
-
-    # Other images in this light curve.
-    potential_image_companions = analysis.lightcurve.useruploadedimage_set.all()
-
-    template_args = {
-        'analysis': analysis.get_summary_obj(),
-        'reduction': analysis.get_or_create_reduction().get_summary_obj(),
-        'image_filters': ImageFilter.objects.all(),
-
-        'potential_image_companions': potential_image_companions,
-    }
-    return render_to_response('companion_image.html', template_args,
-            context_instance=RequestContext(request))
 
 def select_target_modal(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
