@@ -32,6 +32,10 @@ ol.breadcrumb > li.active a {
   color: #444;
 }
 
+.button-row {
+  margin-bottom: 1em;
+}
+
 .table-wrapper {
   overflow: auto;
   max-height: 400px;

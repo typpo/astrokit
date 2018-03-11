@@ -187,6 +187,33 @@ h1 span {
 
   <hr/>
 
+  <h2 id="image-reductions">Run image reductions</h2>
+  <div>
+    <p>
+      This is an <strong>optional step</strong> that will run photometric reductions for ALL images in your dataset.  This option is the quickest way to build a lightcurve, but it could include bad datapoints or images.  Regardless of your choice, you are encouraged to continue below and review all image analyses for correctness.
+    </p>
+    <p>
+      If you don't want to run all reductions now, proceed below to run reductions image-by-image.
+    </p>
+  </div>
+
+  <div class="button-row">
+    <div class="btn btn-primary js-run-image-reductions">Run <span class="js-num-images-target"></span> image reductions</div>
+    <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+  </div>
+
+  <div>
+    <p>
+      Once you've run some reductions, use the button below to add all completed image reductions to the light curve plot.  Or, you can go image-by-image and add them individually.
+    </p>
+  </div>
+  <div class="button-row">
+    <div class="btn btn-primary js-add-images-lightcurve">Add <span class="js-num-images-reduction-complete"></span> images to light curve</div>
+    <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+  </div>
+
+  <hr/>
+
   <h2 id="review-analyses">Review each image</h2>
   <p>
     Now that you've created a basic light curve, you should review each image and verify that its reduced standard magnitude data point is acceptable.
@@ -277,14 +304,15 @@ h1 span {
     <h2>Checklist</h2>
     <p>
       ☐ <a href="#settings">Set global settings</a><br>
-      ☑ Initial processing and astrometry (<span id="num-images-processed">0</span> of {{ images | length }})<br>
-      ☐ Photometry processed (<span id="num-images-photometry">?</span> of {{ images | length }})<br>
-      ☐ <a href="#select-targets">Select targets</a> (<span id="num-images-target">?</span> of {{ images | length }})<br>
-      ☐ <a href="#select-comp-stars">Select comparison stars</a> (<span id="num-images-comparison">?</span> of {{ images | length }})<br>
-      ☐ <a href="#select-pairs">Select image pairs</a> (<span id="num-images-companion">?</span> selected)<br>
+      ☑ Initial processing and astrometry (<span class="js-num-images-processed">0</span> of {{ images | length }})<br>
+      ☐ Photometry processed (<span class="js-num-images-photometry">?</span> of {{ images | length }})<br>
+      ☐ <a href="#select-targets">Select targets</a> (<span class="js-num-images-target">?</span> of {{ images | length }})<br>
+      ☐ <a href="#select-comp-stars">Select comparison stars</a> (<span class="js-num-comparison-stars">?</span> selected)<br>
+      ☐ <a href="#select-pairs">Select image pairs</a> (<span class="js-num-images-pair">?</span> selected)<br>
       ☐ <a href="#calculations">Review transform calculations</a><br>
-      ☐ Add to light curve (<span id="num-images-lightcurve">?</span> of {{ images | length}})<br>
-      ☐ <a href="#review-analyses">Review analyses</a> (<span id="num-images-reviewed">?</span> of {{ images | length}})<br>
+      ☐ <a href="#image-reductions">Run image reductions</a> (<span class="js-num-images-reduction-complete">?</span> of <span class="js-num-images-target">?</span>)<br>
+      ☐ <a href="#review-analyses">Review analyses</a> (<span class="js-num-images-reviewed">?</span> of {{ images | length}})<br>
+      ☐ <a href="#review-analyses">Add images to light curve</a> (<span class="js-num-images-lightcurve">?</span> of <span class="js-num-images-reduction-complete">?</span>)<br>
     </p>
     <p>
       <button style="display:none" class="btn btn-success js-reload js-new-results">Load new results</button>

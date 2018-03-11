@@ -46,8 +46,8 @@ def run_reductions(analysis):
 
     # Get the URAT1 keys for each CI band. eg. 'Bmag', 'jmag'
     filter_key = analysis.image_filter.urat1_key
-    ci1_key = reduction.color_index_1.urat1_key
-    ci2_key = reduction.color_index_2.urat1_key
+    ci1_key = analysis.lightcurve.get_ci_band1().urat1_key
+    ci2_key = analysis.lightcurve.get_ci_band2().urat1_key
 
     # Get the set of comparison stars.  These are a subset of reduced stars.
     comparison_stars = analysis.lightcurve.comparison_stars
@@ -109,7 +109,7 @@ def run_reductions(analysis):
 def process_pending_reductions():
     pending = Reduction.objects.filter(status=Reduction.PENDING)
     for reduction in pending:
-        if reduction.analysis.target_id != 0:
+        if reduction.analysis.target_id and reduction.analysis.target_id > 0:
             run_reductions(reduction.analysis)
 
 if __name__ == '__main__':

@@ -1,12 +1,19 @@
+window.lightcurveStatus = {};
+
+(function() {
+
 var prevNumProcessed = -1;
 function checkStatus() {
   $.get('/lightcurve/' + window.lightcurveId + '/status', function(data) {
-    $('#num-images-processed').text(data.numProcessed);
-    $('#num-images-photometry').text(data.numPhotometry);
-    $('#num-images-companion').text(data.numCompanion);
-    $('#num-images-target').text(data.numTarget);
-    $('#num-images-reviewed').text(data.numReviewed);
-    $('#num-images-lightcurve').text(data.numLightcurve);
+    window.lightcurveStatus = data;
+    $('.js-num-images-processed').text(data.numProcessed);
+    $('.js-num-images-photometry').text(data.numPhotometry);
+    $('.js-num-comparison-stars').text(data.numComparisonStars);
+    $('.js-num-images-pair').text(data.numPairs);
+    $('.js-num-images-target').text(data.numTarget);
+    $('.js-num-images-reviewed').text(data.numReviewed);
+    $('.js-num-images-reduction-complete').text(data.numReductionComplete);
+    $('.js-num-images-lightcurve').text(data.numLightcurve);
     if (data.numImages === data.numProcessed &&
         data.numProcessed !== prevNumProcessed &&
         prevNumProcessed !== -1) {
@@ -48,6 +55,28 @@ function toggleAddToLightcurve(toggleButton) {
       }
     } else {
       alert('Something went wrong. Changes were not applied to this image.');
+    }
+  });
+}
+
+function setupAddAllImages() {
+  $('.js-add-images-lightcurve').on('click', function() {
+    $('.page-loader').show();
+    $('.js-add-images-lightcurve').attr('disabled', 1);
+    addAllImages();
+  });
+}
+
+function addAllImages() {
+  $.post('/lightcurve/' + window.lightcurveId + '/add_images', {}, function(data) {
+    if (data.success) {
+      $('.page-loader').hide();
+      $('.js-add-images-lightcurve').removeAttr('disabled');
+      alert(data.count + ' images added to your light curve. Press OK to refresh.');
+      window.location.hash = 'image-reductions';
+      window.location.reload();
+    } else {
+      alert('Sorry, something went wrong and images could not be added to your lightcurve.');
     }
   });
 }
@@ -192,4 +221,7 @@ $(function() {
   setupMiscHandlers();
   setupImagePairs();
   setupModals();
+  setupAddAllImages();
 });
+
+})();
