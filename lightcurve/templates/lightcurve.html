@@ -218,9 +218,11 @@ h1 span {
     </p>
   </div>
   <div class="button-row">
-    <div class="btn btn-primary js-add-images-lightcurve">Add <span class="js-num-images-reduction-complete"></span> images to light curve</div>
+    <div class="btn btn-primary js-add-images-lightcurve">Add images to light curve</div>
     <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
   </div>
+
+  {% include 'partials/image_list.html' %}
 
   <hr/>
 

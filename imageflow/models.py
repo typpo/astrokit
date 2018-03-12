@@ -24,8 +24,8 @@ class ImageAnalysis(models.Model):
         (ASTROMETRY_PENDING, 'Astrometry pending'),
         (PHOTOMETRY_PENDING, 'Photometry pending'),
         (REVIEW_PENDING, 'Review pending'),
-        (REDUCTION_COMPLETE, "Reduction complete"),
-        (ADDED_TO_LIGHT_CURVE, "Added to light curve"),
+        (REDUCTION_COMPLETE, 'Reduction complete'),
+        (ADDED_TO_LIGHT_CURVE, 'Added to light curve'),
         (FAILED, 'Failed'),
     )
     status = models.CharField(

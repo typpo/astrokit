@@ -6,10 +6,7 @@
       }, function(data) {
         $('.js-run-image-reductions').attr('disabled', 1);
         $('.page-loader').show();
-        setTimeout(function() {
-          // Messy, but make sure it waits til the NEXT status poll...
-          pollLightcurveReductionStatus();
-        }, 6000);
+        pollLightcurveReductionStatus();
       });
       return false;
     });
@@ -20,7 +17,10 @@
       $('.page-loader').show();
 
       $.post('/lightcurve/' + window.lightcurveId + '/run_image_reductions', {}, function(data) {
-        pollImageReductionStatus();
+        setTimeout(function() {
+          // Messy, but make sure it waits til the NEXT status poll...
+          pollImageReductionStatus();
+        }, 6000);
       });
       return false;
     });
