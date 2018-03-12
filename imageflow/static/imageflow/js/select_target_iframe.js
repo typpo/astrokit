@@ -6,7 +6,7 @@ $(function() {
 
   window.addEventListener('plot complete', function() {
     var $frame = $('.iframe-target', window.parent.document);
-    var height = $('body').height() + 100;
+    var height = $('body').height() + 20;
     $frame.height(height);
   });
 });

@@ -6,10 +6,12 @@
 
 {% block nav %}{% endblock %}
 
-{% block heading %}Analysis #{{analysis.id}}{% endblock %}
-
 {% block styles %}
 <style>
+.heading-container {
+  border: 0;
+}
+
 .header-tooltip {
   color: #337ab7;
   cursor: help;
@@ -26,7 +28,7 @@
 }
 
 .content {
-  padding-top: 0;
+  padding: 0;
 }
 </style>
 {% endblock %}
@@ -34,17 +36,12 @@
 {% block content-interior %}
 
 <p>
+<strong>Image Analysis #{{analysis.id}}</strong><br>
+Filename: {{analysis.meta.image_name_short}}<br>
+Timestamp: {{analysis.meta.datetime}}<br><br>
 {{analysis.data.coords | length}} point sources detected via the
 <a href="http://stsdas.stsci.edu/cgi-bin/gethelp.cgi?daofind">DAOFind</a> algorithm.
 <strong><a target="_blank" href="/analysis/point_sources/{{analysis.id}}">Adjust point source extraction</a></strong>
-</p>
-<p>
-<strong>Image details</strong><br>
-Filename: {{analysis.meta.image_name_short}}<br>
-Timestamp: {{analysis.meta.datetime}}
-</p>
-<p>
-Select the point source for which you are interested in creating a lightcurve below.
 </p>
 
 {% include 'partials/point_source_plot.html' %}
