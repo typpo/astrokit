@@ -33,6 +33,12 @@ h1 span {
 
   border: none;
 }
+
+.select-target-link {
+  cursor: pointer;
+  color: #3366BB;
+  text-decoration: underline;
+}
 </style>
 {% endblock %}
 
@@ -96,6 +102,10 @@ h1 span {
   <hr/>
 
   <h2 id="select-targets">Select Targets</h2>
+  Image Analysis (ordered by time) #
+  {% for image in images %}
+  <span class="select-target-link" data-analysis-id="{{image.analysis.id}}">{{image.analysis.id}}</span>
+  {% endfor %}
   <div>
     <iframe class="iframe-target" src="/analysis/select_target_modal/{{images.0.analysis.id}}"></iframe>
   </div>

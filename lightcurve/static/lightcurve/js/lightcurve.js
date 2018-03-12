@@ -133,6 +133,11 @@ function setupMiscHandlers() {
     window.location.reload();
     return false;
   });
+
+  $('.select-target-link').on('click', function() {
+    var analysisId = $(this).data('analysis-id');
+    $('.iframe-target').attr('src', '/analysis/select_target_modal/' + analysisId);
+  });
 }
 
 function setupImagePairs() {
