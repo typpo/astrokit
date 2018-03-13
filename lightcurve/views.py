@@ -1,24 +1,36 @@
 from django.http import JsonResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.shortcuts import get_object_or_404
 
 from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
 from corrections import get_jd_for_analysis
 from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
 from lightcurve.models import LightCurve
+from lightcurve.util import ordered_analysis_status
 from reduction.util import find_point_by_id
 
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
     images = UserUploadedImage.objects.filter(lightcurve=lc)
 
+    sort = request.GET.get('sort')
+    print sort
+    if sort == 'filename':
+        images = images.order_by('original_filename')
+    elif sort == 'timestamp':
+        images = images.order_by('analysis__image_datetime')
+    elif sort == 'status':
+        images = images.annotate(status_sort = ordered_analysis_status()).order_by('status_sort')
+    else:
+        pass
+
     context = {
         'lightcurve': lc,
         'images': images,
         'image_filters': ImageFilter.objects.all(),
     }
+
     return render_to_response('lightcurve.html', context,
             context_instance=RequestContext(request))
 
@@ -166,7 +178,7 @@ def my_lightcurve(request):
             'images': images,
         })
 
-    return render_to_response('lightcurve_list.html', {"contexts": context_list},
+    return render_to_response('lightcurve_list.html', {'contexts': context_list},
             context_instance=RequestContext(request))
 
 def all_lightcurve(request):
@@ -180,5 +192,5 @@ def all_lightcurve(request):
             'images': images,
         })
 
-    return render_to_response('lightcurve_list.html', {"contexts": context_list, "request_all": True},
+    return render_to_response('lightcurve_list.html', {'contexts': context_list, 'request_all': True},
             context_instance=RequestContext(request))
