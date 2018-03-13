@@ -3,9 +3,9 @@
     <table class="table table-striped table-hover star-table js-reference-table">
       <thead>
         <tr>
-          <th>Analysis ID</th>
-          <th>Timestamp</th>
-          <th>Status</th>
+          <th data-sort="int">Analysis ID</th>
+          <th data-sort="string">Timestamp</th>
+          <th data-sort="string">Status</th>
           <th>Notes</th>
         </tr>
       </thead>
@@ -14,7 +14,7 @@
         {% if image.analysis %}
         <tr>
           <td><a href="/analysis/{{image.analysis.id}}">{{image.analysis.id}}</a></td>
-          <td>{{image.analysis.image_datetime}}</td>
+          <td>{{image.analysis.image_datetime | date:'Y-m-d H:i:s'}}</td>
           <td>{{image.analysis.status}}</td>
           <td>{{image.analysis.notes}}</td>
         </tr>
