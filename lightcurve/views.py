@@ -189,7 +189,7 @@ def all_lightcurve(request):
 def download(request, lightcurve_id):
     file_type = request.GET.get('file_type')
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="LightCurve%d.%s"' % (int(lightcurve_id), file_type) # Gets TypeError without int(). %s instead of %d?
+    response['Content-Disposition'] = 'attachment; filename="LightCurve%s.%s"' % (lightcurve_id, file_type)
 
     lc = LightCurve.objects.get(id=lightcurve_id)
     analyses = ImageAnalysis.objects.filter(useruploadedimage__lightcurve=lc) \
@@ -199,7 +199,8 @@ def download(request, lightcurve_id):
         writer = csv.writer(response)
         writer.writerow(['Datetime', 'JD', 'Mag instrumental', 'Mag standard', 'Mag std'])
         for analysis in analyses:
-            if analysis.annotated_point_sources != "[]":
+            print len(analysis.annotated_point_sources)
+            if analysis.annotated_point_sources != []:
                 result = find_point_by_id(analysis.annotated_point_sources, analysis.target_id)
                 if not result:
                     continue
