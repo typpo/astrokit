@@ -117,6 +117,28 @@ h1 span {
 
   <hr/>
 
+  <h2 id="select-filters">Select Filters</h2>
+  <p>
+    Select the optical filter associated with each image.
+  </p>
+
+  {% include 'partials/image_filter_selector.html' %}
+
+  <hr/>
+
+  <h2 id="tune-photometry">Tune Point Source Extraction &amp; Photometry</h2>
+  <p>
+    Point source extraction is the process that determines the location of stars and other objects in your image.  This information is then used to process photometry, which measures the number of photons emitted by objects in your image.
+  </p>
+  <p>
+    To start tuning photometry, we recommend that you use a single image that is representative of most of the images in your uploaded dataset.
+  </p>
+  <p>
+    <strong><a href="/analysis/point_sources/{{images.0.analysis.id}}">Start at your first image</a></strong>.  Once you have tuned the photometry parameters to your satisfaction, apply those settings to all images.
+  </p>
+
+  <hr/>
+
   <h2 id="select-targets">Select Targets</h2>
   Image Analysis (ordered by time) #
   {% for image in images %}
@@ -333,7 +355,9 @@ h1 span {
     <p>
       ☑ Initial processing and astrometry (<span class="js-num-images-processed">0</span> of {{ images | length }})<br>
       ☐ <a href="#settings">Apply global settings</a><br>
-      ☐ Photometry processed (<span class="js-num-images-photometry">?</span> of {{ images | length }})<br>
+      ☐ <a href="#select-filters">Select filters</a><br>
+      ☐ Initial photometry processed (<span class="js-num-images-photometry">?</span> of {{ images | length }})<br>
+      ☐ <a href="#tune-photometry">Tune photometry</a><br>
       ☐ <a href="#select-targets">Select targets</a> (<span class="js-num-images-target">?</span> of {{ images | length }})<br>
       ☐ <a href="#select-comp-stars">Select comparison stars</a> (<span class="js-num-comparison-stars">?</span> selected)<br>
       ☐ <a href="#select-pairs">Select image pairs</a> (<span class="js-num-images-pair">?</span> selected)<br>
