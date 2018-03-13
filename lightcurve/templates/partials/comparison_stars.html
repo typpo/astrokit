@@ -10,8 +10,8 @@
     <table class="table table-striped table-hover star-table js-reference-table">
       <thead>
         <tr>
-<!--
           <th></th>
+<!--
           <th data-sort="int"><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
 -->
           <th data-sort="string"><span class="header-tooltip" data-toggle="tooltip" title="URAT1 catalog designation">Designation</span></th>
@@ -31,8 +31,8 @@
       <tbody>
       {% for star in stars %}
         <tr data-star-id="{{star.id}}" {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
-<!--
           <td class="table-checkbox"><input type="checkbox" /></td>
+<!--
           <td>{{star.id}}</td>
 -->
           <td>
