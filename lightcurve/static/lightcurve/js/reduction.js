@@ -1,11 +1,12 @@
 (function() {
   function setupRunLightcurveReduction() {
     $('.js-run-lightcurve-reductions').on('click', function() {
+      $('.page-loader').show();
+      $('.js-run-image-reductions').attr('disabled', 1);
+
       $.post('/lightcurve/' + window.lightcurveId + '/status', {
         status: 'REDUCTION_PENDING'
       }, function(data) {
-        $('.js-run-image-reductions').attr('disabled', 1);
-        $('.page-loader').show();
         pollLightcurveReductionStatus();
       });
       return false;
@@ -15,6 +16,7 @@
   function setupRunImageReductions() {
     $('.js-run-image-reductions').on('click', function() {
       $('.page-loader').show();
+      $('.js-run-image-reductions').attr('disabled', 1);
 
       $.post('/lightcurve/' + window.lightcurveId + '/run_image_reductions', {}, function(data) {
         setTimeout(function() {
@@ -36,6 +38,7 @@
     });
    */
     if (window.lightcurveStatus.status === 'REDUCTION_COMPLETE') {
+      $('.js-run-image-reductions').removeAttr('disabled');
       $('.page-loader').hide();
       alert('Your reduction has completed. Press OK to refresh.');
       window.location.hash = 'calculations';
