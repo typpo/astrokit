@@ -86,6 +86,14 @@ h1 span {
       <input id="set-elevation" class="form-control" style="width: 20em" type="number" value="{{images.0.analysis.image_elevation}}">
     </div>
 
+    <h4>Target magnitude</h4>
+    <div class="well">
+      <p>
+        For the target, convert the raw instrumental magnitude to this color band.
+      </p>
+      {% include 'partials/filter_selector.html' with selected_band=image.analysis.image_filter.band %}
+    </div>
+
     <h4>Second-order extinction k"<sub><em>f</em></sub></h4>
     <div class="well">
       <p>
@@ -98,15 +106,6 @@ h1 span {
       <div id="save-observation-default" class="btn btn-primary">Apply settings</div>
     </div>
   </div>
-
-  <hr/>
-
-  <h2 id="select-filters">Select Filters</h2>
-  <p>
-    Select the optical filter associated with each image.
-  </p>
-
-  {% include 'partials/image_filter_selector.html' %}
 
   <hr/>
 
@@ -326,7 +325,6 @@ h1 span {
     <p>
       ☑ Initial processing and astrometry (<span class="js-num-images-processed">0</span> of {{ images | length }})<br>
       ☐ <a href="#settings">Apply global settings</a><br>
-      ☐ <a href="#select-filters">Select filters</a><br>
       ☐ Photometry processed (<span class="js-num-images-photometry">?</span> of {{ images | length }})<br>
       ☐ <a href="#select-targets">Select targets</a> (<span class="js-num-images-target">?</span> of {{ images | length }})<br>
       ☐ <a href="#select-comp-stars">Select comparison stars</a> (<span class="js-num-comparison-stars">?</span> selected)<br>
