@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
 from corrections import get_jd_for_analysis
-from imageflow.models import ImageAnalysis, Reduction, UserUploadedImage
+from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
 from lightcurve.models import LightCurve
 from reduction.util import find_point_by_id
 
@@ -19,6 +19,7 @@ def edit_lightcurve(request, lightcurve_id):
     context = {
         'lightcurve': lc,
         'images': images,
+        'image_filters': ImageFilter.objects.all(),
     }
     return render_to_response('lightcurve.html', context,
             context_instance=RequestContext(request))
@@ -83,6 +84,7 @@ def save_observation_default(request, lightcurve_id):
     elevation = request.POST.get('elevation')
     extinction = request.POST.get('extinction')
     target_name = request.POST.get('target')
+    magband = request.POST.get('magband')
 
     for image in images:
         if lat:
@@ -98,6 +100,9 @@ def save_observation_default(request, lightcurve_id):
         if target_name:
             # This target is looked up during the reduction step.
             image.target_name = target_name
+        if magband:
+            lc.magband = ImageFilter.objects.get(band=band)
+            lc.save()
         image.save()
 
     return JsonResponse({
@@ -137,6 +142,7 @@ def get_status(request, lightcurve_id):
 
     num_processed = sum([image.submission.is_done() for image in images if image.submission])
     num_companion = sum([image.analysis.get_or_create_reduction().image_companion is not None for image in images if image.analysis])
+    num_target = sum([image.analysis.target_id > 0 for image in images if image.analysis])
 
     num_reviewed = sum([image.analysis.is_reviewed() for image in images if image.analysis])
     num_lightcurve = sum([image.analysis.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE for image in images if image.analysis])
@@ -145,6 +151,7 @@ def get_status(request, lightcurve_id):
         'success': True,
         'numProcessed': num_processed,
         'numCompanion': num_companion,
+        'numTarget': num_target,
         'numReviewed': num_reviewed,
         'numLightcurve': num_lightcurve,
         'numImages': len(images),
