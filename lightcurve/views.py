@@ -16,11 +16,11 @@ def edit_lightcurve(request, lightcurve_id):
 
     sort = request.GET.get('sort')
     print sort
-    if sort == "filename":
-        images = images.order_by("original_filename")
-    elif sort == "timestamp":
-        images = images.order_by("analysis__image_datetime")
-    elif sort == "status":
+    if sort == 'filename':
+        images = images.order_by('original_filename')
+    elif sort == 'timestamp':
+        images = images.order_by('analysis__image_datetime')
+    elif sort == 'status':
         images = images.annotate(status_sort = ordered_analysis_status()).order_by('status_sort')
     else:
         pass
