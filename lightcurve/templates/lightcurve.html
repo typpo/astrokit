@@ -101,6 +101,15 @@ h1 span {
 
   <hr/>
 
+  <h2 id="select-targets">Select Filters</h2>
+  <p>
+    Select the optical filter associated with each image.
+  </p>
+
+  {% include 'partials/image_filter_selector.html' %}
+
+  <hr/>
+
   <h2 id="select-targets">Select Targets</h2>
   Image Analysis (ordered by time) #
   {% for image in images %}

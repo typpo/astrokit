@@ -6,7 +6,7 @@ function setupListeners() {
                 $('#edit-image-datetime-failure'));
 
   setupListener('set_filter_band',
-                $('#select-filter-name'),
+                $('.js-select-filter-name'),
                 $('#select-filter-name-success'),
                 $('#select-filter-name-failure'));
 
