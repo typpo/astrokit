@@ -1,15 +1,18 @@
-var firstCheck = true;
+var prevNumProcessed = -1;
 function checkStatus() {
   $.get('/lightcurve/' + window.lightcurveId + '/status', function(data) {
     $('#num-images-processed').text(data.numProcessed);
     $('#num-images-companion').text(data.numCompanion);
+    $('#num-images-target').text(data.numTarget);
     $('#num-images-reviewed').text(data.numReviewed);
     $('#num-images-lightcurve').text(data.numLightcurve);
-    if (data.numImages === data.numProcessed && !firstCheck) {
+    if (data.numImages === data.numProcessed &&
+        data.numProcessed !== prevNumProcessed &&
+        prevNumProcessed !== -1) {
       $('.js-new-results').show();
     }
     setTimeout(checkStatus, 5000);
-    firstCheck = false;
+    prevNumProcessed = data.numProcessed;
   });
 }
 
@@ -20,6 +23,7 @@ function saveObservationDefault() {
     'elevation': $('#set-elevation').val(),
     'extinction': $('#second-order-extinction').val(),
     'target': $('#target-name').val(),
+    'magband': $('#select-magband').val(),
   }, function(data) {
     if (data.success) {
       alert('Settings applied to all images.');
@@ -122,9 +126,16 @@ function setupMiscHandlers() {
 function setupModals() {
   $('.js-select-companion-image').on('click', function() {
     var analysisId = $(this).data('analysis-id');
-    $('.comparison-image-modal iframe')
+    $('.image-modal iframe')
         .attr('src', '/analysis/companion_image_modal/' + analysisId);
-    $('.comparison-image-modal .modal').modal();
+    $('.image-modal .modal').modal();
+  });
+
+  $('.js-select-target').on('click', function() {
+    var analysisId = $(this).data('analysis-id');
+    $('.image-modal iframe')
+        .attr('src', '/analysis/select_target_modal/' + analysisId);
+    $('.image-modal .modal').modal();
   });
 }
 

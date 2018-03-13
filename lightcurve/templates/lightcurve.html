@@ -10,6 +10,10 @@ h1 span {
   color:#286090;
 }
 
+.checklist {
+  position: fixed;
+}
+
 .user-image {
   max-width: 300px;
   max-height: 300px;
@@ -19,6 +23,9 @@ h1 span {
   margin: 2em 0;
 }
 
+.col-md-12, .col-md-8 {
+  padding-left: 0;
+}
 </style>
 {% endblock %}
 
@@ -37,19 +44,22 @@ h1 span {
 {% endblock %}
 
 {% block content-interior %}
-<a href="plot" class="btn btn-default">Standard Magnitudes Plot</a>
-<a href="plot?type=instrumental" class="btn btn-default">Instrumental Magnitudes Plot</a>
-<a href="#" class="btn btn-default">Download as XLSX</a>
-<a href="#" class="btn btn-default">Download as ALCDEF</a>
+<div class="col-md-12">
+  <a href="plot" class="btn btn-default">Standard Magnitudes Plot</a>
+  <a href="plot?type=instrumental" class="btn btn-default">Instrumental Magnitudes Plot</a>
+  <a href="#" class="btn btn-default">Download as XLSX</a>
+  <a href="#" class="btn btn-default">Download as ALCDEF</a>
+</div>
 
-<div>
-  <h3>Observation Metadata</h3>
+<div class="col-md-8">
+  <h2 id="settings">Settings</h2>
   <p>These settings apply to all images.  You can change these values for individual images later.</p>
   <div>
     <h4>Target</h4>
     <div class="well">
       Name (<a href="https://ssd.jpl.nasa.gov/horizons.cgi">JPL Horizons</a>) <input type="text" class="form-control" style="width:20em" id="target-name" value="{{analysis.meta.target_name}}" />
     </div>
+
     <h4>Coordinates</h4>
     <div class="well">
       Latitude <input id="set-latitude" class="form-control" style="width: 20em" type="number" value="{{result.meta.latitude}}" min="-90" max="90">
@@ -70,21 +80,29 @@ h1 span {
       </p>
       <input type="text" class="form-control" style="width:20em" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
     </div>
+
+    <h4>Light Curve</h4>
+    <div class="well">
+      Magnitude Band
+      <select id="select-magband" class="form-control" style="width: 10em">
+        {% for filter in image_filters %}
+          <option value="{{filter.band}}" {% if filter.band == lightcurve.magband %}selected{% endif %}>
+            {{filter.band}} ({{filter.system}})
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
     <div class="button-row">
-      <div id="save-observation-default" class="btn btn-primary">Apply to all images</div>
+      <div id="save-observation-default" class="btn btn-primary">Apply settings</div>
     </div>
   </div>
 
   <hr/>
 
-  <h3>Images</h3>
+  <h2 id="first-pass-selection">Target &amp; Companion Image Selection</h2>
   <p>
-    Image processing checklist:<br>
-    ☑ Initial processing of astrometry and photometry (<span id="num-images-processed">0</span> of {{ images | length }})<br>
-    ☐ Select companion image (<span id="num-images-companion">?</span> of {{ images | length}})<br>
-    ☐ Review analysis (<span id="num-images-reviewed">?</span> of {{ images | length}})<br>
-    ☐ Add to light curve (<span id="num-images-lightcurve">?</span> of {{ images | length}})<br>
-    <span id="num-images-processed">0</span> of {{ images | length }} images have been processed.
+    For color index/hidden transform.
   </p>
   <p class="clearfix">
     <select id="select-sort-images" class="form-control pull-right" style="display:inline-block; width: auto">
@@ -93,7 +111,6 @@ h1 span {
       <option value="timestamp">Timestamp</option>
       <option value="status">Status</option>
     </select>
-    <button style="display:none" class="btn btn-success js-reload js-new-results">Load new results</button>
   </p>
 
   <div id="image-list">
@@ -105,7 +122,6 @@ h1 span {
         {{image.original_filename}}
       </a><br>
       Timestamp: {{image.analysis.image_datetime}}<br>
-
       Status:
       {% if image.analysis %}
         {% if image.analysis.status == 'ASTROMETRY_PENDING'  %}
@@ -132,11 +148,10 @@ h1 span {
       {% else %}
         <span style="color:purple">Stage 0: Uploaded, astrometry starting...</span>
       {% endif %}
-
       {% if image.analysis.notes %}
           <br>Note: <em>{{image.analysis.notes}}</em>
       {% endif %}
-
+  <!--
       <div class="image-container">
         {% if image.analysis.original_display_url %}
           <a href="/analysis/{{image.analysis.id}}">
@@ -144,38 +159,81 @@ h1 span {
           </a>
         {% endif %}
       </div>
-
+  -->
       <div class="button-row">
+  <!--
         {% if image.submission and image.submission.status == 'COMPLETE' %}
           <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary">Review Analysis</a>
         {% elif image.submission %}
           <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary disabled">Analysis Pending</a>
         {% endif %}
-
-        <div class="btn btn-default" data-analysis-id="{{image.analysis.id}}">Select comparison image</div>
-
+  -->
+        {% if image.analysis.target_id %}
+          <div class="btn btn-default js-select-target" data-analysis-id="{{image.analysis.id}}">Change Target</div>
+        {% else %}
+          <div class="btn btn-primary js-select-target" data-analysis-id="{{image.analysis.id}}">Select Target</div>
+        {% endif %}
+        {% if image.analysis.reduction and image.analysis.reduction.image_companion %}
+          <div class="btn btn-default js-select-companion-image" data-analysis-id="{{image.analysis.id}}">Change Companion Image</div>
+        {% else %}
+          <div class="btn btn-primary js-select-companion-image" data-analysis-id="{{image.analysis.id}}">Select Companion Image</div>
+        {% endif %}
+  <!--
         {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
           <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
         {% elif image.analysis and image.analysis.status == 'ADDED_TO_LIGHT_CURVE' %}
           <div class="btn btn-warning js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Remove from lightcurve</div>
-        {% elif image.submission %}
-          <!--<div class="btn btn-default disabled">Add to lightcurve</div>-->
         {% endif %}
+  -->
+  <!--
         {% if image.submission %}
           <a href="http://35.202.61.141/status/{{image.analysis.astrometry_job.jobid}}" class="btn btn-default">View Astrometry job</a>
         {% endif %}
+  -->
       </div>
     </div>
     {% endfor %}
+    </div>
   </div>
   <div>
     <p>
       <button style="display:none" class="btn btn-success js-reload js-new-results">Load new results</button>
     </p>
   </div>
+
+  <hr/>
+
+  <h2 id="calculations">Calculations</h2>
+  <p>
+    CI/Hidden transform
+  </p>
+
+  <hr/>
+
+  <h2>Review each image</h2>
+  <p>
+    review
+  </p>
+</div>
+<div class="col-md-4">
+  <div class="checklist">
+    <h2>Checklist</h2>
+    <p>
+      ☐ <a href="#settings">Set global settings</a><br>
+      ☑ Initial processing of astrometry and photometry (<span id="num-images-processed">0</span> of {{ images | length }})<br>
+      ☐ <a href="#first-pass-selection">Select targets</a> (<span id="num-images-target">?</span> of {{ images | length }})<br>
+      ☐ <a href="#first-pass-selection">Select companion images</a> (<span id="num-images-companion">?</span> of {{ images | length}})<br>
+      ☐ Confirm CI/transform calculations<br>
+      ☐ Review analyses (<span id="num-images-reviewed">?</span> of {{ images | length}})<br>
+      ☐ Add to light curve (<span id="num-images-lightcurve">?</span> of {{ images | length}})<br>
+    </p>
+    <p>
+      <button style="display:none" class="btn btn-success js-reload js-new-results">Load new results</button>
+    </p>
+  </div>
 </div>
 
-<div class="comparison-image-modal">
+<div class="image-modal">
   {% include 'partials/modal.html' %}
 </div>
 

@@ -88,8 +88,8 @@ def set_target_point_source(request, pk):
         })
 
     analysis.target_id = request.POST.get('val')
-    analysis.target_x = request.POST.get('x')
-    analysis.target_y = request.POST.get('y')
+    #analysis.target_x = request.POST.get('x')
+    #analysis.target_y = request.POST.get('y')
     analysis.save()
     return JsonResponse({
         'success': True,
@@ -419,6 +419,18 @@ def companion_image_modal(request, pk):
         'potential_image_companions': potential_image_companions,
     }
     return render_to_response('companion_image.html', template_args,
+            context_instance=RequestContext(request))
+
+def select_target_modal(request, pk):
+    analysis = get_object_or_404(ImageAnalysis, pk=pk)
+    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
+        return render_to_response('submission_pending.html', {},
+                context_instance=RequestContext(request))
+
+    template_args = {
+        'analysis': analysis.get_summary_obj(),
+    }
+    return render_to_response('select_target.html', template_args,
             context_instance=RequestContext(request))
 
 def api_get_analysis_results(request, subid):
