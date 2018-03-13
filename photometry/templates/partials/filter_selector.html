@@ -1,0 +1,7 @@
+<select class="form-control js-select-filter-name" data-analysis-id="{{analysis.id}}" style="width:12em">
+  {% for filter in image_filters %}
+    <option value="{{filter.band}}" {% if filter.band == selected_band %}selected{% endif %}>
+      {{filter.band}} ({{filter.system}})
+    </option>
+  {% endfor %}
+</select>

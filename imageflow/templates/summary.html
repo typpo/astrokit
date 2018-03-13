@@ -56,15 +56,7 @@ Select the standard filter that most closely matches the filter used for this im
   <div id="select-filter-name-failure" class="alert alert-danger" style="display:none">
     Something went wrong - failed to update your setting.
   </div>
-  <label>
-    <select class="form-control" id="select-filter-name">
-      {% for filter in image_filters %}
-        <option value="{{filter.band}}" {% if filter.band == analysis.meta.image_band %}selected{% endif %}>
-          {{filter.band}} ({{filter.system}})
-        </option>
-      {% endfor %}
-    </select>
-  </label>
+  {% include 'partials/filter_selector.html' with selected_band=analysis.meta.image_band %}
 </div>
 
 <h3>Date &amp; time</h3>

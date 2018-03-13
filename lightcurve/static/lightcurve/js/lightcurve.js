@@ -212,6 +212,24 @@ function setupImagePairs() {
   });
 }
 
+function setupFilterSelection() {
+  $('.js-filter-selection .js-select-filter-name').on('change', function() {
+    var $success = $('.js-select-filter-success');
+    var $failure = $('.js-select-filter-failure');
+
+    $success.toggle(false);
+    $failure.toggle(false);
+
+    var analysisId = $(this).data('analysis-id');
+    $.post('/analysis/' + analysisId + '/set_filter_band', {
+      val: $(this).val(),
+    }, function(data) {
+      $success.toggle(data.success);
+      $failure.toggle(!data.success);
+    });
+  });
+}
+
 function setupModals() {
   $('.js-select-target').on('click', function() {
     var analysisId = $(this).data('analysis-id');
@@ -226,6 +244,7 @@ $(function() {
   setupEditNameHandlers();
   setupMiscHandlers();
   setupImagePairs();
+  setupFilterSelection();
   setupModals();
   setupAddAllImages();
 });
