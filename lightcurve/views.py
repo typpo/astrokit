@@ -1,7 +1,6 @@
 from django.http import JsonResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.db.models import Case, Value, When, IntegerField
 
 from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
@@ -9,25 +8,22 @@ from corrections import get_jd_for_analysis
 from imageflow.models import ImageAnalysis, Reduction, UserUploadedImage
 from lightcurve.models import LightCurve
 from reduction.util import find_point_by_id
+from lightcurve.util import ordered_analysis_status
 
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
     images = UserUploadedImage.objects.filter(lightcurve=lc)
 
     sort = request.GET.get('sort')
-    if sort:
-        if sort == "analysis__status":
-            images = images.annotate( status_sort = Case(
-                When(analysis__status='ASTROMETRY_PENDING', then=Value(0)),
-                When(analysis__status='PHOTOMETRY_PENDING', then=Value(1)),
-                When(analysis__status='REVIEW_PENDING', then=Value(2)),
-                When(analysis__status='REDUCTION_COMPLETE', then=Value(3)),
-                When(analysis__status='ADDED_TO_LIGHT_CURVE', then=Value(4)),
-                When(analysis__status='FAILED', then=Value(5)),
-                output_field=IntegerField(), )
-            ).order_by('status_sort')
-        else:
-            images = images.order_by(sort)
+    print sort
+    if sort == "filename":
+        images = images.order_by("original_filename")
+    elif sort == "timestamp":
+        images = images.order_by("analysis__image_datetime")
+    elif sort == "status":
+        images = images.annotate(status_sort = ordered_analysis_status()).order_by('status_sort')
+    else:
+        pass
 
     context = {
         'lightcurve': lc,
@@ -36,7 +32,6 @@ def edit_lightcurve(request, lightcurve_id):
 
     return render_to_response('lightcurve.html', context,
             context_instance=RequestContext(request))
-
 
 def plot_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
@@ -176,7 +171,7 @@ def my_lightcurve(request):
             'images': images,
         })
 
-    return render_to_response('lightcurve_list.html', {"contexts": context_list},
+    return render_to_response('lightcurve_list.html', {'contexts': context_list},
             context_instance=RequestContext(request))
 
 def all_lightcurve(request):
@@ -190,5 +185,5 @@ def all_lightcurve(request):
             'images': images,
         })
 
-    return render_to_response('lightcurve_list.html', {"contexts": context_list, "request_all": True},
+    return render_to_response('lightcurve_list.html', {'contexts': context_list, 'request_all': True},
             context_instance=RequestContext(request))
