@@ -7,8 +7,8 @@ from astrometry.process import process_astrometry_online
 from corrections import get_jd_for_analysis
 from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
 from lightcurve.models import LightCurve
-from reduction.util import find_point_by_id
 from lightcurve.util import ordered_analysis_status
+from reduction.util import find_point_by_id
 
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
