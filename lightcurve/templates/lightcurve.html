@@ -86,12 +86,20 @@ h1 span {
       <input id="set-elevation" class="form-control" style="width: 20em" type="number" value="{{images.0.analysis.image_elevation}}">
     </div>
 
-    <h4>Target magnitude</h4>
-    <div class="well">
+    <h4>Target magnitude color band</h4>
+    <div class="well" id="set-magband">
       <p>
         For the target, convert the raw instrumental magnitude to this color band.
       </p>
-      {% include 'partials/filter_selector.html' with selected_band=image.analysis.image_filter.band %}
+      {% include 'partials/filter_selector.html' with selected_band=lightcurve.magband.band image_filters=magband_filters %}
+    </div>
+
+    <h4>Filter</h4>
+    <div class="well" id="set-filter">
+      <p>
+        The filter used to make observations.
+      </p>
+      {% include 'partials/filter_selector.html' with selected_band=lightcurve.filter.band %}
     </div>
 
     <h4>Second-order extinction k"<sub><em>f</em></sub></h4>

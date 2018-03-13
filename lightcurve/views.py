@@ -25,6 +25,7 @@ def edit_lightcurve(request, lightcurve_id):
         'reduction': lc.get_or_create_reduction(),
         'images': images,
         'image_filters': ImageFilter.objects.all(),
+        'magband_filters': ImageFilter.objects.all().exclude(band='C'),
         'image_pairs': image_pairs,
         'ci_bands': ImageFilter.objects.get_ci_bands(),
     }
@@ -109,9 +110,9 @@ def save_observation_default(request, lightcurve_id):
             # This target is looked up during the reduction step.
             image.target_name = target_name
         if magband:
-            lc.magband = ImageFilter.objects.get(band=band)
+            lc.magband = ImageFilter.objects.get(band=magband)
         if filter:
-            lc.filter = ImageFilter.objects.get(band=band)
+            lc.filter = ImageFilter.objects.get(band=filter)
         lc.save()
         image.save()
 
