@@ -161,7 +161,7 @@ def my_lightcurve(request):
             'images': images,
         })
 
-    return render_to_response('lightcurve_list.html', {"contexts": context_list},
+    return render_to_response('lightcurve_list.html', {'contexts': context_list},
             context_instance=RequestContext(request))
 
 def all_lightcurve(request):
@@ -175,20 +175,20 @@ def all_lightcurve(request):
             'images': images,
         })
 
-    return render_to_response('lightcurve_list.html', {"contexts": context_list, "request_all": True},
+    return render_to_response('lightcurve_list.html', {'contexts': context_list, 'request_all': True},
             context_instance=RequestContext(request))
 
 
 def download(request, lightcurve_id):
     file_type = request.GET.get('file_type')
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="LightCurve' + lightcurve_id + '.' + file_type + '"'
+    response['Content-Disposition'] = 'attachment; filename="LightCurve%d.%s"' % (int(lightcurve_id), file_type) # Gets TypeError without int(). %s instead of %d?
 
     lc = LightCurve.objects.get(id=lightcurve_id)
     analyses = ImageAnalysis.objects.filter(useruploadedimage__lightcurve=lc) \
                                     .exclude(status=ImageAnalysis.ASTROMETRY_PENDING)
 
-    if file_type == "csv":
+    if file_type == 'csv':
         writer = csv.writer(response)
         writer.writerow(['Datetime', 'JD', 'Mag instrumental', 'Mag standard', 'Mag std'])
         for analysis in analyses:
@@ -196,7 +196,6 @@ def download(request, lightcurve_id):
                 result = find_point_by_id(analysis.annotated_point_sources, analysis.target_id)
                 if not result:
                     continue
-                print result
-                writer.writerow([analysis.image_datetime, get_jd_for_analysis(analysis), result["mag_instrumental"], result.get("mag_standard", None), result.get("mag_std", None)])
+                writer.writerow([analysis.image_datetime, get_jd_for_analysis(analysis), result.get('mag_instrumental', None), result.get('mag_standard', None), result.get('mag_std', None)])
 
     return response
