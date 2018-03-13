@@ -32,6 +32,7 @@ function saveObservationDefault() {
     'extinction': $('#second-order-extinction').val(),
     'target': $('#target-name').val(),
     'magband': $('#select-magband').val(),
+    'filter': $('#select-filter').val(),
   }, function(data) {
     if (data.success) {
       alert('Settings applied to all images.');

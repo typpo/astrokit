@@ -70,20 +70,20 @@ h1 span {
   <div>
     <h4>Target</h4>
     <div class="well">
-      Name (<a href="https://ssd.jpl.nasa.gov/horizons.cgi">JPL Horizons</a>) <input type="text" class="form-control" style="width:20em" id="target-name" value="{{analysis.meta.target_name}}" />
+      Name (<a href="https://ssd.jpl.nasa.gov/horizons.cgi">JPL Horizons</a>) <input type="text" class="form-control" style="width:20em" id="target-name" value="{{images.0.analysis.target_name}}" />
     </div>
 
     <h4>Coordinates</h4>
     <div class="well">
-      Latitude <input id="set-latitude" class="form-control" style="width: 20em" type="number" value="{{result.meta.latitude}}" min="-90" max="90">
+      Latitude <input id="set-latitude" class="form-control" style="width: 20em" type="number" value="{{images.0.analysis.image_latitude}}" min="-90" max="90">
       <br>
-      Longitude <input id="set-longitude" class="form-control" style="width: 20em" type="number" value="{{result.meta.longitude}}" min="-180" max="180">
+      Longitude <input id="set-longitude" class="form-control" style="width: 20em" type="number" value="{{images.0.analysis.image_longitude}}" min="-180" max="180">
     </div>
 
     <h4>Elevation</h4>
     <div class="well">
       Above sea level (meters)
-      <input id="set-elevation" class="form-control" style="width: 20em" type="number" value="{{result.meta.elevation}}">
+      <input id="set-elevation" class="form-control" style="width: 20em" type="number" value="{{images.0.analysis.image_elevation}}">
     </div>
 
     <h4>Second-order extinction k"<sub><em>f</em></sub></h4>
@@ -91,7 +91,7 @@ h1 span {
       <p>
         Second-order extinction is nearly constant and usually only significant for B-V color index measurements. Set to 0 if you do not want to include a term for second-order extinction.
       </p>
-      <input type="text" class="form-control" style="width:20em" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
+      <input type="text" class="form-control" style="width:20em" id="second-order-extinction" value="{{reduction.second_order_extinction}}" placeholder="0.0" />
     </div>
 
     <div class="button-row">

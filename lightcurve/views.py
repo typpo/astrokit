@@ -92,6 +92,7 @@ def save_observation_default(request, lightcurve_id):
     extinction = request.POST.get('extinction')
     target_name = request.POST.get('target')
     magband = request.POST.get('magband')
+    filter = request.POST.get('filter')
 
     for image in images:
         if lat:
@@ -101,7 +102,7 @@ def save_observation_default(request, lightcurve_id):
         if elevation:
             image.image_elevation = float(elevation)
         if extinction:
-            reduction = image.get_or_create_reduction()
+            reduction = lc.get_or_create_reduction()
             reduction.second_order_extinction = float(extinction)
             reduction.save()
         if target_name:
@@ -109,7 +110,9 @@ def save_observation_default(request, lightcurve_id):
             image.target_name = target_name
         if magband:
             lc.magband = ImageFilter.objects.get(band=band)
-            lc.save()
+        if filter:
+            lc.filter = ImageFilter.objects.get(band=band)
+        lc.save()
         image.save()
 
     return JsonResponse({
