@@ -8,6 +8,7 @@ urlpatterns = patterns('lightcurve.views',
     url(r'^(?P<lightcurve_id>[0-9]+)/save_observation_default$', 'save_observation_default', name='save_observation_default'),
     url(r'^(?P<lightcurve_id>[0-9]+)/add_image_toggle$', 'add_image_toggle', name='add_image_toggle'),
     url(r'^(?P<lightcurve_id>[0-9]+)/edit_lightcurve_name$', 'edit_lightcurve_name', name='edit_lightcurve_name'),
+    url(r'^(?P<lightcurve_id>[0-9]+)/download$', 'download', name='download'),
     url(r'^my-lightcurve$', 'my_lightcurve', name='my_lightcurve'),
     url(r'^all-lightcurve$', 'all_lightcurve', name='all_lightcurve'),
 )

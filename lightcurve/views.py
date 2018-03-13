@@ -1,4 +1,6 @@
-from django.http import JsonResponse
+import csv
+
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 
@@ -194,3 +196,26 @@ def all_lightcurve(request):
 
     return render_to_response('lightcurve_list.html', {'contexts': context_list, 'request_all': True},
             context_instance=RequestContext(request))
+
+
+def download(request, lightcurve_id):
+    file_type = request.GET.get('file_type')
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="LightCurve%s.%s"' % (lightcurve_id, file_type)
+
+    lc = LightCurve.objects.get(id=lightcurve_id)
+    analyses = ImageAnalysis.objects.filter(useruploadedimage__lightcurve=lc) \
+                                    .exclude(status=ImageAnalysis.ASTROMETRY_PENDING)
+
+    if file_type == 'csv':
+        writer = csv.writer(response)
+        writer.writerow(['Datetime', 'JD', 'Mag instrumental', 'Mag standard', 'Mag std'])
+        for analysis in analyses:
+            print len(analysis.annotated_point_sources)
+            if analysis.annotated_point_sources != []:
+                result = find_point_by_id(analysis.annotated_point_sources, analysis.target_id)
+                if not result:
+                    continue
+                writer.writerow([analysis.image_datetime, get_jd_for_analysis(analysis), result.get('mag_instrumental', None), result.get('mag_standard', None), result.get('mag_std', None)])
+
+    return response
