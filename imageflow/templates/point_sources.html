@@ -148,7 +148,8 @@ where Φ<sup>−1</sup> * (P) is the normal inverse cumulative distribution func
 </div>
 
 <div style="margin-bottom:1.8em">
-  <button class="btn btn-primary btn-lg js-run-photometry">Re-run photometry</button>
+  <button class="btn btn-primary btn-lg js-run-photometry">Apply parameters to this image</button>
+  <button class="btn btn-danger btn-lg js-apply-photometry">Apply parameters to all images</button>
   <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
 </div>
 
@@ -276,6 +277,7 @@ should continue to tune your inputs.
 {% block scripts %}
   <script>
     window.analysisId = {{analysis.id | jsonify }};
+    window.lightcurveId = {{analysis.lightcurve_id | jsonify }};
     window.targetId = {{analysis.meta.target_id | jsonify }};
     window.originalImageUrl = {{analysis.urls.original_display_url | jsonify}};
     window.pointSourceData = {{ analysis.data.coords | jsonify }};
