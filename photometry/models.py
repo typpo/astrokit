@@ -1,16 +1,49 @@
 from __future__ import unicode_literals
 
+from collections import OrderedDict
+
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.utils import OperationalError
+
+CI_BAND_TO_FILTERS = OrderedDict([
+    ('BV', ('B', 'V')),
+    ('VR', ('V', 'R')),
+    ('VI', ('V', 'I')),
+    ('SGU', ('g', 'u')),
+    ('SGR', ('g', 'r')),
+    ('SRI', ('r', 'i')),
+    ('SIZ', ('i', 'z')),
+])
 
 class ImageFilterManager(models.Manager):
     def get_default(self):
-        return self.get(band='B').pk
+        try:
+            return self.get(band='B').pk
+        except:
+            # Happens when db doesn't exist yet, get_default() is called at
+            # some imports and it should pass.
+            print 'Image filter returning NULL default'
+            return None
 
     def get_default_2(self):
-        return self.get(band='V').pk
+        try:
+            return self.get(band='V').pk
+        except:
+            # Happens when db doesn't exist yet, get_default() is called at
+            # some imports and it should pass.
+            print 'Image filter returning NULL default'
+            return None
 
+    def get_from_ci_band(self, ci_band, pos):
+        filters = CI_BAND_TO_FILTERS.get(ci_band)
+        if not filters or pos not in [0, 1]:
+            return None
+        return filters[pos]
+
+    def get_ci_bands(self):
+        return CI_BAND_TO_FILTERS.keys()
 
 class ImageFilter(models.Model):
     objects = ImageFilterManager()

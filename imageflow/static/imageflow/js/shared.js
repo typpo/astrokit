@@ -25,7 +25,8 @@ function plotImage($container, canvas, imageUrl, opts) {
     if (window.catalogData) {
       plotStars(canvas, window.catalogData, {
         color: 'red',
-        radius: 9,
+        compareStarColor: '#4B0082',
+        radius: 6,
         text: function(star) {
           return star.id;
         }
@@ -34,11 +35,18 @@ function plotImage($container, canvas, imageUrl, opts) {
     if (window.pointSourceData) {
       plotStars(canvas, window.pointSourceData, {
         color: 'green',
-        radius: 6,
+        targetColor: '#32bfbf',
+        radius: 4,
+        /*
         text: window.catalogData ?
           function(star) { return null; } : function(star) { return star.id },
+        */
+        text: function(star) {
+          return star.id;
+        }
       });
     }
+    window.dispatchEvent(new Event('plot complete'));;
   };
   img.src = imageUrl;
 }
@@ -56,10 +64,10 @@ function plotStars(canvas, stars, rawOpts) {
 
     // Determine color of circle.
     var myColor = opts.color;
-    if (star.id === window.targetId) {
-      myColor = 'cyan';
-    } else if (typeof window.compareIds !== 'undefined' && compareIds.has(star.id)) {
-      myColor = '#4B0082';
+    if (opts.targetColor && star.id === window.targetId) {
+      myColor = opts.targetColor;
+    } else if (opts.compareStarColor && typeof window.compareIds !== 'undefined' && compareIds.has(star.id)) {
+      myColor = opts.compareStarColor;
     }
 
     // Plot catalog stars over an image.
@@ -68,7 +76,7 @@ function plotStars(canvas, stars, rawOpts) {
     // Circle - defined by x, y, radius, ...
     ctx.arc(starX, starY, opts.radius, 0, Math.PI * 2);
     ctx.strokeStyle = myColor;
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 3;
     ctx.stroke();
 
     // Label
@@ -77,9 +85,9 @@ function plotStars(canvas, stars, rawOpts) {
       continue;
     }
 
-    ctx.font = '14px Arial';
+    ctx.font = '12px Arial';
     ctx.strokeStyle= 'black';
-    ctx.lineWidth = 6;
+    ctx.lineWidth = 4;
     var labelWidth = ctx.measureText(text).width;
     var offset = starY < 14 * 2 ? 14 + 8 : -8;
     ctx.strokeText(text, starX - (labelWidth / 2), starY + offset);
@@ -106,19 +114,6 @@ function setupCanvasListeners(canvas) {
     xPosElt.innerHTML = parseInt(pos.x / IMAGE_TO_PLOT_XY_CONVERSION_FACTOR, 10);
     yPosElt.innerHTML = parseInt(pos.y / IMAGE_TO_PLOT_XY_CONVERSION_FACTOR, 10);
   }
-}
-
-function setupTables() {
-  var $tableWrapper = $('.table-wrapper').on('scroll', function() {
-    $(this).find('thead').css('transform', 'translate(0,' + this.scrollTop + 'px)');
-  });
-  if ($().stupidtable) {
-    $tableWrapper.find('table').stupidtable();
-  }
-  $('.js-scroll-to-target').on('click', function() {
-    scrollToTarget($(this).parent().prev());
-    return false;
-  });
 }
 
 function scrollToTarget($wrapper) {
@@ -159,8 +154,7 @@ function setupMagnitudeChecks($elts, type, xData, yData, comparisonStarsOnly) {
     var yr = yData[i];
     var yVal = type === 'instrumental' ? yr.mag_instrumental : yr.mag_standard;
     var xVal = xr[window.urat1Key];
-    var isComparisonStar = xr.is_comparison ||
-        (typeof window.compareIds !== 'undefined' && compareIds.has(xr.id));
+    var isComparisonStar = (typeof window.compareIds !== 'undefined' && compareIds.has(xr.id));
     if (!isComparisonStar && comparisonStarsOnly) {
       continue;
     }
@@ -230,15 +224,8 @@ function setupPlot() {
       setupCanvasListeners(canvas);
     }, 200);
   }
-
 }
 
 $(function() {
-  setupTables();
   setupNotes();
-
-  // Initialize tooltips.
-  if ($().tooltip) {
-    $('[data-toggle="tooltip"]').tooltip({container: 'body'})
-  }
 });

@@ -6,7 +6,7 @@ function setupListeners() {
                 $('#edit-image-datetime-failure'));
 
   setupListener('set_filter_band',
-                $('#select-filter-name'),
+                $('.js-select-filter-name'),
                 $('#select-filter-name-success'),
                 $('#select-filter-name-failure'));
 
@@ -30,6 +30,10 @@ function setupListeners() {
                 $('#target-id-success'),
                 $('#target-id-failure'));
 
+  $('#target-id').on('change', function() {
+    window.targetId = parseInt($(this).val(), 10);
+    setupPlot();
+  });
   setupPlot();
 }
 

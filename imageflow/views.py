@@ -7,8 +7,9 @@ from django.utils.dateparse import parse_datetime
 
 from astrometry.util import create_new_lightcurve, edit_lightcurve
 
+from accounts.models import UserUploadedImage
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
-from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
+from imageflow.models import ImageAnalysis, ImageFilter, Reduction
 
 def index(request):
     return render_to_response('index.html', context_instance=RequestContext(request))
@@ -87,7 +88,10 @@ def set_target_point_source(request, pk):
             'msg': 'Astrometry is still pending',
         })
 
-    analysis.target_id = request.POST.get('val')
+    val = request.POST.get('val')
+    if val == 0:
+        val = None
+    analysis.target_id = val
     #analysis.target_x = request.POST.get('x')
     #analysis.target_y = request.POST.get('y')
     analysis.save()
@@ -102,43 +106,6 @@ def set_filter_band(request, pk):
     return JsonResponse({
         'success': True,
         'msg': 'Resolved input to %s' % str(filter_band)
-    })
-
-def set_color_index_1(request, pk):
-    analysis, filter_band = resolve_band(request, pk)
-    analysis.get_or_create_reduction()
-    analysis.reduction.color_index_1 = filter_band
-    analysis.reduction.save()
-    return JsonResponse({
-        'success': True,
-        'msg': 'Resolved input to %s' % str(filter_band)
-    })
-
-def set_color_index_2(request, pk):
-    analysis, filter_band = resolve_band(request, pk)
-    analysis.get_or_create_reduction()
-    analysis.reduction.color_index_2 = filter_band
-    analysis.reduction.save()
-    return JsonResponse({
-        'success': True,
-        'msg': 'Resolved input to %s' % str(filter_band)
-    })
-
-def set_image_companion(request, pk):
-    analysis = get_object_or_404(ImageAnalysis, pk=pk, user=request.user.id)
-    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
-        return JsonResponse({
-            'success': False,
-            'msg': 'Astrometry is still pending',
-        })
-    analysis.get_or_create_reduction()
-
-    imageid = request.POST.get('val')
-    analysis.reduction.image_companion = UserUploadedImage.objects.get(pk=imageid)
-    analysis.reduction.save()
-    return JsonResponse({
-        'success': True,
-        'msg': 'Resolved input'
     })
 
 def resolve_band(request, pk):
@@ -165,27 +132,6 @@ def set_latitude(request, pk):
 
 def set_longitude(request, pk):
     return set_float(request, pk, 'image_longitude')
-
-def set_color_index_manual(request, pk):
-    analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
-        return JsonResponse({
-            'success': False,
-            'msg': 'Astrometry is still pending',
-        })
-    analysis.get_or_create_reduction()
-    return set_float(request, pk, 'color_index_manual',
-                     on_reduction=True, allow_null=True)
-
-def set_second_order_extinction(request, pk):
-    analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
-        return JsonResponse({
-            'success': False,
-            'msg': 'Astrometry is still pending',
-        })
-    analysis.get_or_create_reduction()
-    return set_float(request, pk, 'second_order_extinction', on_reduction=True)
 
 def set_float(request, pk, attrname, on_reduction=False, allow_null=False):
     analysis = get_object_or_404(ImageAnalysis, pk=pk, user=request.user.id)
@@ -323,6 +269,7 @@ def comparison_stars(request, pk):
     reduction = analysis.get_or_create_reduction()
 
     if request.method == 'POST':
+        '''
         ids = [int(x) for x in request.POST.getlist('ids[]')]
         reduction.comparison_star_ids = ids
         reduction.save()
@@ -330,10 +277,15 @@ def comparison_stars(request, pk):
             'success': True,
             'ids': ids,
         })
+        '''
+        return JsonResponse({
+            'success': False,
+            'message': 'Comparison stars must be set at the lightcurve level',
+        })
     else:
         return JsonResponse({
             'success': True,
-            'ids': reduction.comparison_star_ids,
+            'ids': analysis.get_comparison_star_ids(),
         })
 
 def point_sources(request, pk):
@@ -372,9 +324,6 @@ def reduction(request, pk):
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
-    # Other images in this light curve.
-    potential_image_companions = analysis.lightcurve.useruploadedimage_set.all()
-
     # Next image for user to process in this light curve.
     next_image = ImageAnalysis.objects.filter(status=ImageAnalysis.REVIEW_PENDING,
                                               useruploadedimage__lightcurve=analysis.lightcurve) \
@@ -385,7 +334,6 @@ def reduction(request, pk):
         'analysis': analysis.get_summary_obj(),
         'image_filters': ImageFilter.objects.all(),
 
-        'potential_image_companions': potential_image_companions,
         'next_image': next_image,
     }
     if hasattr(analysis, 'reduction') and analysis.reduction:
@@ -401,34 +349,50 @@ def reduction(request, pk):
         return render_to_response('reduction.html', template_args,
                 context_instance=RequestContext(request))
 
-def companion_image_modal(request, pk):
-    # TODO(ian): Dedup this with above code.
-    analysis = get_object_or_404(ImageAnalysis, pk=pk)
-    if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
-        return render_to_response('submission_pending.html', {},
-                context_instance=RequestContext(request))
-
-    # Other images in this light curve.
-    potential_image_companions = analysis.lightcurve.useruploadedimage_set.all()
-
-    template_args = {
-        'analysis': analysis.get_summary_obj(),
-        'reduction': analysis.get_or_create_reduction().get_summary_obj(),
-        'image_filters': ImageFilter.objects.all(),
-
-        'potential_image_companions': potential_image_companions,
-    }
-    return render_to_response('companion_image.html', template_args,
-            context_instance=RequestContext(request))
-
 def select_target_modal(request, pk):
     analysis = get_object_or_404(ImageAnalysis, pk=pk)
     if analysis.status == ImageAnalysis.ASTROMETRY_PENDING:
         return render_to_response('submission_pending.html', {},
                 context_instance=RequestContext(request))
 
+    all_analyses = list(ImageAnalysis.objects \
+            .filter(lightcurve=analysis.lightcurve) \
+            .order_by('image_datetime'))
+
+    # Pick the analyses that need targets.
+    some_analyses = list(ImageAnalysis.objects \
+            .filter(lightcurve=analysis.lightcurve, target_id=None) \
+            .order_by('image_datetime'))
+
+    # Find this analysis in both lists.
+    next_analysis = None
+    next_analysis_without_target = None
+    prev_analysis = None
+    all_idx = None
+    some_idx = None
+    try:
+        all_idx = all_analyses.index(analysis)
+        if all_idx < len(all_analyses) - 1:
+            next_analysis = all_analyses[all_idx + 1]
+        if all_idx > 0:
+            prev_analysis = all_analyses[all_idx - 1]
+    except ValueError:
+        pass
+
+    try:
+        some_idx = some_analyses.index(analysis)
+        if some_idx < len(some_analyses) - 1:
+            next_analysis_without_target = some_analyses[some_idx + 1]
+    except ValueError:
+        pass
+
     template_args = {
         'analysis': analysis.get_summary_obj(),
+        'next_analysis_idx': all_idx,
+        'next_analysis': next_analysis,
+        'prev_analysis': prev_analysis,
+        'next_analysis_without_target_idx': some_idx,
+        'next_analysis_without_target': next_analysis_without_target,
     }
     return render_to_response('select_target.html', template_args,
             context_instance=RequestContext(request))

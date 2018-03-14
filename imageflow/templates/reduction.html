@@ -31,7 +31,7 @@
 {% if not analysis.meta.target_id %}
   <div class="alert alert-danger">
     <strong>
-      You MUST choose a target star in the first step. <a href="/analysis/{{analysis.id}}#target-selection">Select a target</a>
+      You MUST choose a target point source in the first step. <a href="/analysis/{{analysis.id}}#target-selection">Select a target</a>
     </strong>
   </div>
 {% endif %}
@@ -51,52 +51,6 @@ M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) - k"<sub><em>f</em></sub> X<sub>
 This page will walk you through several steps in order to calculate M<sub>t.
 </p>
 
-<h3>Input: Color index setup</h3>
-<div class="well">
-  <p>
-    To compute color index and the hidden transform to standard magnitudes, specify another image of the same field in a different band.  Color Index CI = Image1 - Image2.
-  </p>
-  <p>
-    <strong>Image 1</strong> (this image)<br>
-    <div style="margin-left: 2em">
-      Filter: {{analysis.meta.image_band}}<br>
-      File: {{analysis.meta.uploaded_image.original_filename | truncatechars:50}}<br>
-      Target: {{analysis.meta.target_id}}
-    </div>
-  </p>
-  <form class="form">
-    <strong>Image 2</strong>
-    {% include 'partials/companion_image_selector.html' %}
-    <hr/>
-    <div>
-      <div id="color-index-manual-success" class="alert alert-success" style="display:none">
-        Color index successfully updated.
-      </div>
-      <div id="color-index-manual-failure" class="alert alert-danger" style="display:none">
-        Something went wrong - failed to update your setting.
-      </div>
-      <p>
-        or, manually enter a color index:
-      </p>
-      <input id="color-index-manual" class="form-control" style="width:6em" type="number" step="any" placeholder="0.0" value="{{reduction.data.color_index_manual}}"/>
-    </div>
-  </form>
-</div>
-
-<h3>Input: Second-order extinction k"<sub><em>f</em></sub></h3>
-<div class="well">
-  <div id="second-order-extinction-success" class="alert alert-success" style="display:none">
-    k'' successfully updated.
-  </div>
-  <div id="second-order-extinction-success" class="alert alert-danger" style="display:none">
-    Something went wrong - failed to update your setting.
-  </div>
-  <p>
-    Second-order extinction is nearly constant and usually only significant for B-V color index measurements. Set to 0 if you do not want to include a term for second-order extinction.
-  </p>
-  <input type="text" class="form-control" style="width:6em" id="second-order-extinction" value="{{reduction.data.second_order_extinction}}" placeholder="0.0" />
-</div>
-
 <div style="margin-bottom:1.8em">
   <a href="#" class="btn btn-primary btn-lg js-run-reductions">Run reductions</a>
   <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
@@ -104,44 +58,7 @@ This page will walk you through several steps in order to calculate M<sub>t.
 
 <hr/>
 
-<h3>Step 1: Compute transform coefficient T<sub><em>f</em></sub></h3>
-<p>
-T<sub><em>f</em></sub> is a coefficient that converts your raw instrumental magnitude to a standard magnitude in color band <em>f</em>. It is solved for by the following equation:
-</p>
-<p>
-<blockquote>
-  M<sub><em>f</em></sub> - m<sub><em>f</em></sub> = T<sub><em>f</em></sub> CI + ZP<sub><em>f</em></sub>
-</blockquote>
-</p>
-<p>
-In which:<br>
-<ul>
-<li>M<sub><em>f</em></sub> = standard magnitude in color band of filter <em>f</em><br></li>
-<li>m<sub><em>f</em></sub> = raw instrumental magnitude in color band of filter <em>f</em><br></li>
-<li>T<sub><em>f</em></sub> = coefficient that converts raw instrumental magnitude to standard magnitude in color band <em>f</em><br></li>
-<li>CI = standard color index<br></li>
-<li>ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f</em>, at the airmass of the reference field.</li>
-</ul>
-</p>
-<p>
-This computation uses the {{reduction.meta.comparison_star_ids|length}} comparison stars you chose in the <a href="/analysis/reference_stars/{{analysis.id}}">previous step</a>.
-</p>
-
-<div class="well">
-  {% if no_reduction or reduction.meta.status == 'CREATED' %}
-    <p class="run-reductions-mask">
-      <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
-      <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
-    </p>
-  {% else %}
-    Slope = t<sub><em>f</em></sub> = {{reduction.data.tf}}<br>
-    Intercept = ZP<sub><em>f</em></sub> = {{reduction.data.zpf}}<br>
-    Standard error = {{reduction.data.tf_std}}
-    <img src="{{reduction.urls.tf_graph}}">
-  {% endif %}
-</div>
-
-<h3>Step 2: Compute airmass X<sub>t</sub></h3>
+<h3>Step 1: Compute airmass X<sub>t</sub></h3>
 <p>
 The <a href="https://en.wikipedia.org/wiki/Air_mass_(astronomy)">airmass</a> parameter corrects for light attenuation by atmospheric scattering and absorption.
 </p>
@@ -194,82 +111,7 @@ The <a href="https://en.wikipedia.org/wiki/Air_mass_(astronomy)">airmass</a> par
   {% endif %}
 </div>
 
-<h3>Step 3: Find the hidden transform</h3>
-<p>
-The <em>hidden transform</em> is the equation that allows us to compute the color index for each object.
-</p>
-{% if reduction.meta.color_index_manual_enabled %}
-  <div class="well">
-    This section is omitted because you entered a manual color index of {{reduction.data.color_index_manual}}.
-  </div>
-{% else %}
-  <div class="well">
-    {% if no_reduction or reduction.meta.status == 'CREATED' %}
-      <p class="run-reductions-mask">
-        <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
-        <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
-      </p>
-    {% else %}
-      <p>
-        Hidden transform = {{reduction.data.hidden_transform}}<br>
-        Standard error = {{reduction.data.hidden_transform_std}}<br>
-        rval = {{reduction.data.hidden_transform_rval}}
-      </p>
-      <img src="{{reduction.urls.hidden_transform_graph}}">
-    {% endif %}
-  </div>
-
-  {% if not no_reduction and reduction.meta.status != 'CREATED' %}
-  <h4>Checking the hidden transform</h4>
-  <p>
-    This table compares values generated using the formula derived above with known catalog values for your color index.
-  </p>
-  <p>
-    <span style="color:red">Red</span> indicates comparison stars, <span style="color:blue">blue</span> indicates other catalog stars.
-  </p>
-  <div class="well">
-      <p>
-        Your target id: {{analysis.meta.target_id}}
-      </p>
-      <div class="table-wrapper">
-        <table class="table table-striped table-hover">
-          <thead>
-            <tr>
-              <th data-sort="int"><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
-              <th data-sort="string">Designation</th>
-              <th data-sort="float">RA (obs)</th>
-              <th data-sort="float">Dec (obs)</th>
-              <th data-sort="float"><span class="header-tooltip" data-toggle="tooltip" title="Computed with hidden transform">Color Index (computed)</span></th>
-              <th data-sort="float"><span class="header-tooltip" data-toggle="tooltip" title="From catalog">Color Index (known)</span></th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for star in reduction.data.reduced_stars %}
-            <tr {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
-              <td>{{star.id}}</td>
-              <td>
-                {% if star.id == analysis.meta.target_id %}
-                  TARGET
-                {% endif %}
-                <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
-              </td>
-              <td>{{star.index_ra|floatformat:5}}</td>
-              <td>{{star.index_dec|floatformat:5}}</td>
-              <td><strong>{{star.color_index|floatformat:5}}</strong></td>
-              <td>{{star.color_index_known|floatformat:5}}</td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      <div class="table-actions">
-        <a href="#" class="js-scroll-to-target">&raquo; Scroll to target</a>
-      </div>
-  </div>
-  {% endif %}
-{% endif %}
-
-<h3>Step 4: Apply the formula to get M<sub><em>t</em></sub></h3>
+<h3>Step 2: Apply the formula to get M<sub><em>t</em></sub></h3>
 <p>
   Given the formula:
   <blockquote>
@@ -370,6 +212,8 @@ This linearity test shows how accurate your reduction is when compared to known 
     window.urat1Key = {{ analysis.meta.image_band_urat1_key | jsonify }};
 
     window.reducedStars = {{ reduction.data.reduced_stars | jsonify }};
+
+    window.compareIds = new Set({{ analysis.data.comparison_star_ids | jsonify }});
   </script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>

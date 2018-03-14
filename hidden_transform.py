@@ -6,51 +6,87 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 from imageflow.s3_util import upload_to_s3
-from reduction.util import find_star_by_designation, find_point_by_id
+from imageflow.models import ImageAnalysisPair
+from reduction.util import (average_instrumental_mags_by_desig,
+                            find_star_by_designation,
+                            find_point_by_id)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def calculate(analysis, reduction, save_graph=False):
-    companion_image = analysis.reduction.image_companion
-    if not companion_image:
-        raise Error('You must have a companion image to calculate the hidden transform')
+def run(lightcurve, reduction):
+    logger.info('Finding hidden transform for lightcurve %d' % lightcurve.id)
+    if lightcurve.ciband == 'NONE':
+        reduction.hidden_transform = 0
+        reduction.hidden_transform_intercept = 0
+        reduction.hidden_transform_std = 0
+        reduction.hidden_transform_rval = 0
+        reduction.hidden_transform_graph_url = None
+        reduction.save()
+        return
 
+    ci1 = lightcurve.get_ci_band1()
+    ci2 = lightcurve.get_ci_band2()
+
+    # Select analyses that match the lightcurve filter.
+    image_pairs = ImageAnalysisPair.objects.filter(lightcurve=lightcurve)
+    analyses_band1 = [pair.analysis1 for pair in image_pairs]
+    analyses_band2 = [pair.analysis2 for pair in image_pairs]
+
+    # TODO(ian): Assert that these analyses are equal to lightcurve ci1, ci2
+    # respectively.
+
+    # Take the average instrumental magnitudes for comparison stars across
+    # these analyses.
+    comparison_desigs = lightcurve.get_comparison_desigs()
+    desig_map_band1 = average_instrumental_mags_by_desig(analyses_band1,
+                                                         comparison_desigs)
+    desig_map_band2 = average_instrumental_mags_by_desig(analyses_band2,
+                                                         comparison_desigs)
+    stars_band1 = desig_map_band1.values()
+    stars_band2 = desig_map_band2.values()
+    star_pairs = zip(stars_band1, stars_band2)
+
+    ht, ht_intercept, ht_std, ht_r, ht_url = \
+            calculate_hidden_transform(lightcurve, star_pairs, save_graph=True)
+
+    reduction.hidden_transform = ht
+    reduction.hidden_transform_intercept = ht_intercept
+    reduction.hidden_transform_std = ht_std
+    reduction.hidden_transform_rval = ht_r
+    reduction.hidden_transform_graph_url = ht_url
+
+    calculate_color_index(lightcurve, reduction, image_pairs)
+    #annotate_color_index(analysis, reduction)
+
+def calculate_hidden_transform(lightcurve, star_pairs, save_graph=False):
     # Get the URAT1 keys for each filter and CI band. eg. 'Bmag', 'jmag'
-    filter_key = analysis.image_filter.urat1_key
-    ci1_key = reduction.color_index_1.urat1_key
-    ci2_key = reduction.color_index_2.urat1_key
+    ci1 = lightcurve.get_ci_band1()
+    ci2 = lightcurve.get_ci_band2()
+    ci1_key = ci1.urat1_key
+    ci2_key = ci2.urat1_key
 
     standard_diffs = []
     instrumental_diffs = []
-    for star in analysis.catalog_reference_stars:
-        if star['id'] not in reduction.get_comparison_id_set():
-            continue
+    for i in xrange(len(star_pairs)):
+        star1, star2 = star_pairs[i]
 
-        star_in_companion_image = \
-                find_star_by_designation(companion_image.analysis.catalog_reference_stars,
-                                         star['designation'])
-        if not star_in_companion_image:
-            print 'Rejecting star because could not find it in companion image:', star
-            continue
+        if star1['designation'] != star2['designation']:
+            logger.error('Star1 designation does not match Star2 designation')
+            logger.error('%s vs %s)' % (star1, star2))
+            raise RuntimeError('Mismatched star designations')
 
-        if not (filter_key in star and ci1_key in star and ci2_key in star):
-            # TODO(ian): expand this for companion star
-            print 'Rejecting star because it does not have the required standard magnitudes:', star
-            continue
-
-        standard_diffs.append(star[ci1_key] - star[ci2_key])
-        instrumental_diffs.append(star['mag_instrumental'] - star_in_companion_image['mag_instrumental'])
+        standard_diffs.append(star1[ci1_key] - star1[ci2_key])
+        instrumental_diffs.append(star1['mag_instrumental'] - star2['mag_instrumental'])
 
     xs = np.array(instrumental_diffs)
     ys = np.array(standard_diffs)
-
     slope, intercept, r_value, p_value, std_err = stats.linregress(xs, ys)
 
     graph_url = None
     if save_graph:
-        band1 = reduction.color_index_1.band.upper()
-        band2 = reduction.color_index_2.band.upper()
+        band1 = ci1.band.upper()
+        band2 = ci2.band.upper()
 
         # Clear any existing state
         plt.clf()
@@ -67,54 +103,58 @@ def calculate(analysis, reduction, save_graph=False):
         img_graph = StringIO()
         plt.savefig(img_graph)
 
-        graph_url = upload_graph(analysis, reduction, img_graph.getvalue())
+        graph_url = upload_graph(lightcurve, img_graph.getvalue())
         logger.info('  -> Uploaded to %s' % graph_url)
 
     return slope, intercept, std_err, r_value, graph_url
 
-def upload_graph(analysis, reduction, img_graph):
-    job = analysis.astrometry_job
-    submission = job.submission
+def upload_graph(lightcurve, img_graph):
+    logger.info('-> Uploading hidden transform graph for lightcurve %d' % (lightcurve.id))
 
-    logger.info('-> Uploading hidden transform graph for submission %d' % (submission.subid))
+    upload_key_prefix = 'processed/lightcurve/%d' % (lightcurve.id)
 
-    upload_key_prefix = 'processed/%d' % (submission.subid)
-
-    name = '%d_%d_hidden_transform_graph.jpg' % (submission.subid, job.jobid)
+    name = 'hidden_transform_graph.jpg'
     logger.info('  -> Uploading %s...' % name)
     return upload_to_s3(img_graph, upload_key_prefix, name)
 
-def annotate_color_index(analysis, reduction):
-    companion_image = reduction.image_companion
-    if not companion_image:
-        raise Error('You must have a companion image to calculate the hidden transform')
+def calculate_color_index(lightcurve, reduction, image_pairs):
+    if reduction.color_index_manual is not None:
+        # User has chosen color index.
+        reduction.color_index = reduction.color_index_manual
+        reduction.save()
+        return
 
-    ci1_key = reduction.color_index_1.urat1_key
-    ci2_key = reduction.color_index_2.urat1_key
+    ci1 = lightcurve.get_ci_band1()
+    ci2 = lightcurve.get_ci_band2()
 
-    # Compute for all known stars.
-    for point in reduction.reduced_stars:
-        if 'designation' not in point:
-            # FIXME(ian): For the target, we cannot fetch by designation, we have to fetch by id.
-            continue
+    ci1_key = ci1.urat1_key
+    ci2_key = ci2.urat1_key
 
-        point_in_companion_image = \
-                find_star_by_designation(companion_image.analysis.catalog_reference_stars,
-                                         point['designation'])
-        if not point_in_companion_image:
-            print 'Rejecting point because could not find it in companion image:', point
-            continue
+    #cis = defaultdict(list)
+    target_cis = []
+    for image_pair in image_pairs:
+        analysis1 = image_pair.analysis1
+        analysis2 = image_pair.analysis2
 
-        ci = point['mag_instrumental'] - point_in_companion_image['mag_instrumental']
-        point['color_index'] = reduction.hidden_transform * ci + reduction.hidden_transform_intercept
+        '''
+        for comp_desig in lightcurve.comparison_star_designations:
+            star1 = find_star_by_designation(analysis1.annotated_point_sources)
+            star2 = find_star_by_designation(analysis2.annotated_point_sources)
 
-        if ci1_key in point and ci2_key in point:
-            point['color_index_known'] = point[ci1_key] - point[ci2_key]
+            ci = star1['mag_instrumental'] - star2['mag_instrumental']
+            ci_transformed = reduction.hidden_transform * ci + reduction.hidden_transform_intercept
+            cis[comp_desig].append(ci_transformed)
+        '''
 
-    # Now compute for target.
-    target_in_companion_image = \
-            find_point_by_id(companion_image.analysis.annotated_point_sources,
-                             companion_image.analysis.target_id)
-    target = find_point_by_id(reduction.reduced_stars, analysis.target_id)
-    ci = target['mag_instrumental'] - target_in_companion_image['mag_instrumental']
-    target['color_index'] = reduction.hidden_transform * ci + reduction.hidden_transform_intercept
+        target1 = find_point_by_id(analysis1.annotated_point_sources, analysis1.target_id)
+        target2 = find_point_by_id(analysis2.annotated_point_sources, analysis2.target_id)
+        ci = target1['mag_instrumental'] - target2['mag_instrumental']
+        ci_transformed = reduction.hidden_transform * ci + reduction.hidden_transform_intercept
+        target_cis.append(ci_transformed)
+
+    #color_index_by_desig = {}
+    # TODO(ian): Show comparison standard color index vs computed color index
+    # TODO(ian): Produce graph... (see pg 122)
+
+    reduction.color_index = np.mean(target_cis)
+    reduction.save()

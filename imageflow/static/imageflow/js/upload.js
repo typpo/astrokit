@@ -1,6 +1,7 @@
 Dropzone.autoDiscover = false;
 $(function() {
 
+  var alertedOnce = false;
   var redirectUrl = null;
   var myDropzone = new Dropzone(
     '#dropzone-upload',
@@ -47,7 +48,10 @@ $(function() {
       this.on('queuecomplete', function () {
         // this.options.autoProcessQueue = false;
         if (!redirectUrl) {
-          alert('Something went wrong and we cannot redirect to your light curve :(');
+          if (!alertedOnce) {
+            alertedOnce = true;
+            alert('Something went wrong and we cannot redirect to your light curve :(');
+          }
           return;
         }
         window.location = redirectUrl;

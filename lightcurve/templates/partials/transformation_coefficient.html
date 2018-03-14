@@ -1,0 +1,36 @@
+{% load staticfiles %}
+
+<h3>Step 1: Compute transform coefficient T<sub><em>f</em></sub></h3>
+<p>
+T<sub><em>f</em></sub> is a coefficient that converts your raw instrumental magnitude to a standard magnitude in color band <em>f</em>. It is solved for by the following equation:
+</p>
+<p>
+<blockquote>
+  M<sub><em>f</em></sub> - m<sub><em>f</em></sub> = T<sub><em>f</em></sub> CI + ZP<sub><em>f</em></sub>
+</blockquote>
+</p>
+<p>
+In which:<br>
+<ul>
+<li>M<sub><em>f</em></sub> = standard magnitude in color band of filter <em>f</em><br></li>
+<li>m<sub><em>f</em></sub> = raw instrumental magnitude in color band of filter <em>f</em><br></li>
+<li>T<sub><em>f</em></sub> = coefficient that converts raw instrumental magnitude to standard magnitude in color band <em>f</em><br></li>
+<li>CI = standard color index<br></li>
+<li>ZP<sub><em>f</em></sub> = nightly zero point for the color band of filter <em>f</em>, at the airmass of the reference field.</li>
+</ul>
+This computation uses the comparison stars you chose in the previous step.
+</p>
+
+<div class="well">
+  {% if no_reduction or reduction.meta.status == 'CREATED' %}
+    <p class="run-reductions-mask">
+      <em>Calculation will appear here once you <a href="#" class="js-run-reductions">run reductions</a>.</em>
+      <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+    </p>
+  {% else %}
+    Slope = t<sub><em>f</em></sub> = {{reduction.tf|floatformat:3}}<br>
+    Intercept = ZP<sub><em>f</em></sub> = {{reduction.zpf|floatformat:3}}<br>
+    Standard error = {{reduction.tf_std|floatformat:3}}
+    <img src="{{reduction.tf_graph_url}}">
+  {% endif %}
+</div>

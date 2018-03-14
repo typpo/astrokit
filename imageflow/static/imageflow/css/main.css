@@ -32,9 +32,13 @@ ol.breadcrumb > li.active a {
   color: #444;
 }
 
+.button-row {
+  margin-bottom: 1em;
+}
+
 .table-wrapper {
   overflow: auto;
-  height: 400px;
+  max-height: 400px;
 }
 
 .table-wrapper th[data-sort] {
@@ -87,6 +91,8 @@ tr.highlight {
 
 .well img {
   display: block;
+  width: 100%;
+  height: auto;
 }
 
 .well {

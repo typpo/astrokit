@@ -35,12 +35,14 @@ function setupListeners() {
                 $('#target-id-failure'));
 
   $('#target-id').on('change', function() {
-    window.targetId = $(this).val();
+    window.targetId = parseInt($(this).val(), 10);
+    setupPlot();
   });
 }
 
 function setupRunPhotometry() {
   $('.js-run-photometry').on('click', function() {
+    $('.page-loader').show();
     $.post('/analysis/' + window.analysisId + '/status', {
       status: 'PHOTOMETRY_PENDING',
     }, function(data) {
@@ -48,10 +50,31 @@ function setupRunPhotometry() {
         alert('Sorry, something went wrong and your photometry job could not be started.');
         return;
       }
-      $('.page-loader').show();
       setTimeout(pollPhotometryStatus, 2000);
     });
     return false;
+  });
+
+  $('.js-apply-photometry').on('click', function() {
+    if (!confirm('This will overwrite photometry settings and reset targets for all images in this lightcurve.\n\nAre you sure you want to do this?  Press cancel to exit.')) {
+      return;
+    }
+
+    $('.page-loader').show();
+    $('.js-apply-photometry').attr('disabled', 1);
+
+    $.post('/lightcurve/' + window.lightcurveId + '/apply_photometry_settings', {
+      analysisId: window.analysisId,
+    }, function(data) {
+      $('.page-loader').hide();
+    $('.js-apply-photometry').removeAttr('disabled');
+
+      if (data.success) {
+        alert('Success! ' + data.numUpdated + ' images had their photometry parameters changed.');
+      } else {
+        alert('Sorry, something went wrong and your settings were not applied.');
+      }
+    });
   });
 }
 

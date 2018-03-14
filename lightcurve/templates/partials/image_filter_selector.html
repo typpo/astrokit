@@ -1,0 +1,32 @@
+<div class="alert alert-success js-select-filter-success" style="display:none">
+  Filter successfully updated.
+</div>
+<div class="alert alert-danger js-select-filter-failure" style="display:none">
+  Something went wrong - failed to update your setting.
+</div>
+<div class="well js-filter-selection">
+  <div class="table-wrapper">
+    <table class="table table-striped table-hover star-table js-reference-table">
+      <thead>
+        <tr>
+          <th data-sort="int">Analysis ID</th>
+          <th data-sort="string">Timestamp</th>
+          <th>Filter</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for image in images %}
+        {% if image.analysis %}
+        <tr>
+          <td><a href="/analysis/{{image.analysis.id}}">{{image.analysis.id}}</a></td>
+          <td>{{image.analysis.image_datetime | date:'Y-m-d H:i:s'}}</td>
+          <td>
+            {% include 'partials/filter_selector.html' with analysis=image.analysis selected_band=image.analysis.image_filter.band %}
+          </td>
+        </tr>
+        {% endif %}
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

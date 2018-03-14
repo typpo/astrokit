@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 # shim for databases without native json support.
 from jsonfield import JSONField
 
+from accounts.models import UserUploadedImage
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from lightcurve.models import LightCurve
 from photometry.models import ImageFilter, PhotometrySettings
@@ -23,8 +24,8 @@ class ImageAnalysis(models.Model):
         (ASTROMETRY_PENDING, 'Astrometry pending'),
         (PHOTOMETRY_PENDING, 'Photometry pending'),
         (REVIEW_PENDING, 'Review pending'),
-        (REDUCTION_COMPLETE, "Reduction complete"),
-        (ADDED_TO_LIGHT_CURVE, "Added to light curve"),
+        (REDUCTION_COMPLETE, 'Reduction complete'),
+        (ADDED_TO_LIGHT_CURVE, 'Added to light curve'),
         (FAILED, 'Failed'),
     )
     status = models.CharField(
@@ -72,7 +73,7 @@ class ImageAnalysis(models.Model):
 
     # ID of point source target.
     target_name = models.CharField(max_length=50)
-    target_id = models.IntegerField(default=0)
+    target_id = models.IntegerField(blank=True, null=True)
     target_x = models.IntegerField(default=-1)
     target_y = models.IntegerField(default=-1)
 
@@ -105,9 +106,8 @@ class ImageAnalysis(models.Model):
         reduction, created = Reduction.objects.get_or_create(analysis=self)
 
         if created:
+            reduction.analysis = self
             reduction.status = Reduction.CREATED
-            reduction.color_index_1 = self.image_filter
-            reduction.color_index_2 = self.image_filter
             reduction.save()
         return reduction
 
@@ -158,6 +158,7 @@ class ImageAnalysis(models.Model):
             'data': {
                 'coords': self.coords,
                 'catalog_reference_stars': self.catalog_reference_stars,
+                'comparison_star_ids': self.get_comparison_star_ids(),
                 'unknown_stars': self.image_unknown_stars,
 
                 'sigma_clipped_std': self.sigma_clipped_std,
@@ -185,6 +186,15 @@ class ImageAnalysis(models.Model):
         '''
         return self.status in [ImageAnalysis.REDUCTION_COMPLETE, ImageAnalysis.ADDED_TO_LIGHT_CURVE]
 
+    def is_photometry_complete(self):
+        '''Returns whether this image is past the photometry stage.
+        '''
+        return self.is_reviewed() or self.status == 'REVIEW_PENDING'
+
+    def get_comparison_star_ids(self):
+        desigs = set([star['designation'] for star in self.lightcurve.comparison_stars])
+        return [star['id'] for star in self.annotated_point_sources if star.get('designation') in desigs]
+
     def __str__(self):
         return '#%d %s: %s - Sub %d Job %d, Band %s @ %s' % \
                 (self.id,
@@ -194,23 +204,6 @@ class ImageAnalysis(models.Model):
                  self.astrometry_job.jobid, \
                  str(self.image_filter.band), \
                  str(self.image_datetime))
-
-
-class UserUploadedImage(models.Model):
-    """
-    Model for user uploaded images
-    """
-    user = models.ForeignKey(User)
-    image_url = models.URLField(max_length=512)
-    original_filename = models.CharField(max_length=512)
-    created_at = models.DateTimeField(auto_now=True)
-
-    lightcurve = models.ForeignKey(LightCurve, blank=True, null=True)
-    submission = models.ForeignKey(AstrometrySubmission, blank=True, null=True)
-    analysis = models.ForeignKey(ImageAnalysis, blank=True, null=True)
-
-    def __str__(self):
-        return '%s submission #%d' % (self.original_filename, self.submission.subid)
 
 class Reduction(models.Model):
     CREATED = 'CREATED'
@@ -231,73 +224,28 @@ class Reduction(models.Model):
 
     # TODO(ian): rename to reduced_points, because it can contain unknown objects.
     reduced_stars = JSONField()
-    # List of ints containing ids of comparison stars.
-    comparison_star_ids = JSONField()
-    color_index_1 = models.ForeignKey(ImageFilter,
-                                      related_name='reduction_color_index_1_set',
-                                      default=ImageFilter.objects.get_default())
-    color_index_2 = models.ForeignKey(ImageFilter,
-                                      related_name='reduction_color_index_2_set',
-                                      default=ImageFilter.objects.get_default_2())
-
-    image_companion = models.ForeignKey(UserUploadedImage, null=True, blank=True)
-
-    color_index_manual = models.FloatField(null=True)
-    second_order_extinction = models.FloatField(default=0)
-
-    # Transformation coefficient calculation.
-    tf = models.FloatField(null=True)
-    tf_std = models.FloatField(null=True)
-    tf_graph_url = models.CharField(max_length=1024, null=True)
-    zpf = models.FloatField(null=True)
-
-    # Hidden transform calculation.
-    hidden_transform = models.FloatField(null=True)
-    hidden_transform_intercept = models.FloatField(null=True)
-    hidden_transform_std = models.FloatField(null=True)
-    hidden_transform_rval = models.FloatField(null=True)
-    hidden_transform_graph_url = models.CharField(max_length=1024, null=True)
-
-    def get_comparison_id_set(self):
-        return set(self.comparison_star_ids)
 
     def get_summary_obj(self):
         return {
             'urls': {
-                'tf_graph': self.tf_graph_url,
-                'hidden_transform_graph': self.hidden_transform_graph_url,
             },
             'meta': {
                 'status': self.status,
-                'image_companion_id': self.image_companion.id if self.image_companion else None,
-                'comparison_star_ids': self.comparison_star_ids,
-                'color_index_manual_enabled': self.color_index_manual is not None,
             },
             'data': {
-                'color_index_manual': self.color_index_manual,
-                'color_index_1_band': self.color_index_1.band if self.color_index_1 else '',
-                'color_index_2_band': self.color_index_2.band if self.color_index_1 else '',
-
                 'reduced_stars': self.reduced_stars,
-
-                'second_order_extinction': self.second_order_extinction,
-
-                # Transformation coefficent
-                'tf': self.tf,
-                'tf_std': self.tf_std,
-                'zpf': self.zpf,
-
-                # Hidden transform
-                'hidden_transform': self.hidden_transform,
-                'hidden_transform_intercept': self.hidden_transform_intercept,
-                'hidden_transform_std': self.hidden_transform_std,
-                'hidden_transform_rval': self.hidden_transform_rval,
             }
         }
 
     def __str__(self):
         return 'Reduction for Analysis %s' % (str(self.analysis))
 
+class ImageAnalysisPair(models.Model):
+    lightcurve = models.ForeignKey(LightCurve)
+
+    analysis1 = models.ForeignKey(ImageAnalysis, related_name='analysis1_set')
+    analysis2 = models.ForeignKey(ImageAnalysis, related_name='analysis2_set')
+
 admin.site.register(ImageAnalysis)
+admin.site.register(ImageAnalysisPair)
 admin.site.register(Reduction)
-admin.site.register(UserUploadedImage)

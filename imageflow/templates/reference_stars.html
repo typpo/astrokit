@@ -51,7 +51,7 @@ You can begin selecting comparison stars from these designations.
 </p>
 <p>
   {{analysis.data.catalog_reference_stars | length}} catalog stars were recognized out of {{analysis.data.coords | length}} point sources total.
-  <span class="num-comparison-stars">0</span> are selected as comparison stars.
+  <span class="num-comparison-stars">{{ analysis.data.comparison_star_ids|length }}</span> are selected as comparison stars.
 </p>
 <div class="well">
   <div class="table-wrapper">
@@ -72,7 +72,7 @@ You can begin selecting comparison stars from these designations.
       <tbody>
       {% for star in analysis.data.catalog_reference_stars %}
         <tr data-star-id="{{star.id}}" {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
-          <td class="table-checkbox"><input type="checkbox" /></td>
+          <td class="table-checkbox"><input type="checkbox" disabled /></td>
           <td>{{star.id}}</td>
           <td>
             <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
@@ -124,7 +124,7 @@ You have selected <span class="num-comparison-stars">0</span> objects as compari
       <tbody>
       {% for star in analysis.data.catalog_reference_stars %}
         <tr data-star-id="{{star.id}}" {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
-          <td class="table-checkbox"><input type="checkbox" /></td>
+          <td class="table-checkbox"><input type="checkbox" disabled /></td>
           <td>{{star.id}}</td>
           <td>
             <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
@@ -149,21 +149,8 @@ You have selected <span class="num-comparison-stars">0</span> objects as compari
 
 <h4>Catalog Stars</h4>
 <p>Below is a plot of your original image (resized to fit your screen) annotated with detected point sources, reference stars, and comparison stars.
-<div class="well">
-  <p>
-    <span style="font-weight:bold; color:red">Red</span>: Reference stars from URAT1 catalog<br>
-    <span style="font-weight:bold; color:#4B0082">Purple</span>: Selected comparison stars<br>
-    <span style="font-weight:bold; color:green">Green</span>: Point sources from previous step<br>
-  </p>
-  <p>
-    Field position:
-    (<span id="canvas-x-pos">0</span>,
-    <span id="canvas-y-pos">0</span>)
-  </p>
-  <div id="plot-container" style="width: 100%; height: 800px; background-color:#ccc;">
-    <canvas id="star-plot" style="cursor: crosshair" />
-  </div>
-</div>
+
+{% include 'partials/point_source_plot.html' with disable_target_selection=1 %}
 
 <h3>Checking our work</h3>
 <p>
@@ -230,6 +217,8 @@ A graph of instrumental magnitude vs standard catalog magnitudes helps show that
     window.pointSourceData = {{ analysis.data.coords | jsonify }};
     window.catalogData = {{ analysis.data.catalog_reference_stars | jsonify }};
     window.urat1Key = {{ analysis.meta.image_band_urat1_key | jsonify }};
+
+    window.compareIds = new Set({{ analysis.data.comparison_star_ids | jsonify }});
   </script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>

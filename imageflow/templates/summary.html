@@ -40,7 +40,7 @@
 <p>
 {{analysis.data.coords | length}} point sources detected via the
 <a href="http://stsdas.stsci.edu/cgi-bin/gethelp.cgi?daofind">DAOFind</a> algorithm.
-Select the point source you are interested in creating a lightcurve for.
+Select the point source for which you are interested in creating a lightcurve.
 </p>
 
 {% include 'partials/point_source_plot.html' %}
@@ -56,15 +56,7 @@ Select the standard filter that most closely matches the filter used for this im
   <div id="select-filter-name-failure" class="alert alert-danger" style="display:none">
     Something went wrong - failed to update your setting.
   </div>
-  <label>
-    <select class="form-control" id="select-filter-name">
-      {% for filter in image_filters %}
-        <option value="{{filter.band}}" {% if filter.band == analysis.meta.image_band %}selected{% endif %}>
-          {{filter.band}} ({{filter.system}})
-        </option>
-      {% endfor %}
-    </select>
-  </label>
+  {% include 'partials/filter_selector.html' with selected_band=analysis.meta.image_band %}
 </div>
 
 <h3>Date &amp; time</h3>
@@ -134,6 +126,7 @@ Elevation above sea level, in meters.
     window.targetId = {{analysis.meta.target_id | jsonify }};
     window.originalImageUrl = {{analysis.urls.original_display_url | jsonify}};
     window.pointSourceData = {{ analysis.data.coords | jsonify }};
+    window.catalogData = {{ analysis.data.catalog_reference_stars | jsonify }};
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="{% static "imageflow/js/csrf.js" %}" type="text/javascript"></script>

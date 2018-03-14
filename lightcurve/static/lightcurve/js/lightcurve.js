@@ -1,11 +1,19 @@
+window.lightcurveStatus = {};
+
+(function() {
+
 var prevNumProcessed = -1;
 function checkStatus() {
   $.get('/lightcurve/' + window.lightcurveId + '/status', function(data) {
-    $('#num-images-processed').text(data.numProcessed);
-    $('#num-images-companion').text(data.numCompanion);
-    $('#num-images-target').text(data.numTarget);
-    $('#num-images-reviewed').text(data.numReviewed);
-    $('#num-images-lightcurve').text(data.numLightcurve);
+    window.lightcurveStatus = data;
+    $('.js-num-images-processed').text(data.numProcessed);
+    $('.js-num-images-photometry').text(data.numPhotometry);
+    $('.js-num-comparison-stars').text(data.numComparisonStars);
+    $('.js-num-images-pair').text(data.numPairs);
+    $('.js-num-images-target').text(data.numTarget);
+    $('.js-num-images-reviewed').text(data.numReviewed);
+    $('.js-num-images-reduction-complete').text(data.numReductionComplete);
+    $('.js-num-images-lightcurve').text(data.numLightcurve);
     if (data.numImages === data.numProcessed &&
         data.numProcessed !== prevNumProcessed &&
         prevNumProcessed !== -1) {
@@ -23,7 +31,8 @@ function saveObservationDefault() {
     'elevation': $('#set-elevation').val(),
     'extinction': $('#second-order-extinction').val(),
     'target': $('#target-name').val(),
-    'magband': $('#select-magband').val(),
+    'magband': $('#set-magband .js-select-filter-name').val(),
+    'filter': $('#set-filter .js-select-filter-name').val(),
   }, function(data) {
     if (data.success) {
       alert('Settings applied to all images.');
@@ -33,9 +42,27 @@ function saveObservationDefault() {
   });
 }
 
+function setupFilterSelection() {
+  $('.js-filter-selection .js-select-filter-name').on('change', function() {
+    var $success = $('.js-select-filter-success');
+    var $failure = $('.js-select-filter-failure');
+
+    $success.toggle(false);
+    $failure.toggle(false);
+
+    var analysisId = $(this).data('analysis-id');
+    $.post('/analysis/' + analysisId + '/set_filter_band', {
+      val: $(this).val(),
+    }, function(data) {
+      $success.toggle(data.success);
+      $failure.toggle(!data.success);
+    });
+  });
+}
+
 function toggleAddToLightcurve(toggleButton) {
   $.post('/lightcurve/' + window.lightcurveId + '/add_image_toggle', {
-    'analysis_id' : $(toggleButton).data('analysis-id')
+    analysisId: $(toggleButton).data('analysis-id')
   }, function(data) {
     if (data.success) {
       $(toggleButton).toggleClass('btn-success');
@@ -47,6 +74,28 @@ function toggleAddToLightcurve(toggleButton) {
       }
     } else {
       alert('Something went wrong. Changes were not applied to this image.');
+    }
+  });
+}
+
+function setupAddAllImages() {
+  $('.js-add-images-lightcurve').on('click', function() {
+    $('.page-loader').show();
+    $('.js-add-images-lightcurve').attr('disabled', 1);
+    addAllImages();
+  });
+}
+
+function addAllImages() {
+  $.post('/lightcurve/' + window.lightcurveId + '/add_images', {}, function(data) {
+    if (data.success) {
+      $('.page-loader').hide();
+      $('.js-add-images-lightcurve').removeAttr('disabled');
+      alert(data.count + ' images added to your light curve. Press OK to refresh.');
+      window.location.hash = 'image-reductions';
+      window.location.reload();
+    } else {
+      alert('Sorry, something went wrong and images could not be added to your lightcurve.');
     }
   });
 }
@@ -121,21 +170,89 @@ function setupMiscHandlers() {
     window.location.reload();
     return false;
   });
+
+  $('.select-target-link').on('click', function() {
+    var analysisId = $(this).data('analysis-id');
+    $('.iframe-target').attr('src', '/analysis/select_target_modal/' + analysisId);
+  });
+}
+
+function setupImagePairs() {
+  // Handle color index selection.
+  var colorIndex = null;
+  $('.js-select-color-index').on('change', function() {
+    var val = $(this).val();
+    if (val === 'NONE') {
+      $('.image-pair-selector .btn').attr('disabled', 1);
+    } else {
+      $('.image-pair-selector .btn').removeAttr('disabled');
+    }
+    colorIndex = val;
+  });
+
+  // Handle pair selection.
+  var $selectingElt = null;
+  $('.js-select-image').on('click', function() {
+    $selectingElt = $(this);
+    $('input[name="image-radio"]').prop('checked', false);
+    $('.select-image-modal .modal').modal();
+  });
+
+  $('.js-select-image-update').on('click', function() {
+    var analysisId = $('input[name="image-radio"]:checked').val();
+    if ($selectingElt) {
+      if (analysisId && analysisId !== 'NONE') {
+        $selectingElt.text('Image #' + analysisId);
+        $selectingElt.data('analysis-id', analysisId);
+        $selectingElt.removeClass('btn-primary').addClass('btn-default')
+      } else {
+        $selectingElt.text('Select Image');
+        $selectingElt.addClass('btn-primary').removeClass('btn-default')
+      }
+    }
+  });
+
+  // Save everything.
+  $('.js-save-image-pairs').on('click', function() {
+    var data = {
+      ciband: colorIndex,
+      pairsJson: null,
+    };
+
+    var pairs = [];
+    $('.js-select-image').each(function(idx) {
+      var analysisId = parseInt($(this).data('analysis-id'), 0);
+      if (isNaN(analysisId)) {
+        analysisId = null;
+      }
+
+      // Build an array of pair tuples. eg.
+      // [[1,2], [3,4], [5,6]]
+      if (idx % 2 === 0) {
+        pairs.push([analysisId]);
+      } else {
+        pairs[pairs.length - 1].push(analysisId);
+      }
+    });
+
+    data.pairs = JSON.stringify(pairs);
+
+    // TODO(ian): POST it all to some endpoint.
+    $.post('/lightcurve/' + window.lightcurveId + '/save_image_pairs', data, function(result) {
+      if (result.success) {
+        alert('Your settings have been saved.');
+      } else {
+        alert('Sorry, something went wrong and your settings were not saved.');
+      }
+    });
+  });
 }
 
 function setupModals() {
-  $('.js-select-companion-image').on('click', function() {
-    var analysisId = $(this).data('analysis-id');
-    $('.image-modal iframe')
-        .attr('src', '/analysis/companion_image_modal/' + analysisId);
-    $('.image-modal .modal').modal();
-  });
-
   $('.js-select-target').on('click', function() {
     var analysisId = $(this).data('analysis-id');
-    $('.image-modal iframe')
-        .attr('src', '/analysis/select_target_modal/' + analysisId);
-    $('.image-modal .modal').modal();
+    $('.iframe-modal iframe').attr('src', '/analysis/select_target_modal/' + analysisId);
+    $('.iframe-modal .modal').modal();
   });
 }
 
@@ -144,5 +261,10 @@ $(function() {
 
   setupEditNameHandlers();
   setupMiscHandlers();
+  setupImagePairs();
+  setupFilterSelection();
   setupModals();
+  setupAddAllImages();
 });
+
+})();

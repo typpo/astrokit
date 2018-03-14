@@ -5,7 +5,11 @@ while [ 1 ]; do
   ./run_astrometry.py
   echo 'Running photometry...'
   ./run_photometry.py
-  echo 'Running reductions...'
-  ./run_reductions.py
+  echo 'Running lightcurve comparison star...'
+  ./run_comparison.py
+  echo 'Running lightcurve reductions...'
+  ./run_lightcurve_reductions.py
+  echo 'Running image reductions...'
+  ./run_image_reductions.py
   sleep 1
 done

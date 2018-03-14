@@ -1,4 +1,4 @@
-var compareIds = new Set();
+(function() {
 
 function updateStar(starId, checked) {
   $('.js-reference-table')
@@ -6,11 +6,11 @@ function updateStar(starId, checked) {
       .find('input').attr('checked', checked)
 
   if (checked) {
-    compareIds.add(starId);
+    window.compareIds.add(starId);
   } else {
-    compareIds.delete(starId);
+    window.compareIds.delete(starId);
   }
-  $('.num-comparison-stars').text(compareIds.size);
+  $('.num-comparison-stars').text(window.compareIds.size);
 }
 
 function setupComparisonStarSelection() {
@@ -23,7 +23,7 @@ function setupComparisonStarSelection() {
 
     // Update backend.
     $.post('/analysis/' + window.analysisId + '/comparison_stars', {
-      ids: Array.from(compareIds),
+      ids: Array.from(window.compareIds),
     }, function(data) {
       if (!data.success) {
         alert('Sorry, something went wrong and we were not able to save your updated comparison star list.');
@@ -36,6 +36,8 @@ function setupComparisonStarSelection() {
 function selectComparisonStars(cb) {
   $.get('/analysis/' + window.analysisId + '/comparison_stars', function(data) {
     if (data.success) {
+      // FIXME(ian): Doesn't work on first run without any comparison stars
+      // because data.ids is undefined.
       data.ids.forEach(function(starId) { updateStar(starId, true) });
       cb();
     }
@@ -65,3 +67,5 @@ $(function() {
     return false;
   });
 });
+
+})();

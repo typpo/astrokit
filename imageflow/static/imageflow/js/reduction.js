@@ -57,11 +57,6 @@ $(function() {
                 $('#select-color-index-success'),
                 $('#select-comparison-image-failure'));
 
-  setupListener('set_image_companion',
-                $('input[name="image-companion"]'),
-                $('#select-comparison-image-success'),
-                $('#select-comparison-image-failure'));
-
   setupListener('set_second_order_extinction',
                 $('#second-order-extinction'),
                 $('#second-order-extinction-success'),

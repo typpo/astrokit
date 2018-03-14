@@ -17,3 +17,27 @@ function setupListener(apiPath, $control, $success, $failure, postVals) {
   });
 }
 
+function setupTables() {
+  var $tableWrapper = $('.table-wrapper').on('scroll', function() {
+    $(this).find('thead').css('transform', 'translate(0,' + this.scrollTop + 'px)');
+  });
+  if ($().stupidtable) {
+    $tableWrapper.find('table').stupidtable();
+  }
+  $('.js-scroll-to-target').on('click', function() {
+    scrollToTarget($(this).parent().prev());
+    return false;
+  });
+}
+
+function setupTooltips() {
+  // Initialize tooltips.
+  if ($().tooltip) {
+    $('[data-toggle="tooltip"]').tooltip({container: 'body'})
+  }
+}
+
+$(function() {
+  setupTables();
+  setupTooltips();
+});

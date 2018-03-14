@@ -8,7 +8,7 @@ import time
 
 from django.shortcuts import get_object_or_404
 
-from imageflow.models import UserUploadedImage
+from accounts.models import UserUploadedImage
 from lightcurve.models import LightCurve
 import imageflow.s3_util as s3_util
 

@@ -1,20 +1,25 @@
 import csv
+import json
 
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 
+from accounts.models import UserUploadedImage
 from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
 from corrections import get_jd_for_analysis
-from imageflow.models import ImageAnalysis, ImageFilter, Reduction, UserUploadedImage
+from imageflow.models import ImageAnalysis, ImageAnalysisPair, ImageFilter, Reduction
 from lightcurve.models import LightCurve
 from lightcurve.util import ordered_analysis_status
 from reduction.util import find_point_by_id
 
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
-    images = UserUploadedImage.objects.filter(lightcurve=lc)
+    images = UserUploadedImage.objects.filter(lightcurve=lc).order_by('analysis__image_datetime')
+
+    # Always add 5 extra empty image pairs to the list.
+    image_pairs = list(ImageAnalysisPair.objects.filter(lightcurve=lc)) + ([None] * 5)
 
     sort = request.GET.get('sort')
     print sort
@@ -29,8 +34,12 @@ def edit_lightcurve(request, lightcurve_id):
 
     context = {
         'lightcurve': lc,
+        'reduction': lc.get_or_create_reduction(),
         'images': images,
         'image_filters': ImageFilter.objects.all(),
+        'magband_filters': ImageFilter.objects.all().exclude(band='C'),
+        'image_pairs': image_pairs,
+        'ci_bands': ImageFilter.objects.get_ci_bands(),
     }
 
     return render_to_response('lightcurve.html', context,
@@ -97,6 +106,7 @@ def save_observation_default(request, lightcurve_id):
     extinction = request.POST.get('extinction')
     target_name = request.POST.get('target')
     magband = request.POST.get('magband')
+    filter = request.POST.get('filter')
 
     for image in images:
         if lat:
@@ -106,23 +116,94 @@ def save_observation_default(request, lightcurve_id):
         if elevation:
             image.image_elevation = float(elevation)
         if extinction:
-            reduction = image.get_reduction_or_create()
+            reduction = lc.get_or_create_reduction()
             reduction.second_order_extinction = float(extinction)
             reduction.save()
         if target_name:
             # This target is looked up during the reduction step.
             image.target_name = target_name
         if magband:
-            lc.magband = ImageFilter.objects.get(band=band)
-            lc.save()
+            lc.magband = ImageFilter.objects.get(band=magband)
+        if filter:
+            lc.filter = ImageFilter.objects.get(band=filter)
+        lc.save()
         image.save()
 
     return JsonResponse({
         'success': True,
     })
 
+def apply_photometry_settings(request, lightcurve_id):
+    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
+    template_analysis = ImageAnalysis.objects.get(pk=request.POST.get('analysisId'))
+    template_settings = template_analysis.photometry_settings
+
+    # Apply the settings from this analysis to every analysis.
+    count = 0
+    for analysis in lc.imageanalysis_set.all():
+        settings = analysis.photometry_settings
+        changed = settings.sigma_psf != template_settings.sigma_psf or \
+                  settings.crit_separation != template_settings.crit_separation or \
+                  settings.threshold != template_settings.threshold or \
+                  settings.box_size != template_settings.box_size or \
+                  settings.iters != template_settings.iters
+        if changed:
+            analysis.photometry_settings = template_settings
+            analysis.photometry_settings.save()
+
+            analysis.status = ImageAnalysis.PHOTOMETRY_PENDING
+            analysis.save()
+
+            count += 1
+
+    return JsonResponse({
+        'success': True,
+        'numUpdated': count,
+    })
+
+def save_image_pairs(request, lightcurve_id):
+    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
+    images = lc.imageanalysis_set.all()
+
+    ciband = request.POST.get('ciband')
+    pairs = json.loads(request.POST.get('pairs'))
+
+    if ciband:
+        lc.ciband = ciband
+        lc.save()
+
+    if pairs:
+        # Clear existing ImageAnalysisPairs
+        ImageAnalysisPair.objects.filter(lightcurve=lc).delete()
+
+        # Rebuild them
+        for pair in pairs:
+            # Exclude Nones
+            if all(pair):
+                analysis1 = ImageAnalysis.objects.get(pk=pair[0], user=request.user.id)
+                analysis2 = ImageAnalysis.objects.get(pk=pair[1], user=request.user.id)
+                ImageAnalysisPair.objects.create(lightcurve=lc, analysis1=analysis1, analysis2=analysis2)
+
+    return JsonResponse({
+        'success': True,
+    })
+
+def add_images(request, lightcurve_id):
+    # Add all images that are currently eligible to be in the lightcurve.
+    lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
+    analyses = lc.imageanalysis_set.filter(status=ImageAnalysis.REDUCTION_COMPLETE)
+
+    for analysis in analyses:
+        analysis.status = ImageAnalysis.ADDED_TO_LIGHT_CURVE
+        analysis.save()
+
+    return JsonResponse({
+        'success': True,
+        'count': len(analyses),
+    })
+
 def add_image_toggle(request, lightcurve_id):
-    analysis_id = request.POST.get('analysis_id')
+    analysis_id = request.POST.get('analysisId')
 
     lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     image = lc.imageanalysis_set.get(id=analysis_id)
@@ -139,7 +220,7 @@ def add_image_toggle(request, lightcurve_id):
     })
 
 def edit_lightcurve_name(request, lightcurve_id):
-    name = request.POST.get('lightcurve_name')
+    name = request.POST.get('name')
     lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     lc.name = name
     lc.save()
@@ -148,25 +229,68 @@ def edit_lightcurve_name(request, lightcurve_id):
         'success': True,
     })
 
-def get_status(request, lightcurve_id):
-    lc = LightCurve.objects.get(id=lightcurve_id)
-    images = lc.useruploadedimage_set.all()
+def status(request, lightcurve_id):
+    lc = get_object_or_404(LightCurve, pk=lightcurve_id, user=request.user.id)
 
-    num_processed = sum([image.submission.is_done() for image in images if image.submission])
-    num_companion = sum([image.analysis.get_or_create_reduction().image_companion is not None for image in images if image.analysis])
-    num_target = sum([image.analysis.target_id > 0 for image in images if image.analysis])
+    if request.method == 'POST':
+        val = request.POST.get('status')
+        if val == 'REDUCTION_PENDING':
+            lc.status = LightCurve.REDUCTION_PENDING
+        elif val == 'PHOTOMETRY_PENDING':
+            lc.status = LightCurve.PHOTOMETRY_PENDING
+        else:
+            return JsonResponse({
+                'success': False,
+                'message': 'Did not recognize status %s' % val
+            })
 
-    num_reviewed = sum([image.analysis.is_reviewed() for image in images if image.analysis])
-    num_lightcurve = sum([image.analysis.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE for image in images if image.analysis])
+        lc.save()
+        return JsonResponse({
+            'success': True,
+        })
+    else:
+        images = lc.useruploadedimage_set.all()
+        pairs = ImageAnalysisPair.objects.filter(lightcurve=lc)
+
+        num_processed = sum([image.submission.is_done() for image in images if image.submission])
+        num_photometry = sum([image.analysis.is_photometry_complete() for image in images if image.analysis])
+        num_target = sum([image.analysis.target_id > 0 for image in images if image.analysis])
+
+        num_reviewed = sum([image.analysis.is_reviewed() for image in images if image.analysis])
+        num_lightcurve = sum([image.analysis.status == ImageAnalysis.ADDED_TO_LIGHT_CURVE for image in images if image.analysis])
+        num_reduction_complete = sum([image.analysis.status == ImageAnalysis.REDUCTION_COMPLETE for image in images if image.analysis])
+
+        return JsonResponse({
+            'success': True,
+            'status': lc.status,
+            'numProcessed': num_processed,
+            'numPhotometry': num_photometry,
+            'numPairs': len(pairs),
+            'numComparisonStars': len(lc.comparison_stars),
+            'numTarget': num_target,
+            'numReductionComplete': num_reduction_complete + num_lightcurve,
+            'numReviewed': num_reviewed,
+            'numLightcurve': num_lightcurve,
+            'numImages': len(images),
+        })
+
+def run_image_reductions(request, lightcurve_id):
+    lc = get_object_or_404(LightCurve, pk=lightcurve_id, user=request.user.id)
+    analyses = lc.imageanalysis_set.all()
+    count = 0
+    for analysis in analyses:
+        if analysis.target_id and analysis.target_id > 0:
+            analysis.status = ImageAnalysis.REVIEW_PENDING
+            analysis.save()
+
+            reduction = analysis.get_or_create_reduction()
+            reduction.status = Reduction.PENDING
+            reduction.save()
+            count += 1
 
     return JsonResponse({
         'success': True,
-        'numProcessed': num_processed,
-        'numCompanion': num_companion,
-        'numTarget': num_target,
-        'numReviewed': num_reviewed,
-        'numLightcurve': num_lightcurve,
-        'numImages': len(images),
+        'numTriggered': count,
     })
 
 def my_lightcurve(request):
