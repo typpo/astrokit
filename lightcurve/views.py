@@ -1,9 +1,8 @@
 import json
 
 from django.http import JsonResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.shortcuts import get_object_or_404
 
 from accounts.models import UserUploadedImage
 from astrometry.models import AstrometrySubmission
@@ -11,6 +10,7 @@ from astrometry.process import process_astrometry_online
 from corrections import get_jd_for_analysis
 from imageflow.models import ImageAnalysis, ImageAnalysisPair, ImageFilter, Reduction
 from lightcurve.models import LightCurve
+from lightcurve.util import ordered_analysis_status
 from reduction.util import find_point_by_id
 
 def edit_lightcurve(request, lightcurve_id):
@@ -19,6 +19,17 @@ def edit_lightcurve(request, lightcurve_id):
 
     # Always add 5 extra empty image pairs to the list.
     image_pairs = list(ImageAnalysisPair.objects.filter(lightcurve=lc)) + ([None] * 5)
+
+    sort = request.GET.get('sort')
+    print sort
+    if sort == 'filename':
+        images = images.order_by('original_filename')
+    elif sort == 'timestamp':
+        images = images.order_by('analysis__image_datetime')
+    elif sort == 'status':
+        images = images.annotate(status_sort = ordered_analysis_status()).order_by('status_sort')
+    else:
+        pass
 
     context = {
         'lightcurve': lc,
@@ -29,6 +40,7 @@ def edit_lightcurve(request, lightcurve_id):
         'image_pairs': image_pairs,
         'ci_bands': ImageFilter.objects.get_ci_bands(),
     }
+
     return render_to_response('lightcurve.html', context,
             context_instance=RequestContext(request))
 
