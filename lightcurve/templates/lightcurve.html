@@ -178,7 +178,7 @@ h1 span {
         </p>
         {% include 'partials/comparison_stars.html' with stars=lightcurve.common_stars %}
       {% else %}
-        Uh oh - there are no common stars.  Please tune your photometry to make sure some known stars are picked up, then try again.
+        <p class="alert alert-danger">Uh oh - there are no common stars.  Please tune your photometry to make sure some known stars are picked up, then try again.</p>
       {% endif %}
     {% endif %}
   </div>

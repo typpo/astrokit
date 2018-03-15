@@ -91,7 +91,7 @@ class LightCurveReduction(models.Model):
 
     # Color index of targets
     color_index_manual = models.FloatField(null=True)
-    color_index = models.FloatField(null=True)
+    color_index = models.FloatField(default=0)
 
 admin.site.register(LightCurve)
 admin.site.register(LightCurveReduction)
