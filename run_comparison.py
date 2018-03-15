@@ -38,7 +38,7 @@ def get_common_stars(analyses):
     return ret
 
 def process(lightcurve):
-    analyses = ImageAnalysis.objects.filter(lightcurve=lightcurve)
+    analyses = ImageAnalysis.objects.filter(lightcurve=lightcurve).order_by('image_datetime')
 
     stars = get_common_stars([analysis for analysis in analyses \
             if analysis.target_id and analysis.target_id > 0])

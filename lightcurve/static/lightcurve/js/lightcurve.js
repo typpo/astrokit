@@ -35,7 +35,8 @@ function saveObservationDefault() {
     'filter': $('#set-filter .js-select-filter-name').val(),
   }, function(data) {
     if (data.success) {
-      alert('Settings applied to all images.');
+      alert('Settings applied to all images. Press OK to reload the page.');
+      window.location.reload();
     } else {
       alert('Something went wrong. Settings were not applied to all images.');
     }
