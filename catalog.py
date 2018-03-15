@@ -136,6 +136,7 @@ def choose_reference_stars(image_fits_data, corr_fits_data, point_source_json):
             'index_dec': nearest['index_dec'],
             'mag_instrumental': point['mag_instrumental'],
             'mag_instrumental_unc': point['mag_instrumental_unc'],
+            'snr': point['snr'],
         })
 
     logger.info('distance count: %d' % len(distances))
@@ -192,10 +193,10 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
             obj['temperature'] = temp_k
 
         mag_i = comparison_star.get('mag_instrumental')
-        mag_i_unc = comparison_star.get('mag_instrumental_unc')
         if mag_i:
             obj['mag_instrumental'] = mag_i
-            obj['mag_instrumental_unc'] = mag_i_unc
+            obj['mag_instrumental_unc'] = comparison_star.get('mag_instrumental_unc')
+            obj['snr'] = comparison_star.get('snr')
             obj['field_x'] = comparison_star['field_x'],
             obj['field_y'] = comparison_star['field_y'],
         if postprocess_fn:
