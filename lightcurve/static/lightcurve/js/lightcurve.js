@@ -35,8 +35,7 @@ function saveObservationDefault() {
     'filter': $('#set-filter .js-select-filter-name').val(),
   }, function(data) {
     if (data.success) {
-      alert('Settings applied to all images. Press OK to reload the page.');
-      window.location.reload();
+      alert('Settings applied to all images.');
     } else {
       alert('Something went wrong. Settings were not applied to all images.');
     }
@@ -150,6 +149,11 @@ function setupEditNameHandlers() {
 }
 
 function setupMiscHandlers() {
+  $('.js-skip-image-paris').on('click', function() {
+    $('.ci-skipped-equation').toggle();
+    $('.reduction-calculation-step').toggle();
+  });
+
   $('#select-sort-images').on('change', function() {
     if ($(this).val()) {
       sortImages(this);
