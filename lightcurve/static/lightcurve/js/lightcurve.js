@@ -237,6 +237,9 @@ function setupImagePairs() {
 
     data.pairs = JSON.stringify(pairs);
 
+    // Manual color index
+    data.manual_color_index = $('#set-manual-ci').val();
+
     // TODO(ian): POST it all to some endpoint.
     $.post('/lightcurve/' + window.lightcurveId + '/save_image_pairs', data, function(result) {
       if (result.success) {

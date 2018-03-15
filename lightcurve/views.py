@@ -163,8 +163,15 @@ def apply_photometry_settings(request, lightcurve_id):
 
 def save_image_pairs(request, lightcurve_id):
     lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
-    images = lc.imageanalysis_set.all()
+    reduction = lc.get_or_create_reduction()
+    color_index_manual = request.POST.get('manual_color_index')
+    if color_index_manual:
+        reduction.color_index_manual = float(color_index_manual)
+    else:
+        reduction.color_index_manual = None
+    reduction.save()
 
+    images = lc.imageanalysis_set.all()
     ciband = request.POST.get('ciband')
     pairs = json.loads(request.POST.get('pairs'))
 

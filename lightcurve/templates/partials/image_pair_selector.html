@@ -1,12 +1,19 @@
 <div class="color-index-selector">
-  <form class="form form-inline">
-    <label for="select-color-index">Color index</label>
-    <select id="select-color-index" class="form-control js-select-color-index" style="width: 10em">
-      <option value="NONE">None</option>
-      {% for band in ci_bands %}
-        <option value="{{band}}" {% if lightcurve.ciband == band %}selected{% endif %}>{{band}}</option>
-      {% endfor %}
-    </select>
+  <form class="form">
+    <div class="form-group">
+      <label for="set-manual-ci">Manual color index</label>
+      - this value overrides the computed color index from image pairs.
+      <input id="set-manual-ci" class="form-control" style="width: 20em" type="number" step="any" value="{{reduction.color_index_manual}}">
+    </div>
+    <div class="form-group">
+      <label for="select-color-index">Color index</label>
+      <select id="select-color-index" class="form-control js-select-color-index" style="width: 10em">
+        <option value="NONE">None</option>
+        {% for band in ci_bands %}
+          <option value="{{band}}" {% if lightcurve.ciband == band %}selected{% endif %}>{{band}}</option>
+        {% endfor %}
+      </select>
+    </div>
   </form>
 </div>
 <div class="image-pair-selector" style="margin-top:1em">
