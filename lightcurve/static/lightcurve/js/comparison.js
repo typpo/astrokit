@@ -45,7 +45,7 @@
           $tr.addClass('success');
           setTimeout(function() {
             $tr.removeClass('success');
-          }, 800);
+          }, 250);
         }
       });
     });

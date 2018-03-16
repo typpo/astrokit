@@ -153,7 +153,8 @@ function setupMagnitudeChecks($elts, type, xData, yData, comparisonStarsOnly) {
     var xr = xData[i];
     var yr = yData[i];
     var yVal = type === 'instrumental' ? yr.mag_instrumental : yr.mag_standard;
-    var xVal = xr[window.urat1Key];
+    // For clear filter: default to Vmag standard magnitudes.
+    var xVal = xr[window.urat1Key === 'none' ? 'Vmag' : window.urat1Key];
     var isComparisonStar = (typeof window.compareIds !== 'undefined' && compareIds.has(xr.id));
     if (!isComparisonStar && comparisonStarsOnly) {
       continue;
