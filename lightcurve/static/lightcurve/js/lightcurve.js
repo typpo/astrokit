@@ -35,7 +35,8 @@ function saveObservationDefault() {
     'filter': $('#set-filter .js-select-filter-name').val(),
   }, function(data) {
     if (data.success) {
-      alert('Settings applied to all images.');
+      alert('Settings applied to all images. Press OK to refresh');
+      window.location.reload();
     } else {
       alert('Something went wrong. Settings were not applied to all images.');
     }
@@ -162,6 +163,9 @@ function setupMiscHandlers() {
   });
 
   $('#save-observation-default').on('click', function() {
+    var $this = $(this);
+    $('.page-loader').show();
+    $this.attr('disabled', 1);
     saveObservationDefault();
     return false;
   });
