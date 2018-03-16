@@ -25,7 +25,34 @@
     });
   }
 
+  function setupComparisonStars() {
+    $('.js-comparison-star-selection-table input').on('change', function() {
+      var $tr = $(this).closest('tr');
+      var selectedDesigs = $('.js-comparison-star-selection-table input:checked').map(function() {
+        return $(this).data('star-desig');
+      });
+
+      $tr.addClass('warning');
+
+      // Update backend.
+      $.post('/lightcurve/' + window.lightcurveId + '/comparison_desigs', {
+        desigs: JSON.stringify(selectedDesigs.toArray()),
+      }, function(data) {
+        $tr.removeClass('warning');
+        if (!data.success) {
+          alert('Sorry, something went wrong and we were not able to update your comparison star list.');
+        } else {
+          $tr.addClass('success');
+          setTimeout(function() {
+            $tr.removeClass('success');
+          }, 800);
+        }
+      });
+    });
+  }
+
   $(function() {
     setupComparisonRefreshHandler();
+    setupComparisonStars();
   });
 })();

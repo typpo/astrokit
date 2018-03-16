@@ -7,13 +7,10 @@
 
 <div class="well">
   <div class="table-wrapper">
-    <table class="table table-striped table-hover star-table js-reference-table">
+    <table class="table table-striped table-hover star-table js-reference-table js-comparison-star-selection-table">
       <thead>
         <tr>
           <th></th>
-<!--
-          <th data-sort="int"><span class="header-tooltip" data-toggle="tooltip" title="Each point source in this image has a unique ID">ID</span></th>
--->
           <th data-sort="string"><span class="header-tooltip" data-toggle="tooltip" title="URAT1 catalog designation">Designation</span></th>
           <th data-sort="float" style="white-space:nowrap"><span class="header-tooltip" data-toggle="tooltip" title="Signal-to-noise ratio">SNR</span></th>
           <th data-sort="float" style="white-space:nowrap"><span class="header-tooltip" data-toggle="tooltip" title="Raw instrumental magnitude from first image in dataset">Magnitude</span></th>
@@ -31,13 +28,12 @@
       </thead>
       <tbody>
       {% for star in lightcurve.common_stars %}
-        <tr data-star-id="{{star.id}}" {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
+        <tr>
           <td class="table-checkbox">
-            <input type="checkbox" {% if star in lightcurve.comparison_stars %}checked{% endif %} />
+            <input type="checkbox"
+                   data-star-desig="{{star.designation}}"
+                   {% if star in lightcurve.comparison_stars %}checked{% endif %} />
           </td>
-<!--
-          <td>{{star.id}}</td>
--->
           <td>
             <a target="_blank" href="http://vizier.u-strasbg.fr/viz-bin/VizieR-5?-ref=VIZ592c985c22af&-out.add=.&-source=I/329&-c={{star.index_ra}},{{star.index_dec}},eq=J2000,rs=0.002">{{star.designation}}</a>
           </td>

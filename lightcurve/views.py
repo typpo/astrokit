@@ -12,7 +12,7 @@ from corrections import get_jd_for_analysis
 from imageflow.models import ImageAnalysis, ImageAnalysisPair, ImageFilter, Reduction
 from lightcurve.models import LightCurve
 from lightcurve.util import ordered_analysis_status
-from reduction.util import find_point_by_id
+from reduction.util import find_point_by_id, find_star_by_designation
 
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
@@ -280,6 +280,23 @@ def status(request, lightcurve_id):
             'numLightcurve': num_lightcurve,
             'numImages': len(images),
         })
+
+def comparison_desigs(request, lightcurve_id):
+    lc = get_object_or_404(LightCurve, pk=lightcurve_id, user=request.user.id)
+    if request.method == 'POST':
+        desigs = set(json.loads(request.POST.get('desigs')))
+        lc.comparison_stars = [star for star in lc.common_stars if star['designation'] in desigs]
+        print desigs
+        print lc.comparison_stars, 'caomraodbb'
+        lc.save()
+
+        return JsonResponse({
+            'success': True,
+        })
+    return JsonResponse({
+        'success': True,
+        'desigs': [star['designation'] for star in lc.comparison_desigs],
+    })
 
 def run_image_reductions(request, lightcurve_id):
     lc = get_object_or_404(LightCurve, pk=lightcurve_id, user=request.user.id)

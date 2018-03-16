@@ -30,7 +30,6 @@ function setupComparisonStarSelection() {
       }
     });
   });
-
 }
 
 function selectComparisonStars(cb) {

@@ -256,10 +256,6 @@ function setupImagePairs() {
   });
 }
 
-function setupComparisonStars() {
-
-}
-
 function setupModals() {
   $('.js-select-target').on('click', function() {
     var analysisId = $(this).data('analysis-id');
@@ -273,7 +269,6 @@ $(function() {
 
   setupEditNameHandlers();
   setupMiscHandlers();
-  setupComparisonStars();
   setupImagePairs();
   setupFilterSelection();
   setupModals();
