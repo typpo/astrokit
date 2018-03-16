@@ -30,9 +30,11 @@
         </tr>
       </thead>
       <tbody>
-      {% for star in stars %}
+      {% for star in lightcurve.common_stars %}
         <tr data-star-id="{{star.id}}" {% if star.id == analysis.meta.target_id %}class="highlight"{% endif %}>
-          <td class="table-checkbox"><input type="checkbox" /></td>
+          <td class="table-checkbox">
+            <input type="checkbox" {% if star in lightcurve.comparison_stars %}checked{% endif %} />
+          </td>
 <!--
           <td>{{star.id}}</td>
 -->
