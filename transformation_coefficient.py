@@ -47,6 +47,7 @@ def calculate(lightcurve, stars, save_graph=False):
     # Get the URAT1 keys for each filter and CI band. eg. 'Bmag', 'jmag'
     ci1_key = ci1.urat1_key
     ci2_key = ci2.urat1_key
+    # FIXME(ian): Handle case where lightcurve.filter is band C.
     filter_key = lightcurve.filter.urat1_key
 
     apparent_mags = []

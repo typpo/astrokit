@@ -45,7 +45,7 @@ def run_reductions(analysis):
     supporting_calculations(analysis, reduction)
 
     # Get the URAT1 keys for each CI band. eg. 'Bmag', 'jmag'
-    filter_key = analysis.image_filter.urat1_key
+    filter_key = analysis.lightcurve.magband.urat1_key
 
     use_color_index = analysis.lightcurve.ciband != 'NONE'
     if use_color_index:
