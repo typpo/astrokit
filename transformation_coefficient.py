@@ -24,7 +24,7 @@ def run(lightcurve, reduction):
 
     # Select analyses that match the lightcurve filter.
     analyses = ImageAnalysis.objects.filter(lightcurve=lightcurve,
-                                            image_filter=lightcurve.filter)
+                                            image_filter=lightcurve.magband)
 
     # Take the average instrumental magnitudes for common stars across these
     # analyses.
