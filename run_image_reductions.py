@@ -20,6 +20,7 @@ import airmass
 import corrections
 
 from imageflow.models import Reduction, ImageAnalysis, ImageFilter
+from reduction.util import find_star_by_designation
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ def run_reductions(analysis):
     supporting_calculations(analysis, reduction)
 
     # Get the URAT1 keys for each CI band. eg. 'Bmag', 'jmag'
-    filter_key = analysis.lightcurve.magband.urat1_key
+    magband_key = analysis.lightcurve.magband.urat1_key
 
     use_color_index = analysis.lightcurve.ciband != 'NONE'
     if use_color_index:
@@ -53,7 +54,7 @@ def run_reductions(analysis):
         ci2_key = analysis.lightcurve.get_ci_band2().urat1_key
 
     # Get the set of comparison stars.  These are a subset of reduced stars.
-    comparison_stars = analysis.lightcurve.comparison_stars
+    comparison_star_desigs = analysis.lightcurve.get_comparison_desigs()
 
     # Now put it all together.
     for i in xrange(len(reduction.reduced_stars)):
@@ -63,10 +64,13 @@ def run_reductions(analysis):
 
         # Mt = (mt - mc) - k"f Xt (CIt - CIc) + Tf (CIt - CIc) + Mc
         estimates = []
-        for comparison_star in comparison_stars:
-            if 'designation' in star and comparison_star['designation'] == star['designation']:
+        for desig in comparison_star_desigs:
+            if 'designation' in star and star['designation'] == desig:
                 # Don't compare a star against itself.
                 continue
+
+            # Get comparison star in THIS IMAGE.
+            comparison_star = find_star_by_designation(analysis.annotated_point_sources, desig)
 
             term1 = star['mag_instrumental'] - comparison_star['mag_instrumental']
 
@@ -87,22 +91,20 @@ def run_reductions(analysis):
             else:
                 term2 = 0
                 term3 = 0
-            mc = comparison_star[filter_key]
+            mc = comparison_star[magband_key]
 
             combined = term1 - term2 + term3 + mc
             estimates.append(combined)
-
-            comparison_star['is_comparison'] = True
 
         star['mag_standard'] = np.mean(estimates)
         star['mag_std'] = np.std(estimates)
 
         # Set mag_catalog to the URAT1 magnitude in this band.
-        if filter_key in star:
-            star['mag_catalog'] = star[filter_key]
+        if magband_key in star:
+            star['mag_catalog'] = star[magband_key]
             star['mag_error'] = star['mag_standard'] - star['mag_catalog']
         else:
-            #logger.info('No filter %s in star %s' % (filter_key, star))
+            #logger.info('No filter %s in star %s' % (magband_key, star))
             pass
 
     reduction.status = Reduction.COMPLETE
