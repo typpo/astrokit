@@ -1,6 +1,7 @@
 import csv
 import json
 
+from django.db import transaction
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -96,6 +97,7 @@ def plot_lightcurve_json(request, lightcurve_id):
         'results': ret,
     })
 
+@transaction.atomic
 def save_observation_default(request, lightcurve_id):
     lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     images = lc.imageanalysis_set.all()
@@ -134,6 +136,7 @@ def save_observation_default(request, lightcurve_id):
         'success': True,
     })
 
+@transaction.atomic
 def apply_photometry_settings(request, lightcurve_id):
     lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     template_analysis = ImageAnalysis.objects.get(pk=request.POST.get('analysisId'))
@@ -162,6 +165,7 @@ def apply_photometry_settings(request, lightcurve_id):
         'numUpdated': count,
     })
 
+@transaction.atomic
 def save_image_pairs(request, lightcurve_id):
     lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     reduction = lc.get_or_create_reduction()
@@ -196,6 +200,7 @@ def save_image_pairs(request, lightcurve_id):
         'success': True,
     })
 
+@transaction.atomic
 def add_images(request, lightcurve_id):
     # Add all images that are currently eligible to be in the lightcurve.
     lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
@@ -287,8 +292,6 @@ def comparison_desigs(request, lightcurve_id):
     if request.method == 'POST':
         desigs = set(json.loads(request.POST.get('desigs')))
         lc.comparison_stars = [star for star in lc.common_stars if star['designation'] in desigs]
-        print desigs
-        print lc.comparison_stars, 'caomraodbb'
         lc.save()
 
         return JsonResponse({
@@ -299,6 +302,7 @@ def comparison_desigs(request, lightcurve_id):
         'desigs': [star['designation'] for star in lc.comparison_desigs],
     })
 
+@transaction.atomic
 def run_image_reductions(request, lightcurve_id):
     lc = get_object_or_404(LightCurve, pk=lightcurve_id, user=request.user.id)
     analyses = lc.imageanalysis_set.all()
@@ -360,7 +364,6 @@ def download(request, lightcurve_id):
         writer = csv.writer(response)
         writer.writerow(['Datetime', 'JD', 'Mag instrumental', 'Mag standard', 'Mag std'])
         for analysis in analyses:
-            print len(analysis.annotated_point_sources)
             if analysis.annotated_point_sources != []:
                 result = find_point_by_id(analysis.annotated_point_sources, analysis.target_id)
                 if not result:
