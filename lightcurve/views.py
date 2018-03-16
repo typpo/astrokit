@@ -119,13 +119,14 @@ def save_observation_default(request, lightcurve_id):
             reduction = lc.get_or_create_reduction()
             reduction.second_order_extinction = float(extinction)
             reduction.save()
-        if target_name:
-            # This target is looked up during the reduction step.
-            image.target_name = target_name
         if magband:
             lc.magband = ImageFilter.objects.get(band=magband)
         if filter:
             lc.filter = ImageFilter.objects.get(band=filter)
+
+        # Unconditionally set (None if blank)
+        lc.target_name = target_name
+
         lc.save()
         image.save()
 

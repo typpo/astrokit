@@ -31,8 +31,8 @@
 
 <h3 id="target-selection">Target selection</h3>
 <p>
-  {% if analysis.meta.target_name %}
-    Your target is <strong>{{analysis.meta.target_name}}</strong>.
+  {% if lightcurve.target_name %}
+    Your target is <strong>{{lightcurve.target_name}}</strong>.
   {% else %}
     You haven't set your target's name. You can do this on the <a href="/lightcurve/{{analysis.lightcurve_id}}/edit">lightcurve page</a>.
   {% endif %}

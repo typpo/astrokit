@@ -40,6 +40,8 @@ class LightCurve(models.Model):
     common_stars = JSONField()
     comparison_stars = JSONField()
 
+    target_name = models.CharField(max_length=50)
+
     def to_alcdef(self):
         return 'NYI'
 

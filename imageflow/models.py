@@ -72,7 +72,6 @@ class ImageAnalysis(models.Model):
     sigma_clipped_std = models.FloatField(default=0)
 
     # ID of point source target.
-    target_name = models.CharField(max_length=50)
     target_id = models.IntegerField(blank=True, null=True)
     target_x = models.IntegerField(default=-1)
     target_y = models.IntegerField(default=-1)
@@ -137,7 +136,6 @@ class ImageAnalysis(models.Model):
                 # TODO(ian): Don't pass an object - can't be serialized to json.
                 'uploaded_image': self.get_uploaded_image_or_none(),
                 'target_id': self.target_id,
-                'target_name': self.target_name,
             },
             'urls': {
                 'astrometry_original_display_url': self.astrometry_original_display_url,

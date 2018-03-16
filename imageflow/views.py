@@ -44,6 +44,7 @@ def astrometry(request, pk):
 
     template_args = {
         'analysis': analysis.get_summary_obj(),
+        'lightcurve': analysis.lightcurve,
         'image_filters': ImageFilter.objects.all(),
     }
     return render_to_response('summary.html', template_args,
@@ -332,6 +333,7 @@ def reduction(request, pk):
 
     template_args = {
         'analysis': analysis.get_summary_obj(),
+        'lightcurve': analysis.lightcurve,
         'image_filters': ImageFilter.objects.all(),
 
         'next_image': next_image,
