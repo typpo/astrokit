@@ -142,8 +142,14 @@ def choose_reference_stars(image_fits_data, corr_fits_data, point_source_json):
     logger.info('distance count: %d' % len(distances))
     logger.info('distance avg (px): %f' % np.mean(distances))
     logger.info('distance std: %f' % np.std(distances))
-    logger.info('distance min: %f' % min(distances))
-    logger.info('distance max: %f' % max(distances))
+
+    try:
+        logger.info('distance min: %f' % min(distances))
+        logger.info('distance max: %f' % max(distances))
+    except ValueError:
+        # Empty list.
+        pass
+
     return reference_objects, unknown_objects
 
 def get_standard_magnitudes_urat1(reference_objects):
