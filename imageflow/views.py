@@ -1,3 +1,5 @@
+import time
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import JsonResponse, HttpResponseRedirect
@@ -300,6 +302,7 @@ def point_sources(request, pk):
         'analysis': analysis.get_summary_obj(),
         'phot_settings': analysis.get_or_create_photometry_settings(),
         'select_target': request.GET.get('select_target') == '1',
+        'cache_timestamp': time.time(),
     }
     return render_to_response('point_sources.html', template_args,
             context_instance=RequestContext(request))

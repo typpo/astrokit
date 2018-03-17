@@ -257,11 +257,11 @@ should continue to tune your inputs.
     <a class="btn btn-default js-start-blinking" href="#">Start blink comparison</a>
     <a class="btn btn-default js-stop-blinking" href="#" style="display:none">Stop blink comparison</a>
   </div>
-  <a href="{{analysis.urls.psf_residual_image_url}}">
-    <img src="{{analysis.urls.psf_residual_image_url}}" class="js-blinkable" style="display:inline-block" />
+  <a href="{{analysis.urls.psf_residual_image_url}}?cache={{cache_timestamp}}">
+    <img src="{{analysis.urls.psf_residual_image_url}}?cache={{cache_timestamp}}" class="js-blinkable" style="display:inline-block" />
   </a>
-  <a href="{{analysis.urls.original_display_url}}">
-    <img src="{{analysis.urls.original_display_url}}" class="js-blinkable" style="display:inline-block" />
+  <a href="{{analysis.urls.original_display_url}}?cache={{cache_timestamp}}">
+    <img src="{{analysis.urls.original_display_url}}?cache={{cache_timestamp}}" class="js-blinkable" style="display:inline-block" />
   </a>
 </div>
 
