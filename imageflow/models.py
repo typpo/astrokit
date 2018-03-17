@@ -43,6 +43,7 @@ class ImageAnalysis(models.Model):
     # Meta data.
     image_datetime = models.DateTimeField(null=True)
     # Light-time corrected datetime, in JD.
+    image_jd = models.FloatField(null=True)
     image_jd_corrected = models.FloatField(null=True)
     image_filter = models.ForeignKey(ImageFilter, default=ImageFilter.objects.get_default())
     image_latitude = models.FloatField(default=0)
@@ -127,6 +128,7 @@ class ImageAnalysis(models.Model):
                 'image_name_short': self.get_short_name(),
                 'notes': self.notes,
                 'datetime': self.image_datetime,
+                'jd': self.image_jd,
                 'jd_corrected': self.image_jd_corrected,
                 'latitude': self.image_latitude,
                 'longitude': self.image_longitude,
@@ -194,8 +196,12 @@ class ImageAnalysis(models.Model):
         desigs = set([star['designation'] for star in self.lightcurve.comparison_stars])
         return [star['id'] for star in self.annotated_point_sources if star.get('designation') in desigs]
 
+    def get_comparison_stars(self):
+        desigs = set([star['designation'] for star in self.lightcurve.comparison_stars])
+        return [star for star in self.annotated_point_sources if star.get('designation') in desigs]
+
     def get_target(self):
-        return find_point_by_id(self.get_or_create_reduction().reduced_stars, self.target_id)
+        return find_point_by_id(self.annotated_point_sources, self.target_id)
 
     def __str__(self):
         return '#%d %s: %s - Sub %d Job %d, Band %s @ %s' % \
@@ -226,6 +232,9 @@ class Reduction(models.Model):
 
     # TODO(ian): rename to reduced_points, because it can contain unknown objects.
     reduced_stars = JSONField()
+
+    def get_target(self):
+        return find_point_by_id(self.reduced_stars, self.analysis.target_id)
 
     def get_summary_obj(self):
         return {

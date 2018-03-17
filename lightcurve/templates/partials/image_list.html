@@ -18,8 +18,8 @@
           <td><a href="/analysis/{{image.analysis.id}}">{{image.analysis.id}}</a></td>
           <td>{{image.analysis.image_datetime | date:'Y-m-d H:i:s'}}</td>
           <td>{{image.analysis.status}}</td>
-          <td>{{image.analysis.get_target.mag_standard|floatformat:3}}</td>
-          <td>{{image.analysis.get_target.mag_std|floatformat:3}}</td>
+          <td>{{image.analysis.get_or_create_reduction.get_target.mag_standard|floatformat:3}}</td>
+          <td>{{image.analysis.get_or_create_reduction.get_target.mag_std|floatformat:3}}</td>
           <td>{{image.analysis.notes}}</td>
         </tr>
         {% endif %}

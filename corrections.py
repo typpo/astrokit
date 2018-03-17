@@ -7,9 +7,13 @@ import callhorizons
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def get_jd_for_analysis(analysis):
+    return Time(analysis.image_datetime).jd
+
 def get_lighttime_correction(analysis):
+    jd = get_jd_for_analysis(analysis)
+
     q = callhorizons.query(analysis.lightcurve.target_name)
-    jd = Time(analysis.image_datetime).jd
     q.set_discreteepochs(jd)
     # TODO(ian): Allow user to set observatory code, or choose the one closest
     # to them.  https://www.minorplanetcenter.net/iau/lists/ObsCodesF.html

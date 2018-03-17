@@ -28,12 +28,15 @@ logger = logging.getLogger(__name__)
 def supporting_calculations(analysis, reduction):
     '''Compute a variety of terms for the main photometry reduction equation.
     '''
-    reduction.reduced_stars = analysis.annotated_point_sources[:]
+    # Only reduce {comparison stars + target}
+    logger.info('Target: %s' % analysis.get_target())
+    reduction.reduced_stars = [analysis.get_target()] + analysis.get_comparison_stars()
 
     # Airmass
     airmass.annotate_with_airmass(analysis, reduction)
 
     # Compute lighttime correction.
+    analysis.image_jd = corrections.get_jd_for_analysis(analysis)
     analysis.image_jd_corrected = corrections.get_lighttime_correction(analysis)
 
 def run_reductions(analysis):
@@ -94,6 +97,10 @@ def run_reductions(analysis):
             mc = comparison_star[magband_key]
 
             combined = term1 - term2 + term3 + mc
+            if star['id'] == analysis.target_id:
+                print '%s\t%f\t%f\t%f\t%f' % \
+                        (comparison_star['designation'], combined, star['mag_instrumental'],
+                         comparison_star['mag_instrumental'], mc)
             estimates.append(combined)
 
         star['mag_standard'] = np.mean(estimates)
@@ -132,9 +139,9 @@ if __name__ == '__main__':
     from imageflow.models import ImageAnalysis
 
     if len(sys.argv) > 1:
-        analid = sys.argv[1]
+        analid = int(sys.argv[1])
         try:
-            analysis = ImageAnalysis.objects.get(pk=analyid)
+            analysis = ImageAnalysis.objects.get(pk=analid)
         except ObjectDoesNotExist:
             logger.info('Could not find analysis %d' % analid)
             sys.exit(1)

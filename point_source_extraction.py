@@ -18,7 +18,7 @@ import numpy as np
 from PIL import Image
 from astropy.io import fits
 from astropy.modeling.fitting import LevMarLSQFitter
-from astropy.stats import gaussian_sigma_to_fwhm
+from astropy.stats import gaussian_sigma_to_fwhm, SigmaClip
 from photutils import CircularAperture
 from photutils.background import MMMBackground, MADStdBackgroundRMS
 from photutils.detection import IRAFStarFinder
@@ -77,7 +77,7 @@ def compute_photutils(settings, image_data):
     box_size = settings.box_size
     niters = settings.iters
 
-    bkgrms = MADStdBackgroundRMS()
+    bkgrms = MADStdBackgroundRMS(SigmaClip(sigma=3.))
     std = bkgrms(image_data)
 
     logger.info('Using sigma=%f, threshold=%f, separation=%f, box_size=%d, niters=%d, std=%f' % \
@@ -85,11 +85,12 @@ def compute_photutils(settings, image_data):
     fitter = LevMarLSQFitter()
     # See findpars args http://stsdas.stsci.edu/cgi-bin/gethelp.cgi?findpars
     photargs = {
-        'crit_separation': crit_separation * sigma_psf,
+        'crit_separation': crit_separation * sigma_psf * gaussian_sigma_to_fwhm,
+        #'crit_separation': crit_separation,
         'threshold': threshold * std,
         'fwhm': sigma_psf * gaussian_sigma_to_fwhm,
         'sigma_radius': sigma_psf * gaussian_sigma_to_fwhm,
-        # 'sigma': 5.0,
+        #'sigma': 3.0,
         'fitter': fitter,
         'niters': niters,
         'fitshape': (box_size, box_size),
@@ -98,12 +99,13 @@ def compute_photutils(settings, image_data):
         'sharphi': 2.0,
         'roundlo': -1.0,
         'roundhi': 1.0,
+
+        'psf_model': IntegratedGaussianPRF(sigma=sigma_psf),
+        'aperture_radius': sigma_psf * gaussian_sigma_to_fwhm,
     }
 
     # starfinder takes 'exclude border'
 
-
-    photargs['psf_model'] = IntegratedGaussianPRF(sigma=sigma_psf)
     # photargs['psf_model'].sigma.fixed = False
 
     photometry = DAOPhotPSFPhotometry(**photargs)
@@ -128,7 +130,7 @@ def compute_photutils(settings, image_data):
 
     # http://www.ucolick.org/~bolte/AY257/s_n.pdf
     #result_tab['snr'] = 1.0875 / result_tab['mag_unc']
-    result_tab['snr'] = 1.0 / (np.power(10, (result_tab['mag_unc']/2.5)) -1 )
+    result_tab['snr'] = 1.0 / (np.power(10, (result_tab['mag_unc']/2.5)) -1)
 
     residual_image = photometry.get_residual_image()
 
