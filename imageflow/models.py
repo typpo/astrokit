@@ -12,6 +12,7 @@ from accounts.models import UserUploadedImage
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from lightcurve.models import LightCurve
 from photometry.models import ImageFilter, PhotometrySettings
+from reduction.util import find_point_by_id
 
 class ImageAnalysis(models.Model):
     ASTROMETRY_PENDING = 'ASTROMETRY_PENDING'
@@ -192,6 +193,9 @@ class ImageAnalysis(models.Model):
     def get_comparison_star_ids(self):
         desigs = set([star['designation'] for star in self.lightcurve.comparison_stars])
         return [star['id'] for star in self.annotated_point_sources if star.get('designation') in desigs]
+
+    def get_target(self):
+        return find_point_by_id(self.get_or_create_reduction().reduced_stars, self.target_id)
 
     def __str__(self):
         return '#%d %s: %s - Sub %d Job %d, Band %s @ %s' % \
