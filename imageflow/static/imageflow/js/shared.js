@@ -116,13 +116,6 @@ function setupCanvasListeners(canvas) {
   }
 }
 
-function scrollToTarget($wrapper) {
-  var $elt = $wrapper.find('tr.highlight');
-  $wrapper.animate({
-    scrollTop: $wrapper.scrollTop() + ($elt.position().top - $wrapper.position().top) - ($wrapper.height()/2) + ($elt.height()/2),
-  });
-}
-
 function setupNotes() {
   $('.js-notes').on('change', function() {
     $.post('/analysis/' + window.analysisId + '/notes', { val: $(this).val() });
