@@ -144,17 +144,6 @@ h1 span {
 
   <hr/>
 
-  <h2 id="select-targets">Select Targets</h2>
-  Image Analysis (ordered by time) #
-  {% for image in images %}
-  <span class="select-target-link" data-analysis-id="{{image.analysis.id}}">{{image.analysis.id}}</span>
-  {% endfor %}
-  <div>
-    <iframe class="iframe-target" src="/analysis/select_target_modal/{{images.0.analysis.id}}"></iframe>
-  </div>
-
-  <hr/>
-
   <h2 id="select-comp-stars">Comparison Stars</h2>
   <div>
     <p>
@@ -186,6 +175,17 @@ h1 span {
         <p class="alert alert-danger">Uh oh - there are no common stars.  Please tune your photometry to make sure some known stars are picked up, then try again.</p>
       {% endif %}
     {% endif %}
+  </div>
+
+  <hr/>
+
+  <h2 id="select-targets">Select Targets</h2>
+  Image Analysis (ordered by time) #
+  {% for image in images %}
+  <span class="select-target-link" data-analysis-id="{{image.analysis.id}}">{{image.analysis.id}}</span>
+  {% endfor %}
+  <div>
+    <iframe class="iframe-target" src="/analysis/select_target_modal/{{images.0.analysis.id}}"></iframe>
   </div>
 
   <hr/>
@@ -388,8 +388,8 @@ h1 span {
       ☐ <a href="#select-filters">Select filters</a><br>
       ☐ Initial photometry processed (<span class="js-num-images-photometry">?</span> of {{ images | length }})<br>
       ☐ <a href="#tune-photometry">Tune photometry</a><br>
-      ☐ <a href="#select-targets">Select targets</a> (<span class="js-num-images-target">?</span> of {{ images | length }})<br>
       ☐ <a href="#select-comp-stars">Select comparison stars</a> (<span class="js-num-comparison-stars">?</span> selected)<br>
+      ☐ <a href="#select-targets">Select targets</a> (<span class="js-num-images-target">?</span> of {{ images | length }})<br>
       ☐ <a href="#select-pairs">Select image pairs</a> (<span class="js-num-images-pair">?</span> selected)<br>
       ☐ <a href="#calculations">Review transform calculations</a><br>
       ☐ <a href="#image-reductions">Run image reductions</a> (<span class="js-num-images-reduction-complete">?</span> of <span class="js-num-images-target">?</span>)<br>
