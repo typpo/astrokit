@@ -7,7 +7,7 @@ import callhorizons
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def get_jd_for_analysis(analysis):
+def get_uncorrected_jd(analysis):
     return Time(analysis.image_datetime).jd
 
 def get_lighttime_correction(analysis):

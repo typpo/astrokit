@@ -36,7 +36,7 @@ def supporting_calculations(analysis, reduction):
     airmass.annotate_with_airmass(analysis, reduction)
 
     # Compute lighttime correction.
-    analysis.image_jd = corrections.get_jd_for_analysis(analysis)
+    analysis.image_jd = corrections.get_uncorrected_jd(analysis)
     analysis.image_jd_corrected = corrections.get_lighttime_correction(analysis)
 
 def run_reductions(analysis):
