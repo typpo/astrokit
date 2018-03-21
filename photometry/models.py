@@ -60,11 +60,17 @@ class ImageFilter(models.Model):
         return u'%s (%s)' % (self.band, self.system)
 
 class PhotometrySettings(models.Model):
+    analysis = models.ForeignKey('imageflow.ImageAnalysis')
+
     sigma_psf = models.FloatField(default=2.0)
     crit_separation = models.FloatField(default=5.0)
     threshold = models.FloatField(default=5.0)
     box_size = models.IntegerField(default=11)
     iters = models.IntegerField(default=1)
+
+    def __str__(self):
+        return 'sigma_psf: %f, crit_sep: %f, threshold: %f, box: %d, iters: %d' % \
+                (self.sigma_psf, self.crit_separation, self.threshold, self.box_size, self.iters)
 
 admin.site.register(ImageFilter)
 admin.site.register(PhotometrySettings)

@@ -140,20 +140,25 @@ def save_observation_default(request, lightcurve_id):
 def apply_photometry_settings(request, lightcurve_id):
     lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     template_analysis = ImageAnalysis.objects.get(pk=request.POST.get('analysisId'))
-    template_settings = template_analysis.photometry_settings
+    template_settings = template_analysis.get_or_create_photometry_settings()
 
     # Apply the settings from this analysis to every analysis.
     count = 0
+    print 'template', template_settings
     for analysis in lc.imageanalysis_set.all():
-        settings = analysis.photometry_settings
+        settings = analysis.get_or_create_photometry_settings()
         changed = settings.sigma_psf != template_settings.sigma_psf or \
                   settings.crit_separation != template_settings.crit_separation or \
                   settings.threshold != template_settings.threshold or \
                   settings.box_size != template_settings.box_size or \
                   settings.iters != template_settings.iters
         if changed:
-            analysis.photometry_settings = template_settings
-            analysis.photometry_settings.save()
+            settings.sigma_psf = template_settings.sigma_psf
+            settings.crit_separation = template_settings.crit_separation
+            settings.treshold = template_settings.threshold
+            settings.box_size = template_settings.box_size
+            settings.iters = template_settings.iters
+            settings.save()
 
             analysis.status = ImageAnalysis.PHOTOMETRY_PENDING
             analysis.save()
