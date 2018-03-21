@@ -353,14 +353,14 @@ def all_lightcurve(request):
 
 def download(request, lightcurve_id):
     file_type = request.GET.get('file_type')
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="LightCurve%s.%s"' % (lightcurve_id, file_type)
-
     lc = LightCurve.objects.get(id=lightcurve_id)
     analyses = ImageAnalysis.objects.filter(useruploadedimage__lightcurve=lc) \
                                     .exclude(status=ImageAnalysis.ASTROMETRY_PENDING)
 
     if file_type == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="LightCurve%s.csv"' % (lightcurve_id)
+
         writer = csv.writer(response)
         writer.writerow(['Datetime', 'JD', 'Mag instrumental', 'Mag standard', 'Mag std'])
         for analysis in analyses:
@@ -369,5 +369,12 @@ def download(request, lightcurve_id):
                 if not result:
                     continue
                 writer.writerow([analysis.image_datetime, get_jd_for_analysis(analysis), result.get('mag_instrumental', None), result.get('mag_standard', None), result.get('mag_std', None)])
+
+    elif file_type == 'alcdef':
+        response = HttpResponse(content_type='text/plain; charset=us-ascii')
+        response['Content-Disposition'] = 'attachment; filename="LightCurve%s.alcdef"' % (lightcurve_id)
+
+        response.write('STARTMETADATA')
+        response.write('ENDDATA')
 
     return response
