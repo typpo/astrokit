@@ -374,7 +374,61 @@ def download(request, lightcurve_id):
         response = HttpResponse(content_type='text/plain; charset=us-ascii')
         response['Content-Disposition'] = 'attachment; filename="LightCurve%s.alcdef"' % (lightcurve_id)
 
-        response.write('STARTMETADATA')
+        response.writelines([
+            'STARTMETADATA\n',
+            'BIBCODE\n',
+            'CIBAND\n',
+            'CICORRECTION\n',
+            'CITARGET\n',
+            'COMMENT\n',
+            'COMPCI\n',
+            'COMPDEC\n',
+            'COMPNAME\n',
+            'COMPMAG\n',
+            'COMPRA\n',
+            'CONTACTINFO=%s\n' % lc.user,
+            'CONTACTNAME=%s\n' % lc.user,
+        ])
+
+        for analysis in analyses:
+            if analysis.annotated_point_sources != []:
+                result = find_point_by_id(analysis.annotated_point_sources, analysis.target_id)
+                if not result:
+                    continue
+                # data format should be: "JD | MagBand | MagErr(optional) | Airmass(optional)"
+                data =  "%s | %s" % (str(get_jd_for_analysis(analysis)), analysis.image_filter.band)
+                response.write('DATA=%s\n' % data)
+
+        response.writelines([
+            'DELIMITER=PIPE\n',
+            'DIFFERMAGS\n',
+            'ENDMETADATA\n',
+            'FILTER\n',
+            'LTCAPP\n',
+            'LTCDAYS\n',
+            'LTCTYPE\n',
+            'MAGADJUST\n',
+            'MAGBAND\n',
+            'MPCDESIG\n',
+            'PABB\n',
+            'PABL\n',
+            'PHASE\n',
+            'PUBLICATION\n',
+            'REDUCEDMAGS\n',
+            'REVISEDDATA\n',
+            'OBJECTDEC\n',
+            'OBJECTNAME\n',
+            'OBJECTNUMBER\n',
+            'OBJECTRA\n',
+            'OBSLATITUDE\n',
+            'OBSLONGITUDE\n',
+            'OBSERVERS\n',
+            'SESSIONDATE\n',
+            'SESSIONTIME\n',
+            'STANDARD\n',
+            'UCORMAG\n',
+        ])
+
         response.write('ENDDATA')
 
     return response
