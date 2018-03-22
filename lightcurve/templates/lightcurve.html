@@ -257,13 +257,19 @@ h1 span {
   <h2 id="image-reductions">Run image reductions</h2>
   <div>
     <p>
-      This is an <strong>optional step</strong> that will run photometric reductions for ALL images in your dataset.  This option is the quickest way to build a lightcurve, but it could include bad datapoints or images.  Regardless of your choice, you are encouraged to continue below and review all image analyses for correctness.
+      This is an optional step that will run photometric reductions for ALL images in your dataset.  This option is the quickest way to build a lightcurve, but it could include bad datapoints or images.  The alternative is to go through each image and click 'Add to Lightcurve' after reviewing it.  Regardless of your choice, you are encouraged to review all image analyses for correctness.
     </p>
     <p>
-      If you don't want to run all reductions now, proceed below to run reductions image-by-image.
+      If you don't want to run all reductions now, <a href="#review-analyses">skip below</a> to run reductions image-by-image.
     </p>
   </div>
 
+  <h3>Image statuses</h3>
+  {% include 'partials/image_list.html' %}
+
+  <p>
+    Images that are marked as "Review pending" are ready to be reduced.
+  </p>
   <div class="button-row">
     <div class="btn btn-primary js-run-image-reductions">Run <span class="js-num-images-target"></span> image reductions</div>
     <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
@@ -279,7 +285,9 @@ h1 span {
     <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
   </div>
 
-  {% include 'partials/image_list.html' %}
+  <p>
+    After adding images to your lightcurve, you can <a href="plot">view the plot</a> of standard magnitudes over time.
+  </p>
 
   <hr/>
 
