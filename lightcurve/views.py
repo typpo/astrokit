@@ -152,7 +152,7 @@ def apply_photometry_settings(request, lightcurve_id):
                   settings.threshold != template_settings.threshold or \
                   settings.box_size != template_settings.box_size or \
                   settings.iters != template_settings.iters
-        if changed:
+        if changed or True:
             settings.sigma_psf = template_settings.sigma_psf
             settings.crit_separation = template_settings.crit_separation
             settings.treshold = template_settings.threshold
