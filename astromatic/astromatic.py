@@ -120,6 +120,7 @@ class Sextractor(Executable):
 class PsfEx(Executable):
     def __init__(self, working_dir=None, name='psfex'):
         super(PsfEx, self).__init__('psfex', working_dir, name)
+        self._catalog_paths = []
 
     def run(self, catalog_paths, config={}):
         final_config = self._get_default_config()
@@ -137,53 +138,70 @@ class PsfEx(Executable):
         args = [self._binpath, '-c', config_path] + catalog_paths
         subprocess.call(args, cwd=self._working_dir)
 
+        self._catalog_paths = catalog_paths
+
     def _get_default_config(self):
         return {
             'PSF_DIR': self._working_dir,
         }
 
     def get_psf_paths(self):
-        return [os.path.join(self._working_dir, path) for path in os.listdir(self._working_dir) \
-                if path.endswith('.psf')]
+        return ['%s.psf' % os.path.join(self._working_dir, os.path.basename(path)[:-4]) \
+                for path in self._catalog_paths]
+
+class PsfPhotometryRunner(object):
+    def __init__(self, fitspath):
+        self._fitspath = fitspath
+        self._result_catalog = None
+
+    def run(self):
+        logger.info('Running sextractor first round...')
+        sex1 = Sextractor(name='sex1')
+        params = Sextractor.PREPSF_PARAMS
+        sex_config = {
+            'PHOT_APERTURES': 11,
+            'GAIN': 0.0,
+            'PIXEL_SCALE': 2.23,
+            'SATUR_LEVEL': 50000,
+        }
+        sex1.run(self._fitspath, params, sex_config)
+
+        logger.info('Catalog written to %s' % sex1.get_catalog_path())
+
+        logger.info('Running psfefx...')
+        psfex = PsfEx()
+        psfex.run([sex1.get_catalog_path()])
+
+        logger.info('PSF model written to %s' % psfex.get_psf_paths()[0])
+        logger.info('Running sextractor second round...')
+
+        sex2 = Sextractor(name='sex2')
+        params = ['X_IMAGE', 'Y_IMAGE', 'MAG_PSF', 'MAGERR_PSF', 'FLUX_PSF',
+                  'FLUXERR_PSF', 'MAG_BEST', 'MAGERR_BEST']
+        sex_config.update({
+            'PSF_NAME': psfex.get_psf_paths()[0],
+            'CATALOG_TYPE': 'ASCII_HEAD',
+        })
+        sex2.run(self._fitspath, params, sex_config)
+        logger.info('Final result: %s' % sex2.get_catalog_path())
+
+        self._result_catalog = sex2.get_astropy_catalog()
+
+        sex1.cleanup()
+        sex2.cleanup()
+        psfex.cleanup()
+
+    def get_result_catalog(self):
+        return self._result_catalog
 
 def main():
     thisdir = os.path.dirname(os.path.realpath(__file__))
     fitspath = os.path.join(thisdir, '../examples/a771/A771A001.FIT')
 
-    logger.info('Running sextractor first round...')
-    sex1 = Sextractor(name='sex1')
-    params = Sextractor.PREPSF_PARAMS
-    sex_config = {
-        'PHOT_APERTURES': 11,
-        'GAIN': 0.0,
-        'PIXEL_SCALE': 2.23,
-        'SATUR_LEVEL': 50000,
-    }
-    sex1.run(fitspath, params, sex_config)
+    phot = PsfPhotometryRunner(fitspath)
+    phot.run()
 
-    logger.info('Catalog written to %s' % sex1.get_catalog_path())
-
-    logger.info('Running psfefx...')
-    psfex = PsfEx()
-    psfex.run([sex1.get_catalog_path()])
-
-    logger.info('PSF model written to %s' % psfex.get_psf_paths()[0])
-    logger.info('Running sextractor second round...')
-
-    sex2 = Sextractor(name='sex2')
-    params = ['X_IMAGE', 'Y_IMAGE', 'MAG_PSF', 'MAGERR_PSF', 'FLUX_PSF',
-              'FLUXERR_PSF', 'MAG_BEST', 'MAGERR_BEST']
-    sex_config.update({
-        'PSF_NAME': psfex.get_psf_paths()[0],
-        'CATALOG_TYPE': 'ASCII_HEAD',
-    })
-    sex2.run(fitspath, params, sex_config)
-    logger.info('Final result: %s' % sex2.get_catalog_path())
-    logger.info(sex2.get_astropy_catalog())
-
-    sex1.cleanup()
-    sex2.cleanup()
-    psfex.cleanup()
+    logger.info(phot.get_result_catalog())
 
 if __name__ == '__main__':
     main()
