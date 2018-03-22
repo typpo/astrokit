@@ -63,7 +63,7 @@ class PhotometryRunner(object):
         job = self.analysis.astrometry_job
         submission = job.submission
 
-        logger.info('-> Processing fits image for submission %d' % (submission.subid))
+        logger.info('-> Processing fits image for analysis %d' % (analysis.id))
 
         fitsobj = get_fits_from_raw(self.image_fits_data)
 
@@ -76,8 +76,9 @@ class PhotometryRunner(object):
         '''
 
         sources, residual_image, std = \
-                point_source_extraction.compute_photutils(self.analysis.get_or_create_photometry_settings(),
-                                                          data)
+                point_source_extraction.compute_sextractor(self.analysis.get_or_create_photometry_settings(),
+                                                           self.image_fits_data,
+                                                           data)
 
         self.analysis.sigma_clipped_std = std
 

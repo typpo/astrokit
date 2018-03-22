@@ -16,6 +16,7 @@ import matplotlib.pylab as plt
 import numpy as np
 
 from PIL import Image
+from astromatic.astromatic import PsfPhotometryRunner
 from astropy.io import fits
 from astropy.modeling.fitting import LevMarLSQFitter
 from astropy.stats import gaussian_sigma_to_fwhm, SigmaClip
@@ -24,48 +25,29 @@ from photutils.background import MMMBackground, MADStdBackgroundRMS
 from photutils.detection import IRAFStarFinder
 from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtractedPSFPhotometry, DAOPhotPSFPhotometry
 
-from photometry.lib import sewpy
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def compute_sextractor(settings, raw_data, image_data):
-    params = [
-        'X_IMAGE',
-        'Y_IMAGE',
-        'FLUX_PSF',
-        'FLUXERR_PSF',
-        'MAG_PSF',
-        'MAGERR_PSF',
-        'FWHM_IMAGE',
-        'FLAGS',
-        'FLUX_BEST',
-        'FLUXERR_BEST',
-        'MAG_BEST',
-        'MAGERR_BEST',
-        'FLUX_PSF',
-        'MAG_PSF',
-        'FLUX_PSF',
-        'FLUXERR_PSF',
-        'MAG_PSF',
-        'MAGERR_PSF',
-        'NITER_PSF',
-        'CHI2_PSF',
-        'FLUX_APER',
-        'FLUXERR_APER',
-        'MAG_APER',
-        'MAGERR_APER',
-    ]
-    config = {
-
-    }
     with tempfile.NamedTemporaryFile(suffix='.fits') as fp:
         fp.write(raw_data)
         fp.flush()
-        sew = sewpy.SEW(params=params, config=config, sexpath='/usr/bin/sextractor')
-        out = sew(fp.name)
 
-    return out['table'], np.array([[1,2], [3,4]]), 0
+        phot = PsfPhotometryRunner(fp.name)
+        phot.run()
+        tab = phot.get_result_catalog()
+
+    tab = tab[tab['MAG_PSF'] != 99.0]
+
+    tab['x_fit'] = tab['X_IMAGE']
+    tab['y_fit'] = tab['Y_IMAGE']
+    tab['flux_fit'] = tab['FLUX_PSF']
+    tab['flux_unc'] = tab['FLUXERR_PSF']
+    tab['mag'] = tab['MAG_PSF']
+    tab['mag_unc'] = tab['MAGERR_PSF']
+    tab['snr'] = 1.0 / (np.power(10, (tab['mag_unc']/2.5)) -1)
+
+    return tab, np.array([[1,2], [3,4]]), 0
 
 def compute_photutils(settings, image_data):
     # Taken from photuils example http://photutils.readthedocs.io/en/stable/psf.html
