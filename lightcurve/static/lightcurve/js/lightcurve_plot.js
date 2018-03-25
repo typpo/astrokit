@@ -70,8 +70,8 @@ function getChartXAxisLabel() {
 function getChartYAxisLabel() {
   // FIXME(ian): Pass in this info from the light curve...
   return getChartType() === 'instrumental' ?
-              'Magnitude (' + 'b' + ')' :
-              'Magnitude (' + 'B' + ')';
+              'Instrumental Magnitude' :
+              'Magnitude';
 }
 
 function getChartType() {
