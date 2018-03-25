@@ -1,33 +1,27 @@
 function setupListeners() {
   setupListener('photometry_params',
-                $('#photometry-sigma'),
+                $('#photometry-aperture'),
                 $('#photometry-param-success'),
                 $('#photometry-param-failure'),
-                {param: 'sigma'});
+                {param: 'aperture'});
 
   setupListener('photometry_params',
-                $('#photometry-threshold'),
+                $('#photometry-pixscale'),
                 $('#photometry-param-success'),
                 $('#photometry-param-failure'),
-                {param: 'threshold'});
+                {param: 'pixscale'});
 
   setupListener('photometry_params',
-                $('#photometry-separation'),
+                $('#photometry-gain'),
                 $('#photometry-param-success'),
                 $('#photometry-param-failure'),
-                {param: 'separation'});
+                {param: 'gain'});
 
   setupListener('photometry_params',
-                $('#photometry-fitshape'),
+                $('#photometry-saturlevel'),
                 $('#photometry-param-success'),
                 $('#photometry-param-failure'),
-                {param: 'fitshape'});
-
-  setupListener('photometry_params',
-                $('#photometry-iters'),
-                $('#photometry-param-success'),
-                $('#photometry-param-failure'),
-                {param: 'iters'});
+                {param: 'saturlevel'});
 
   setupListener('set_target_point_source',
                 $('#target-id'),
