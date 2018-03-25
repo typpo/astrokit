@@ -22,17 +22,6 @@ def edit_lightcurve(request, lightcurve_id):
     # Always add 5 extra empty image pairs to the list.
     image_pairs = list(ImageAnalysisPair.objects.filter(lightcurve=lc)) + ([None] * 5)
 
-    sort = request.GET.get('sort')
-    print sort
-    if sort == 'filename':
-        images = images.order_by('original_filename')
-    elif sort == 'timestamp':
-        images = images.order_by('analysis__image_datetime')
-    elif sort == 'status':
-        images = images.annotate(status_sort = ordered_analysis_status()).order_by('status_sort')
-    else:
-        pass
-
     context = {
         'lightcurve': lc,
         'reduction': lc.get_or_create_reduction(),
@@ -42,9 +31,30 @@ def edit_lightcurve(request, lightcurve_id):
         'image_pairs': image_pairs,
         'ci_bands': ImageFilter.objects.get_ci_bands(),
     }
-
     return render_to_response('lightcurve.html', context,
             context_instance=RequestContext(request))
+
+def images(request, lightcurve_id):
+    '''List images in lightcurve.
+    '''
+    lc = LightCurve.objects.get(id=lightcurve_id)
+    images = UserUploadedImage.objects.filter(lightcurve=lc).order_by('analysis__image_datetime')
+
+    sort = request.GET.get('sort')
+    if sort == 'filename':
+        images = images.order_by('original_filename')
+    elif sort == 'timestamp':
+        images = images.order_by('analysis__image_datetime')
+    elif sort == 'status':
+        images = images.annotate(status_sort = ordered_analysis_status()).order_by('status_sort')
+
+    context = {
+        'lightcurve': lc,
+        'images': images,
+    }
+    return render_to_response('images.html', context,
+            context_instance=RequestContext(request))
+
 
 def plot_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
