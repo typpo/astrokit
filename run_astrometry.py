@@ -183,19 +183,30 @@ class AstrometryRunner(object):
     def process_metadata(self):
         fitsobj = get_fits_from_raw(self.image_fits_data)
 
+        # Parse date
         dateobs = fitsobj[0].header.get('DATE-OBS')
-        if not dateobs:
-            return None
+        if dateobs:
+            for fmt in ('%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%d', '%d.%m.%Y', '%d/%m/%y'):
+                try:
+                    # TODO(ian): Set timezone
+                    self.analysis.image_datetime = datetime.strptime(dateobs, fmt)
+                    break
+                except ValueError:
+                    logger.warning('Unable to parse DATE-OBS %s' % dateobs)
 
-        for fmt in ('%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%d', '%d.%m.%Y', '%d/%m/%y'):
+        # Parse latlng
+        lat = fitsobj[0].header.get('OBSLAT')
+        lng = fitsobj[0].header.get('OBSLON')
+        if lat:
             try:
-                # TODO(ian): Set timezone
-                self.analysis.image_datetime = datetime.strptime(dateobs, fmt)
-                break
+                self.analysis.image_latitude = float(lat)
             except ValueError:
-                logger.warning('Unable to parse DATE-OBS %s' % dateobs)
-
-        # TODO(ian): Get latlng
+                logger.warning('Unable to parse OBSLAT %s' % lat)
+        if lng:
+            try:
+                self.analysis.image_longitude = float(lng)
+            except ValueError:
+                logger.warning('Unable to parse OBSLON %s' % lng)
 
 def process_pending_submissions(args):
     '''Turns submitted Astrometry jobs into ImageAnalyses
