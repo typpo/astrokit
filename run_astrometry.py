@@ -25,6 +25,7 @@ from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.process import process_astrometry_online
 from astrophot_util import get_fits_from_raw
 from imageflow.models import ImageAnalysis
+from photometry.models import ImageFilter
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -207,6 +208,14 @@ class AstrometryRunner(object):
                 self.analysis.image_longitude = float(lng)
             except ValueError:
                 logger.warning('Unable to parse OBSLON %s' % lng)
+
+        # Parse filter
+        filterstr = fitsobj[0].header.get('FILTER')
+        if filterstr:
+            try:
+                self.analysis.image_filter = ImageFilter.objects.get(band=filterstr)
+            except ImageFilter.DoesNotExist:
+                logger.warning('Unable to parse FILTER %s' % filterstr)
 
 def process_pending_submissions(args):
     '''Turns submitted Astrometry jobs into ImageAnalyses
