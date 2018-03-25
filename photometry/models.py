@@ -68,6 +68,11 @@ class PhotometrySettings(models.Model):
     box_size = models.IntegerField(default=11)
     iters = models.IntegerField(default=1)
 
+    phot_apertures = models.FloatField(default=11.0)
+    pixel_scale = models.FloatField(default=2.5)
+    gain = models.FloatField(default=0.0)
+    satur_level = models.FloatField(default=50000.0)
+
     def __str__(self):
         return 'sigma_psf: %f, crit_sep: %f, threshold: %f, box: %d, iters: %d' % \
                 (self.sigma_psf, self.crit_separation, self.threshold, self.box_size, self.iters)
