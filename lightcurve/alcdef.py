@@ -33,10 +33,10 @@ class AlcdefWriter(models.Model):
             'CICORRECTION': '',
             'CIBAND': '',
             'CITARGET': '',
-            'PUBLICATION': None,
+            'PUBLICATION': '',
             'BIBCODE': '',
             'DELIMITER': '',
-            'COMMENT': None,
+            'COMMENT': '',
         }
         self.starid = 1 # ID for metadata of comparison star
         self.comments = []
@@ -49,7 +49,7 @@ class AlcdefWriter(models.Model):
         del self.metadata['COMMENT']
         self.comments.append(comment)
 
-    def add_comparisonstar(self, pci=None, dec=None, name=None, mag=None, pra=None):
+    def add_comparisonstar(self, pci='', dec='', name='', mag='', pra=''):
         self.metadata['COMPCI' + starid] = pci
         self.metadata['COMDEC' + starid] = dec
         self.metadata['COMNAME' + starid] = name
