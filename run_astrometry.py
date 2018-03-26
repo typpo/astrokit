@@ -217,6 +217,24 @@ class AstrometryRunner(object):
             except ImageFilter.DoesNotExist:
                 logger.warning('Unable to parse FILTER %s' % filterstr)
 
+        # Parse exposure time
+        exptime = fitsobj[0].header.get('EXPTIME')
+        if not exptime:
+            exptime = fitsobj[0].header.get('EXPOSURE')
+        if exptime:
+            try:
+                self.analysis.get_or_create_photometry_settings().exptime = float(exptime)
+            except ValueError:
+                logger.warning('Unable to parse EXPOSURE/EXPTIME %s' % exptime)
+
+        # Parse gain
+        gain = fitsobj[0].header.get('GAIN')
+        if gain:
+            try:
+                self.analysis.get_or_create_photometry_settings().gain = float(gain)
+            except ValueError:
+                logger.warning('Unable to parse GAIN %s' % exptime)
+
 def process_pending_submissions(args):
     '''Turns submitted Astrometry jobs into ImageAnalyses
     '''

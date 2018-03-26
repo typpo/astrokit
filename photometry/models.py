@@ -67,6 +67,8 @@ class PhotometrySettings(models.Model):
     gain = models.FloatField(default=0.0)
     satur_level = models.FloatField(default=50000.0)
 
+    exptime = models.FloatField(default=1.0)
+
     ###############################
     # Deprecated - used for photutils.
     sigma_psf = models.FloatField(default=2.0)
