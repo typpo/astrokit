@@ -33,8 +33,15 @@ def compute_sextractor(settings, raw_data, image_data):
         fp.write(raw_data)
         fp.flush()
 
+        config = {
+            'PHOT_APERTURES': settings.phot_apertures,
+            'GAIN': settings.gain,
+            'PIXEL_SCALE': settings.pixel_scale,
+            'SATUR_LEVEL': settings.satur_level,
+        }
+
         phot = PsfPhotometryRunner(fp.name)
-        phot.run()
+        phot.run(config)
         tab = phot.get_result_catalog()
 
     tab = tab[tab['MAG_PSF'] != 99.0]

@@ -66,13 +66,14 @@ class Sextractor(Executable):
         self._catalog_path = None
         self._name = name
 
-    def run(self, image_path, params=[], config={}, conv=DEFAULT_CONV):
+    def run(self, image_path, params=None, config=None, conv=DEFAULT_CONV):
         logger.info('Configuring Sextractor for image %s' % image_path)
         self._catalog_path = None
 
-        final_params = DEFAULT_PARAMS if len(params) == 0 else params
+        final_params = params if params else DEFAULT_PARAMS
         final_config = self._get_default_config()
-        final_config.update(config)
+        if config:
+            final_config.update(config)
 
         # Build params
         params_path = os.path.join(self._working_dir, final_config['PARAMETERS_NAME'])
@@ -122,9 +123,10 @@ class PsfEx(Executable):
         super(PsfEx, self).__init__('psfex', working_dir, name)
         self._catalog_paths = []
 
-    def run(self, catalog_paths, config={}):
+    def run(self, catalog_paths, config=None):
         final_config = self._get_default_config()
-        final_config.update(config)
+        if config:
+            final_config.update(config)
 
         # Build config
         config_path = os.path.join(self._working_dir, '%s.psfex')
@@ -154,7 +156,7 @@ class PsfPhotometryRunner(object):
         self._fitspath = fitspath
         self._result_catalog = None
 
-    def run(self):
+    def run(self, config=None):
         logger.info('Running sextractor first round...')
         sex1 = Sextractor(name='sex1')
         params = Sextractor.PREPSF_PARAMS
@@ -164,6 +166,8 @@ class PsfPhotometryRunner(object):
             'PIXEL_SCALE': 2.23,
             'SATUR_LEVEL': 50000,
         }
+        if config:
+            sex_config.update(config)
         sex1.run(self._fitspath, params, sex_config)
 
         logger.info('Catalog written to %s' % sex1.get_catalog_path())

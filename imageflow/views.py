@@ -236,16 +236,14 @@ def photometry_params(request, pk):
     params = analysis.get_or_create_photometry_settings()
 
     try:
-        if param == 'sigma':
-            params.sigma_psf = float(val)
-        elif param == 'separation':
-            params.crit_separation = float(val)
-        elif param == 'threshold':
-            params.threshold = float(val)
-        elif param == 'fitshape':
-            params.box_size = int(val)
-        elif param == 'iters':
-            params.iters = int(val)
+        if param == 'aperture':
+            params.phot_apertures = float(val)
+        elif param == 'pixscale':
+            params.pixel_scale = float(val)
+        elif param == 'gain':
+            params.gain = float(val)
+        elif param == 'saturlevel':
+            params.satur_level = int(val)
         else:
             return JsonResponse({
                 'success': False,
