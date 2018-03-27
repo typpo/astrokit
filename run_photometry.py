@@ -63,7 +63,7 @@ class PhotometryRunner(object):
         job = self.analysis.astrometry_job
         submission = job.submission
 
-        logger.info('-> Processing fits image for analysis %d' % (analysis.id))
+        logger.info('-> Processing fits image for analysis %d' % (self.analysis.id))
 
         fitsobj = get_fits_from_raw(self.image_fits_data)
 
