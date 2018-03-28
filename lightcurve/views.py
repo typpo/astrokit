@@ -1,8 +1,9 @@
 import csv
 import json
 
+from django.contrib import messages
 from django.db import transaction
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseNotModified
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 
@@ -391,6 +392,13 @@ def download(request, lightcurve_id):
                     continue
                 myalcdef.add_data(get_jd_for_analysis(analysis), result.get('mag_instrumental', None), result.get('mag_instrumental_unc', None), result.get('airmass', None))
 
-        response = myalcdef.get_response()
+        content = myalcdef.tostring()
+
+        if type(content) is list:
+            messages.error(request, 'Document deleted.')
+            return HttpResponse()
+
+        response = HttpResponse(content, content_type='text/plain; charset=us-ascii')
+        response['Content-Disposition'] = 'attachment; filename="LightCurve%s.alcdef"' % (lightcurve_id)
 
         return response

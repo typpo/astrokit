@@ -1,52 +1,66 @@
 from django.contrib import admin
-from django.db import models
 from django.http import HttpResponse
 
-class AlcdefWriter(models.Model):
+ALLOWED_KEYWORDS = [
+    'REVISEDDATA',
+    'OBJECTNUMBER',
+    'OBJECTNAME',
+    'MPCDESIG',
+    'CONTACTNAME',
+    'CONTACTINFO',
+    'OBSERVERS',
+    'OBSLONGITUDE',
+    'OBSLATITUDE',
+    'SESSIONDATE',
+    'SESSIONTIME',
+    'FILTER',
+    'MAGBAND',
+    'STANDARD',
+    'DIFFERMAGS',
+    'LTCTYPE',
+    'LTCDAYS',
+    'LTCAPP',
+    'REDUCEDMAGS',
+    'UCORMAG',
+    'OBJECTRA',
+    'OBJECTDEC',
+    'PHASE',
+    'PABL',
+    'PABB',
+    'CICORRECTION',
+    'CIBAND',
+    'CITARGET',
+    'PUBLICATION',
+    'BIBCODE',
+    'DELIMITER',
+    'COMMENT',
+]
+
+REQUIRED_KEYWORDS = [
+    'CONTACTINFO',
+    'CONTACTNAME',
+    'DELIMITER',
+    'FILTER',
+    'OBJECTNAME',
+    'OBJECTNUMBER',
+    'OBSERVERS',
+    'SESSIONDATE',
+    'SESSIONTIME',
+]
+
+class AlcdefWriter(object):
     def __init__(self):
-        self.metadata = {
-            'REVISEDDATA': '',
-            'OBJECTNUMBER': '',
-            'OBJECTNAME': '',
-            'MPCDESIG': '',
-            'CONTACTNAME': '',
-            'CONTACTINFO': '',
-            'OBSERVERS': '',
-            'OBSLONGITUDE': '',
-            'OBSLATITUDE': '',
-            'SESSIONDATE': '',
-            'SESSIONTIME': '',
-            'FILTER': '',
-            'MAGBAND': '',
-            'STANDARD': '',
-            'DIFFERMAGS': '',
-            'LTCTYPE': '',
-            'LTCDAYS': '',
-            'LTCAPP': '',
-            'REDUCEDMAGS': '',
-            'UCORMAG': '',
-            'OBJECTRA': '',
-            'OBJECTDEC': '',
-            'PHASE': '',
-            'PABL': '',
-            'PABB': '',
-            'CICORRECTION': '',
-            'CIBAND': '',
-            'CITARGET': '',
-            'PUBLICATION': '',
-            'BIBCODE': '',
-            'DELIMITER': '',
-            'COMMENT': '',
-        }
+        self.metadata = {}
         self.starid = 1 # ID for metadata of comparison star
         self.comments = []
         self.datas = []
 
     def set(self, key, value):
-        self.metadata[key] = value
+        if key in ALLOWED_KEYWORDS:
+            self.metadata[key] = value
 
     def add_comment(self, comment):
-        del self.metadata['COMMENT']
+        # del self.metadata['COMMENT']
         self.comments.append(comment)
 
     def add_comparisonstar(self, pci='', dec='', name='', mag='', pra=''):
@@ -65,7 +79,14 @@ class AlcdefWriter(models.Model):
             data += " | %s" % (airmass)
         self.datas.append(data)
 
-    def get_response(self):
+    def tostring(self):
+        # error = []
+        # for k in REQUIRED_KEYWORDS:
+        #     if k not in self.metadata:
+        #         error.append(k)
+        # if len(error) > 0:
+        #   return error
+
         formatted_content = 'STARTMETADATA\n'
         for k, v in self.metadata.iteritems():
             formatted_content += "%s=%s\n" % (k, v)
@@ -77,8 +98,4 @@ class AlcdefWriter(models.Model):
             formatted_content += "DATA=%s\n" % v
         formatted_content += 'ENDDATA\n'
 
-        response = HttpResponse(formatted_content, content_type='text/plain; charset=us-ascii')
-        response['Content-Disposition'] = 'attachment; filename="LightCurve.alcdef"'
-        return response
-
-admin.site.register(AlcdefWriter)
+        return formatted_content

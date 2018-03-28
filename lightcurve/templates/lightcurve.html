@@ -67,6 +67,13 @@ h1 span {
   <a href="download?file_type=csv" class="btn btn-default" download="LightCurve{{lightcurve.id}}.csv">Download as XLSX</a>
   <a href="download?file_type=alcdef" class="btn btn-default" download="LightCurve{{lightcurve.id}}.alcdef">Download as ALCDEF</a>
 </div>
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
 
 <div class="col-md-8">
   <h2 id="settings">Settings</h2>
