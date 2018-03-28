@@ -234,6 +234,16 @@ class AstrometryRunner(object):
                 self.analysis.get_or_create_photometry_settings().gain = float(gain)
             except ValueError:
                 logger.warning('Unable to parse GAIN %s' % exptime)
+        else:
+            # http://www.ifa.hawaii.edu/~rgal/science/sextractor_notes.html
+            # EXPTIME * CCDGAIN
+            ccdgain = fitsobj[0].header.get('CCDGAIN')
+            if ccdgain and exptime:
+                try:
+                    self.analysis.get_or_create_photometry_settings().gain = float(ccdgain) * float(exptime)
+                except ValueError:
+                    logger.warning('Unable to parse CCDGAIN %s' % ccdgain)
+
 
 def process_pending_submissions(args):
     '''Turns submitted Astrometry jobs into ImageAnalyses
