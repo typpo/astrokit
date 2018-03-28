@@ -6,6 +6,7 @@ Usage: python point_source_extraction.py myimage.fits
 '''
 
 import logging
+import math
 import simplejson as json
 import tempfile
 import urllib
@@ -20,6 +21,7 @@ from astromatic.astromatic import PsfPhotometryRunner
 from astropy.io import fits
 from astropy.modeling.fitting import LevMarLSQFitter
 from astropy.stats import gaussian_sigma_to_fwhm, SigmaClip
+from astropy.wcs import WCS
 from photutils import CircularAperture
 from photutils.background import MMMBackground, MADStdBackgroundRMS
 from photutils.detection import IRAFStarFinder
@@ -28,7 +30,21 @@ from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtracted
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def get_pixscale(image_data):
+    '''Compute pixel scale for image with astrometry.
+    '''
+
+    im = fits.open(StringIO(image_data))
+    wcs = WCS(im[0].header)
+    cd11 = w.wcs.cd[0][0]
+    cd12 = w.wcs.cd[0][1]
+    cd21 = w.wcs.cd[1][0]
+    cd22 = w.wcs.cd[1][1]
+    det_cd = cd11 * cd22 - cd12 * cd21
+    return 3600.0 * math.sqrt(abs(det_cd))
+
 def compute_sextractor(settings, raw_data, image_data):
+    # Determine pixel scale
     with tempfile.NamedTemporaryFile(suffix='.fits') as fp:
         fp.write(raw_data)
         fp.flush()
@@ -36,7 +52,8 @@ def compute_sextractor(settings, raw_data, image_data):
         config = {
             'PHOT_APERTURES': settings.phot_apertures,
             'GAIN': settings.gain,
-            'PIXEL_SCALE': settings.pixel_scale,
+            #'PIXEL_SCALE': settings.pixel_scale,
+            'PIXEL_SCALE': get_pixscale(image_data),
             'SATUR_LEVEL': settings.satur_level,
         }
 
