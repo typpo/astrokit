@@ -1,4 +1,4 @@
-ALLOWED_KEYWORDS = [
+ALLOWED_KEYWORDS = set([
     'REVISEDDATA',
     'OBJECTNUMBER',
     'OBJECTNAME',
@@ -31,9 +31,9 @@ ALLOWED_KEYWORDS = [
     'BIBCODE',
     'DELIMITER',
     'COMMENT',
-]
+])
 
-REQUIRED_KEYWORDS = [
+REQUIRED_KEYWORDS = set([
     'CONTACTINFO',
     'CONTACTNAME',
     'DELIMITER',
@@ -43,7 +43,7 @@ REQUIRED_KEYWORDS = [
     'OBSERVERS',
     'SESSIONDATE',
     'SESSIONTIME',
-]
+])
 
 class AlcdefWriter(object):
     def __init__(self):
@@ -55,9 +55,10 @@ class AlcdefWriter(object):
     def set(self, key, value):
         if key in ALLOWED_KEYWORDS:
             self.metadata[key] = value
+        else:
+            raise KeyError('Not a valid ALCDEF key: %s' % key)
 
     def add_comment(self, comment):
-        # del self.metadata['COMMENT']
         self.comments.append(comment)
 
     def add_comparisonstar(self, pci='', dec='', name='', mag='', pra=''):
@@ -77,12 +78,9 @@ class AlcdefWriter(object):
         self.datas.append(data)
 
     def tostring(self):
-        # error = []
-        # for k in REQUIRED_KEYWORDS:
-        #     if k not in self.metadata:
-        #         error.append(k)
-        # if len(error) > 0:
-        #   return error
+        missing_required = REQUIRED_KEYWORDS.difference(set(self.metadata.keys()))
+        if len(missing_required) > 0:
+            return missing_required
 
         formatted_content = 'STARTMETADATA\n'
         for k, v in self.metadata.iteritems():
