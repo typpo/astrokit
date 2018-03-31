@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import tempfile
 
+from astropy.io import fits
 from astropy.io.ascii import SExtractor as SexToAstropy
 
 logging.basicConfig(level=logging.INFO)
@@ -152,7 +153,7 @@ class PsfEx(Executable):
                 for path in self._catalog_paths]
 
     def get_residual_paths(self):
-        return ['%s_resi.fits' % os.path.join(self._working_dir, os.path.basename(path)[:-4]) \
+        return ['%s/resi_%s.fits' % (self._working_dir, os.path.basename(path)[:-4]) \
                 for path in self._catalog_paths]
 
 class PsfPhotometryRunner(object):
@@ -196,7 +197,7 @@ class PsfPhotometryRunner(object):
         logger.info('Final result: %s' % sex2.get_catalog_path())
 
         self._result_catalog = sex2.get_astropy_catalog()
-        self._residual_image = psfex.get_residual_paths()[0]
+        self._residual_image = fits.open(psfex.get_residual_paths()[0])
 
         sex1.cleanup()
         sex2.cleanup()

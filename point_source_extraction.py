@@ -30,12 +30,12 @@ from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtracted
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def get_pixscale(image_data):
+def get_pixscale(fits_data):
     '''Compute pixel scale for image with astrometry.
     '''
 
-    im = fits.open(StringIO(image_data))
-    wcs = WCS(im[0].header)
+    im = fits.open(StringIO(fits_data))
+    w = WCS(im[0].header)
     cd11 = w.wcs.cd[0][0]
     cd12 = w.wcs.cd[0][1]
     cd21 = w.wcs.cd[1][0]
@@ -43,24 +43,24 @@ def get_pixscale(image_data):
     det_cd = cd11 * cd22 - cd12 * cd21
     return 3600.0 * math.sqrt(abs(det_cd))
 
-def compute_sextractor(settings, raw_data, image_data):
+def compute_sextractor(settings, fits_data, image_data):
     # Determine pixel scale
     with tempfile.NamedTemporaryFile(suffix='.fits') as fp:
-        fp.write(raw_data)
+        fp.write(fits_data)
         fp.flush()
 
         config = {
             'PHOT_APERTURES': settings.phot_apertures,
             'GAIN': settings.gain,
             #'PIXEL_SCALE': settings.pixel_scale,
-            'PIXEL_SCALE': get_pixscale(image_data),
+            'PIXEL_SCALE': get_pixscale(fits_data),
             'SATUR_LEVEL': settings.satur_level,
         }
 
         phot = PsfPhotometryRunner(fp.name)
         phot.run(config)
         tab = phot.get_result_catalog()
-        residual = phot.get_residual_image()
+        residual = extract_image_data_from_fits(phot.get_residual_image())
 
     tab = tab[tab['MAG_PSF'] != 99.0]
 
