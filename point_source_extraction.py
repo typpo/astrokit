@@ -60,6 +60,7 @@ def compute_sextractor(settings, raw_data, image_data):
         phot = PsfPhotometryRunner(fp.name)
         phot.run(config)
         tab = phot.get_result_catalog()
+        residual = phot.get_residual_image()
 
     tab = tab[tab['MAG_PSF'] != 99.0]
 
@@ -71,7 +72,7 @@ def compute_sextractor(settings, raw_data, image_data):
     tab['mag_unc'] = tab['MAGERR_PSF']
     tab['snr'] = 1.0 / (np.power(10, (tab['mag_unc']/2.5)) -1)
 
-    return tab, np.array([[1,2], [3,4]]), 0
+    return tab, residual, 0
 
 def compute_photutils(settings, image_data):
     # Taken from photuils example http://photutils.readthedocs.io/en/stable/psf.html
@@ -142,14 +143,6 @@ def compute_photutils(settings, image_data):
 
     return result_tab, residual_image, std
 
-def save_image(data, path):
-    # FIXME(ian): This is not trustworthy.
-    width_height = (len(data[0]), len(data))
-    img = Image.new('L', width_height)
-    flatdata = np.asarray(data.flatten())
-    img.putdata(flatdata)
-    img.save(path)
-
 def plot(sources, data, path):
     positions = (sources['x_fit'], sources['y_fit'])
     # TODO(ian): Show fwhm as aperture size.
@@ -167,13 +160,6 @@ def save_fits(sources, path):
     flux = fits.Column(name='flux', format='E', array=sources['flux_fit'])
     mag_instrumental = fits.Column(name='mag_instrumental', format='E', array=sources['mag'])
 
-    '''
-    col_x = fits.Column(name='field_x', format='E', array=sources['X_IMAGE'])
-    col_y = fits.Column(name='field_y', format='E', array=sources['Y_IMAGE'])
-    flux = fits.Column(name='flux', format='E', array=sources['FLUX_BEST'])
-    mag_instrumental = fits.Column(name='mag_instrumental', format='E', array=sources['MAG_BEST'])
-    '''
-
     cols = fits.ColDefs([col_x, col_y, flux, mag_instrumental])
     tbhdu = fits.BinTableHDU.from_columns(cols)
     tbhdu.writeto(path, clobber=True)
@@ -187,16 +173,6 @@ def format_for_json_export(sources):
     mag_instrumental = sources['mag']
     mag_instrumental_unc = sources['mag_unc']
     snr = sources['snr']
-
-    '''
-    field_x = sources['X_IMAGE']
-    field_y = sources['Y_IMAGE']
-    flux = sources['FLUX_BEST']
-    flux_unc = sources['FLUXERR_BEST']
-    flux_unc_pct = sources['FLUXERR_BEST'] / sources['FLUX_BEST'] * 100.0
-    mag_instrumental = sources['MAG_BEST']
-    mag_instrumental_unc = sources['MAGERR_BEST']
-    '''
 
     out = []
     for i in xrange(len(field_x)):
@@ -220,13 +196,11 @@ def save_json(sources, path):
 
 def load_image(path):
     return extract_image_data_from_fits(fits.open(path))
-    #return fits.getdata(path)
 
 def load_url(url):
     page = urllib.urlopen(url)
     content = page.read()
     return extract_image_data_from_fits(fits.open(StringIO(content)))
-    #return fits.getdata(StringIO(content))
 
 def extract_image_data_from_fits(im):
     if len(im[0].data) == 3:
@@ -234,3 +208,11 @@ def extract_image_data_from_fits(im):
         return im[0].data[2]
     # Sometimes it's just a normal image.
     return im[0].data
+
+def save_image(data, path):
+    # FIXME(ian): This is not trustworthy.
+    width_height = (len(data[0]), len(data))
+    img = Image.new('L', width_height)
+    flatdata = np.asarray(data.flatten())
+    img.putdata(flatdata)
+    img.save(path)
