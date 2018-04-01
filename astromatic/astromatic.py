@@ -87,7 +87,7 @@ class Sextractor(Executable):
             f.write(content)
 
         # Build config
-        config_path = os.path.join(self._working_dir, '%s.sex')
+        config_path = os.path.join(self._working_dir, 'config.sex')
         with open(config_path, 'w') as f:
             logger.info('.sex config:')
             logger.info('\n' + json.dumps(final_config, indent=2))
@@ -130,7 +130,7 @@ class PsfEx(Executable):
             final_config.update(config)
 
         # Build config
-        config_path = os.path.join(self._working_dir, '%s.psfex')
+        config_path = os.path.join(self._working_dir, 'config.psfex')
         with open(config_path, 'w') as f:
             logger.info('.psfex config:')
             logger.info('\n' + json.dumps(final_config, indent=2))
