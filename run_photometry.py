@@ -55,7 +55,7 @@ class PhotometryRunner(object):
     def load(self):
         # TODO(ian): Dedupe with astrometry step.
         job = self.analysis.astrometry_job
-        new_image_fits_url = 'http://35.202.61.141/new_fits_file/%d' \
+        new_image_fits_url = 'http://35.202.61.141:8081/new_fits_file/%d' \
                 % (job.jobid)
         self.image_fits_data = urllib.urlopen(new_image_fits_url).read()
 

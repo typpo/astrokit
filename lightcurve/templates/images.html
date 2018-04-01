@@ -109,7 +109,7 @@ Uploaded images for lightcurve <span class="lightcurve-name">{{lightcurve.name}}
            <div class="btn btn-warning js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Remove from lightcurve</div>
          {% endif %}
          {% if image.submission %}
-           <a target="_blank" href="http://35.202.61.141/status/{{image.analysis.astrometry_job.jobid}}" class="btn btn-default">View Astrometry job</a>
+           <a target="_blank" href="http://35.202.61.141:8081/status/{{image.analysis.astrometry_job.jobid}}" class="btn btn-default">View Astrometry job</a>
          {% endif %}
       </div>
     </div>  <!-- image-X -->

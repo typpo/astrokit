@@ -137,11 +137,11 @@ class AstrometryRunner(object):
 
         # TODO(ian): Move this to astrophot_util.py
         original_display_url = astrometry_original_image_client.get_url(submission.subid)
-        annotated_display_url = 'http://35.202.61.141/annotated_display/%d' \
+        annotated_display_url = 'http://35.202.61.141:8081/annotated_display/%d' \
                 % (job.jobid)
-        new_image_fits_url = 'http://35.202.61.141/new_fits_file/%d' \
+        new_image_fits_url = 'http://35.202.61.141:8081/new_fits_file/%d' \
                 % (job.jobid)
-        corr_url = 'http://35.202.61.141/corr_file/%d' \
+        corr_url = 'http://35.202.61.141:8081/corr_file/%d' \
                 % (job.jobid)
 
         # Original
@@ -249,7 +249,7 @@ def process_pending_submissions(args):
     '''Turns submitted Astrometry jobs into ImageAnalyses
     '''
     # Set up astrometry.net client.
-    client = Client('http://35.202.61.141/api/')
+    client = Client('http://35.202.61.141:8081/api/')
     client.login(settings.ASTROKIT_ASTROMETRY_KEY)
 
     pending_submissions = AstrometrySubmission.objects.all().filter(

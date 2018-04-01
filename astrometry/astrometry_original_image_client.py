@@ -2,7 +2,7 @@ import re
 import sys
 import urllib2
 
-HOST = 'http://35.202.61.141'
+HOST = 'http://35.202.61.141:8081'
 
 def get_url(subid):
     url = '%s/user_images/%d' % (HOST, subid)
