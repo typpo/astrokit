@@ -11,20 +11,17 @@
               <header class="intro__head">
                 <h1 class="intro__title">Welcome to <span>AstroKit</span></h1><!-- /.intro__title -->
 
-                <strong>From the beginning of time, we <br>have watched the stars, and today we continue to make exciting discoveries.</strong>
+                <strong>AstroKit provides a web-based toolset for performing lightcurve photometry.</strong>
 
-                <span>Begin your own research by clicking the start button below and upload your photograph.</span>
+                <span>Begin your research by clicking the start button below and uploading your data.</span>
               </header><!-- /.intro__head -->
 
               <div class="intro__actions">
-                <a href="#" class="btn">
-                  <i class="ico-upload"></i>
-                  <i class="ico-upload-hover hover-state"></i>
-
+                <a href="/accounts/upload" class="btn">
                   <span>Start now</span>
                 </a>
 
-                <a href="#">Learn More</a>
+                <a href="/science">Learn more</a>
               </div><!-- /.intro__actions -->
 
               <footer class="intro__foot">
@@ -38,51 +35,60 @@
           <div class="col-md-7">
             <aside class="intro__aside">
               <figure class="intro__image-tl">
+<!--
                 <div class="intro__image-caption">
                   <strong>2345,3256</strong>
 
                   <span>2345,3256</span>
-                </div><!-- /.intro__image-caption -->
+                </div>
 
-                <div class="line"></div><!-- /.line -->
+                <div class="line"></div>
+-->
 
                 <img src="{% static "imageflow/build/css/images/temp/asteroid1.png" %}" alt="">
 
+<!--
                 <div class="intro__image-edges-top">
                   <p>N5</p>
-                </div><!-- /.intro__image-edges-top -->
+                </div>
 
                 <div class="intro__image-edges-bottom">
                   <p>23</p>
-                </div><!-- /.intro__image-edges-bottom -->
+                </div>
+-->
               </figure><!-- /.intro__image-tl -->
 
               <figure class="intro__image-tr">
+<!--
                 <div class="intro__image-caption">
                   <strong>2345,3256</strong>
 
                   <span>2345,3256</span>
 
-                </div><!-- /.intro__image-caption -->
+                </div>
 
-                <div class="line"></div><!-- /.line -->
+                <div class="line"></div>
+-->
 
                 <img src="{% static "imageflow/build/css/images/temp/asteroid2.png" %}" alt="">
               </figure><!-- /.intro__image-tr-->
 
+<!--
               <figure class="intro__image-br">
                 <a href="#" class="intro__image-caption">
                   Explore the<br /> universe
-                </a><!-- /.intro__image-caption -->
+                </a>
 
                 <img src="{% static "imageflow/build/css/images/temp/nebula.png" %}" alt="">
-              </figure><!-- /.intro__image-br -->
+              </figure>
+-->
             </aside><!-- /.intro__aside -->
           </div><!-- /.col-md-7 -->
         </div><!-- /.row -->
       </div><!-- /.container -->
     </div><!-- /.intro -->
 
+{% comment %}
     <section class="section">
       <div class="container-fluid">
         <div class="row">
@@ -170,6 +176,7 @@
         </div><!-- /.container -->
       </footer><!-- /.section__foot -->
     </section><!-- /.section ./section-/-large -->
+{% endcomment %}
 
     <section class="section-features">
       <div class="container">
@@ -189,7 +196,7 @@
                   <div class="circle__image">
                     <img src="{% static "imageflow/build/css/images/temp/circles.png" %}" alt="">
                   </div><!-- /.circle__image -->
-                  
+
                   <div class="circle__content">
                     <div class="tabs__nav">
                       <ul>
@@ -344,10 +351,10 @@
             <div class="section__entry">
               <h2 class="section__title">The data and science behind AstroKit travels way beyond the stars.</h2>
 
-              <h5>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at porttitor sem.  Aliquam erat volutpat. </h5>
+              <h5>Easily share and compare your results with others.</h5>
 
               <p>
-                <span>You can also use it to download data and to produce graphics of asteroid locations.</span>
+                <span>Download astrometry, photometry, and reduced lightcurve data and graphics.</span>
               </p>
             </div><!-- /.section__entry -->
           </div><!-- /.col-md-5 -->
@@ -393,9 +400,9 @@
               <div class="col-md-3 col-md-offset-8">
                 <div class="section__image-entry">
                   <h4>Lorem ipsum dolor sir amet, consectetur adipiscing elit.</h4>
-                  
+
                   <p>You can also use it to download data and to produce graphics of asteroid locations.</p>
-                  
+
                   <a href="#" class="link-more">Start Using</a>
                 </div><!-- /.section__entry -->
               </div><!-- /.col-md-3 col-md-offset-8 -->

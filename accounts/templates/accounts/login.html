@@ -21,10 +21,12 @@
 					<label>{{ field.label }}</label>
 					{{ field }}
 				</div>
-				
+
 			{% endfor %}
-			<a class="forgot-password" href="{% url "forgot-password" %}">Forgot password?</a><br><br>
 			<input type="submit" name="" class="btn btn-primary" value="Login">
+      <br>
+			<a class="forgot-password" href="{% url "register" %}">Sign up</a><br>
+			<a class="forgot-password" href="{% url "forgot-password" %}">Forgot password?</a><br><br>
 		</form>
 	</div>
 </main>
