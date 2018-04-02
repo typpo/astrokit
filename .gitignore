@@ -1,8 +1,6 @@
 venv
 db.sqlite3
 
-webassets/css
-
 cache/catalog.db
 
 examples/*/*.fit
