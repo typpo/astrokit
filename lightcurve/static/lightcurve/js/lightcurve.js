@@ -259,6 +259,8 @@ $(function() {
   setupFilterSelection();
   setupModals();
   setupAddAllImages();
+
+  setupPlot();
 });
 
 })();
