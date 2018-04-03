@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import tempfile
 
+from astropy.io import fits
 from astropy.io.ascii import SExtractor as SexToAstropy
 
 logging.basicConfig(level=logging.INFO)
@@ -86,7 +87,7 @@ class Sextractor(Executable):
             f.write(content)
 
         # Build config
-        config_path = os.path.join(self._working_dir, '%s.sex')
+        config_path = os.path.join(self._working_dir, 'config.sex')
         with open(config_path, 'w') as f:
             logger.info('.sex config:')
             logger.info('\n' + json.dumps(final_config, indent=2))
@@ -129,7 +130,7 @@ class PsfEx(Executable):
             final_config.update(config)
 
         # Build config
-        config_path = os.path.join(self._working_dir, '%s.psfex')
+        config_path = os.path.join(self._working_dir, 'config.psfex')
         with open(config_path, 'w') as f:
             logger.info('.psfex config:')
             logger.info('\n' + json.dumps(final_config, indent=2))
@@ -151,9 +152,14 @@ class PsfEx(Executable):
         return ['%s.psf' % os.path.join(self._working_dir, os.path.basename(path)[:-4]) \
                 for path in self._catalog_paths]
 
+    def get_residual_paths(self):
+        return ['%s/resi_%s.fits' % (self._working_dir, os.path.basename(path)[:-4]) \
+                for path in self._catalog_paths]
+
 class PsfPhotometryRunner(object):
     def __init__(self, fitspath):
         self._fitspath = fitspath
+        self._residual_image = None
         self._result_catalog = None
 
     def run(self, config=None):
@@ -177,6 +183,7 @@ class PsfPhotometryRunner(object):
         psfex.run([sex1.get_catalog_path()])
 
         logger.info('PSF model written to %s' % psfex.get_psf_paths()[0])
+        logger.info('PSF residual written to %s' % psfex.get_residual_paths()[0])
         logger.info('Running sextractor second round...')
 
         sex2 = Sextractor(name='sex2')
@@ -190,6 +197,7 @@ class PsfPhotometryRunner(object):
         logger.info('Final result: %s' % sex2.get_catalog_path())
 
         self._result_catalog = sex2.get_astropy_catalog()
+        self._residual_image = fits.open(psfex.get_residual_paths()[0])
 
         sex1.cleanup()
         sex2.cleanup()
@@ -197,6 +205,9 @@ class PsfPhotometryRunner(object):
 
     def get_result_catalog(self):
         return self._result_catalog
+
+    def get_residual_image(self):
+        return self._residual_image
 
 def main():
     thisdir = os.path.dirname(os.path.realpath(__file__))
