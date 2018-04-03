@@ -113,7 +113,7 @@
               </div><!-- /.section__body -->
 
               <div class="section__actions">
-                <a href="#" class="link-more">More Info</a>
+                <a href="/science" class="link-more">More Info</a>
               </div><!-- /.section__actions -->
             </div><!-- /.section__content -->
           </div><!-- /.col-md-5 -->
@@ -157,7 +157,7 @@
               </header><!-- /.section__head -->
 
               <div class="section__body">
-                <h5>You can help discover asteroids by sharing images of the objects you see in the night sky. </h5>
+                <h5>You can compute lightcurves of asteroids and stars by uploading your observations.</h5>
 
                 <p>
                   <span>Each contribution enables us to map the positions of asteroids with greater accuracy. You can also contribute suggestions on the code. Explore our website for more information.</span>
@@ -186,9 +186,9 @@
               <div class="section__content">
                 <h3 class="section__title">The Universe of AstroKit</h3><!-- /.section__title -->
 
-                <p>You can help discover asteroids by sharing images of the objects you see in the night sky.</p>
+                <p>You can compute lightcurves of asteroids, stars, and exoplanets by uploading your observations.</p>
 
-                <a href="#">MORE INFO</a>
+                <a href="/science">MORE INFO</a>
               </div><!-- /.section__content -->
 
               <div class="section__map">
@@ -209,25 +209,23 @@
                         </li>
 
                         <li>
-                          <a href="#​​​​​​​analysis">
+                          <a href="#analysis">
                             <i class="ico-attention"></i>
 
                             <span>
-                              Image <br />
-
-                              ​​​​​​​analysis
+                              Photometry
                             </span>
                           </a>
                         </li>
 
                         <li>
-                          <a href="#​​​​​​​images">
+                          <a href="#images">
                             <i class="ico-book"></i>
 
                             <span>
                               Sample<br />
 
-                              ​​​​​​​images
+                              images
                             </span>
                           </a>
                         </li>
@@ -236,7 +234,7 @@
                           <a href="#contact">
                             <i class="ico-bowl"></i>
 
-                            <span>Contact us</span>
+                            <span>About Us</span>
                           </a>
                         </li>
 
@@ -244,7 +242,7 @@
                           <a href="#catalogues">
                             <i class="ico-write"></i>
 
-                            <span>Catalogues</span>
+                            <span>Catalogs</span>
                           </a>
                         </li>
 
@@ -252,7 +250,7 @@
                           <a href="#press">
                             <i class="ico-plugin"></i>
 
-                            <span>press</span>
+                            <span>Press</span>
                           </a>
                         </li>
 
@@ -271,7 +269,7 @@
                             <span>
                               Just <br />
 
-                              ​​​​​​​Curious?
+                              Curious?
                             </span>
                           </a>
                         </li>
@@ -310,16 +308,16 @@
                   </ul>
                 </div><!-- /.tab -->
 
-                <div class="tab" id="​​​​​​​analysis">
+                <div class="tab" id="analysis">
                   <h3 class="tab__title">Image Analysis</h3><!-- /.tab__title -->
                 </div><!-- /.tab -->
 
-                <div class="tab" id="​​​​​​​images">
+                <div class="tab" id="images">
                   <h3 class="tab__title">Sample Images</h3><!-- /.tab__title -->
                 </div><!-- /.tab -->
 
                 <div class="tab" id="contact">
-                  <h3 class="tab__title">Contact us</h3><!-- /.tab__title -->
+                  <h3 class="tab__title">About Us</h3><!-- /.tab__title -->
                 </div><!-- /.tab -->
 
                 <div class="tab" id="catalogues">
@@ -349,16 +347,19 @@
         <div class="row">
           <div class="col-md-5">
             <div class="section__entry">
-              <h2 class="section__title">The data and science behind AstroKit travels way beyond the stars.</h2>
+              <h2 class="section__title">The science behind AstroKit travels way beyond the stars.</h2>
 
-              <h5>Easily share and compare your results with others.</h5>
+              <h5>
+                Download astrometry, photometry, and reduced lightcurve data and graphics.
+              </h5>
 
               <p>
-                <span>Download astrometry, photometry, and reduced lightcurve data and graphics.</span>
+                Easily share and compare your results with others if you choose.
               </p>
             </div><!-- /.section__entry -->
           </div><!-- /.col-md-5 -->
 
+<!--
           <div class="col-md-6 col-md-offset-1">
             <ul class="list-tiles">
               <li>
@@ -390,10 +391,12 @@
                   Using<br /> AstroKit
                 </a>
               </li>
-            </ul><!-- /.list-tiles -->
-          </div><!-- /.col-md-6 -->
+            </ul>
+          </div>
+-->
         </div><!-- /.row -->
 
+{% comment %}
         <div class="section__image" style="background-image: url({% static "imageflow/build/css/images/temp/tarantula-nebula2.jpg" %});">
           <div class="section__image-inner">
             <div class="row">
@@ -409,6 +412,7 @@
             </div><!-- /.row -->
           </div><!-- /.section__image-inner -->
         </div><!-- /.section__image -->
+{% endcomment %}
       </div><!-- /.container -->
     </section><!-- /.features-small -->
   </main><!-- /.main -->

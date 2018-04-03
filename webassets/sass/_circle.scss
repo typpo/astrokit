@@ -3,11 +3,11 @@
 \* ------------------------------------------------------------ */
 
 .circle {
-	position: relative; 
-	width: 79vw; 
+	position: relative;
+	width: 79vw;
 	height: 79vw;
 	margin-top: -25vw;
-	margin-left: -12vw; 
+	margin-left: -12vw;
 	max-width: 1295px;
 	max-height: 1295px;
 
@@ -23,7 +23,7 @@
 
 		span {
 			display: block;
-			opacity: .2;
+			opacity: .7;
 			margin-top: 27px;
 			position: relative;
 		}
@@ -142,9 +142,9 @@
 	.circle .circle__image {
 		display: none;
 	}
-	
+
 	.circle li {
-		position: static !important; 
+		position: static !important;
 		margin-bottom: 20px;
 		float: left;
 		width: 50%;

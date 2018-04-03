@@ -7167,7 +7167,7 @@ blockquote:last-child {
     text-transform: uppercase; }
     .circle a span {
       display: block;
-      opacity: .2;
+      opacity: .7;
       margin-top: 27px;
       position: relative; }
     .circle a span:after {
@@ -7402,7 +7402,7 @@ ul[class^=list-] {
 .footer {
   position: relative;
   z-index: 1;
-  padding: 39px 0 50px; }
+  padding: 70px 0 50px; }
   .footer .copyright {
     display: -webkit-box;
     display: -ms-flexbox;
