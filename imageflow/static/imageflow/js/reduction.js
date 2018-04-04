@@ -30,7 +30,7 @@ function setupAddToLightcurve() {
     }
     var $btn = $(this);
     $.post('/lightcurve/' + window.lightcurveId + '/add_image_toggle', {
-      'analysis_id' : window.analysisId,
+      'analysisId' : window.analysisId,
     }, function(data) {
       if (data.success) {
         hasBeenAdded = true;

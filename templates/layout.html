@@ -60,7 +60,7 @@
 
 
 	{% block header %}
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and False %}
       <header class="header header--secondary">
         <a href="#" class="logo-small">AstroKit</a>
         <div class="header__inner">
@@ -97,7 +97,7 @@
       </header><!-- /.header -->
     {% else %}
       <header class="header">
-        <a href="#" class="logo">AstroKit</a>
+        <span class="logo">AstroKit</span>
 
         <a href="#" class="burger">
         <span></span>
@@ -114,6 +114,11 @@
           </li>
 
           <li>
+          <a href="/science">For Scientists</a>
+          </li>
+
+<!--
+          <li>
           <a href="#">Research case studies</a>
           </li>
 
@@ -124,13 +129,14 @@
           <li>
           <a href="#">Faq'<span>s</span></a>
           </li>
+-->
 
           <li>
-          <a href="#">Contact us</a>
+          <a href="#">Examples</a>
           </li>
 
           <li>
-          <a href="#">Using Astrokit</a>
+          <a href="mailto:contact@astrokit.org">Contact us</a>
           </li>
         </ul>
         </nav><!-- /.nav -->

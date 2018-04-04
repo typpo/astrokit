@@ -25,6 +25,7 @@ from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.process import process_astrometry_online
 from astrophot_util import get_fits_from_raw
 from imageflow.models import ImageAnalysis
+from photometry.models import ImageFilter
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -136,11 +137,11 @@ class AstrometryRunner(object):
 
         # TODO(ian): Move this to astrophot_util.py
         original_display_url = astrometry_original_image_client.get_url(submission.subid)
-        annotated_display_url = 'http://35.202.61.141/annotated_display/%d' \
+        annotated_display_url = 'http://35.202.61.141:8081/annotated_display/%d' \
                 % (job.jobid)
-        new_image_fits_url = 'http://35.202.61.141/new_fits_file/%d' \
+        new_image_fits_url = 'http://35.202.61.141:8081/new_fits_file/%d' \
                 % (job.jobid)
-        corr_url = 'http://35.202.61.141/corr_file/%d' \
+        corr_url = 'http://35.202.61.141:8081/corr_file/%d' \
                 % (job.jobid)
 
         # Original
@@ -183,25 +184,72 @@ class AstrometryRunner(object):
     def process_metadata(self):
         fitsobj = get_fits_from_raw(self.image_fits_data)
 
+        # Parse date
         dateobs = fitsobj[0].header.get('DATE-OBS')
-        if not dateobs:
-            return None
+        if dateobs:
+            for fmt in ('%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%d', '%d.%m.%Y', '%d/%m/%y'):
+                try:
+                    # TODO(ian): Set timezone
+                    self.analysis.image_datetime = datetime.strptime(dateobs, fmt)
+                    break
+                except ValueError:
+                    logger.warning('Unable to parse DATE-OBS %s' % dateobs)
 
-        for fmt in ('%Y-%m-%dT%H:%M:%S.%f', '%Y-%m-%dT%H:%M:%S', '%Y-%m-%d', '%d.%m.%Y', '%d/%m/%y'):
+        # Parse latlng
+        lat = fitsobj[0].header.get('OBSLAT')
+        lng = fitsobj[0].header.get('OBSLON')
+        if lat:
             try:
-                # TODO(ian): Set timezone
-                self.analysis.image_datetime = datetime.strptime(dateobs, fmt)
-                break
+                self.analysis.image_latitude = float(lat)
             except ValueError:
-                logger.warning('Unable to parse DATE-OBS %s' % dateobs)
+                logger.warning('Unable to parse OBSLAT %s' % lat)
+        if lng:
+            try:
+                self.analysis.image_longitude = float(lng)
+            except ValueError:
+                logger.warning('Unable to parse OBSLON %s' % lng)
 
-        # TODO(ian): Get latlng
+        # Parse filter
+        filterstr = fitsobj[0].header.get('FILTER')
+        if filterstr:
+            try:
+                self.analysis.image_filter = ImageFilter.objects.get(band=filterstr)
+            except ImageFilter.DoesNotExist:
+                logger.warning('Unable to parse FILTER %s' % filterstr)
+
+        # Parse exposure time
+        exptime = fitsobj[0].header.get('EXPTIME')
+        if not exptime:
+            exptime = fitsobj[0].header.get('EXPOSURE')
+        if exptime:
+            try:
+                self.analysis.get_or_create_photometry_settings().exptime = float(exptime)
+            except ValueError:
+                logger.warning('Unable to parse EXPOSURE/EXPTIME %s' % exptime)
+
+        # Parse gain
+        gain = fitsobj[0].header.get('GAIN')
+        if gain:
+            try:
+                self.analysis.get_or_create_photometry_settings().gain = float(gain)
+            except ValueError:
+                logger.warning('Unable to parse GAIN %s' % exptime)
+        else:
+            # http://www.ifa.hawaii.edu/~rgal/science/sextractor_notes.html
+            # EXPTIME * CCDGAIN
+            ccdgain = fitsobj[0].header.get('CCDGAIN')
+            if ccdgain and exptime:
+                try:
+                    self.analysis.get_or_create_photometry_settings().gain = float(ccdgain) * float(exptime)
+                except ValueError:
+                    logger.warning('Unable to parse CCDGAIN %s' % ccdgain)
+
 
 def process_pending_submissions(args):
     '''Turns submitted Astrometry jobs into ImageAnalyses
     '''
     # Set up astrometry.net client.
-    client = Client('http://35.202.61.141/api/')
+    client = Client('http://35.202.61.141:8081/api/')
     client.login(settings.ASTROKIT_ASTROMETRY_KEY)
 
     pending_submissions = AstrometrySubmission.objects.all().filter(

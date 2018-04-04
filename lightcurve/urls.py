@@ -2,6 +2,7 @@ from django.conf.urls import patterns, url
 
 urlpatterns = patterns('lightcurve.views',
     url(r'^(?P<lightcurve_id>[0-9]+)/edit$', 'edit_lightcurve', name='edit_lightcurve'),
+    url(r'^(?P<lightcurve_id>[0-9]+)/images$', 'images', name='images'),
     url(r'^(?P<lightcurve_id>[0-9]+)/plot$', 'plot_lightcurve', name='plot_lightcurve'),
     url(r'^(?P<lightcurve_id>[0-9]+)/plot_json$', 'plot_lightcurve_json', name='plot_lightcurve_json'),
     url(r'^(?P<lightcurve_id>[0-9]+)/status$', 'status', name='status'),

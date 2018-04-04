@@ -28,17 +28,6 @@ def edit_lightcurve(request, lightcurve_id):
     # Always add 5 extra empty image pairs to the list.
     image_pairs = list(ImageAnalysisPair.objects.filter(lightcurve=lc)) + ([None] * 5)
 
-    sort = request.GET.get('sort')
-    print sort
-    if sort == 'filename':
-        images = images.order_by('original_filename')
-    elif sort == 'timestamp':
-        images = images.order_by('analysis__image_datetime')
-    elif sort == 'status':
-        images = images.annotate(status_sort = ordered_analysis_status()).order_by('status_sort')
-    else:
-        pass
-
     context = {
         'lightcurve': lc,
         'reduction': lc.get_or_create_reduction(),
@@ -48,9 +37,30 @@ def edit_lightcurve(request, lightcurve_id):
         'image_pairs': image_pairs,
         'ci_bands': ImageFilter.objects.get_ci_bands(),
     }
-
     return render_to_response('lightcurve.html', context,
             context_instance=RequestContext(request))
+
+def images(request, lightcurve_id):
+    '''List images in lightcurve.
+    '''
+    lc = LightCurve.objects.get(id=lightcurve_id)
+    images = UserUploadedImage.objects.filter(lightcurve=lc).order_by('analysis__image_datetime')
+
+    sort = request.GET.get('sort')
+    if sort == 'filename':
+        images = images.order_by('original_filename')
+    elif sort == 'timestamp':
+        images = images.order_by('analysis__image_datetime')
+    elif sort == 'status':
+        images = images.annotate(status_sort = ordered_analysis_status()).order_by('status_sort')
+
+    context = {
+        'lightcurve': lc,
+        'images': images,
+    }
+    return render_to_response('images.html', context,
+            context_instance=RequestContext(request))
+
 
 def plot_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
@@ -146,20 +156,25 @@ def save_observation_default(request, lightcurve_id):
 def apply_photometry_settings(request, lightcurve_id):
     lc = get_object_or_404(LightCurve, id=lightcurve_id, user=request.user.id)
     template_analysis = ImageAnalysis.objects.get(pk=request.POST.get('analysisId'))
-    template_settings = template_analysis.photometry_settings
+    template_settings = template_analysis.get_or_create_photometry_settings()
 
     # Apply the settings from this analysis to every analysis.
     count = 0
+    print 'template', template_settings
     for analysis in lc.imageanalysis_set.all():
-        settings = analysis.photometry_settings
+        settings = analysis.get_or_create_photometry_settings()
         changed = settings.sigma_psf != template_settings.sigma_psf or \
                   settings.crit_separation != template_settings.crit_separation or \
                   settings.threshold != template_settings.threshold or \
                   settings.box_size != template_settings.box_size or \
                   settings.iters != template_settings.iters
-        if changed:
-            analysis.photometry_settings = template_settings
-            analysis.photometry_settings.save()
+        if changed or True:
+            settings.sigma_psf = template_settings.sigma_psf
+            settings.crit_separation = template_settings.crit_separation
+            settings.treshold = template_settings.threshold
+            settings.box_size = template_settings.box_size
+            settings.iters = template_settings.iters
+            settings.save()
 
             analysis.status = ImageAnalysis.PHOTOMETRY_PENDING
             analysis.save()

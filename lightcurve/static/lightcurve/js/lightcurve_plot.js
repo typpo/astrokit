@@ -70,8 +70,8 @@ function getChartXAxisLabel() {
 function getChartYAxisLabel() {
   // FIXME(ian): Pass in this info from the light curve...
   return getChartType() === 'instrumental' ?
-              'Magnitude (' + 'b' + ')' :
-              'Magnitude (' + 'B' + ')';
+              'Instrumental Magnitude' :
+              'Magnitude';
 }
 
 function getChartType() {
@@ -97,6 +97,19 @@ function plot() {
   };
 
   Plotly.newPlot('plot-container', chart, layout);
+
+  // Add table
+  var $table = $('<table class="table">');
+  $table.append('<thead><tr><th>Time</th><th>Standard Mag</th><th>Standard Mag err</th><th>Instrumental mag</th></tr></thead>');
+  var $tbody = $('<tbody>').appendTo($table);
+  plotConfig.lastResults.forEach(function(r) {
+    var $tr = $('<tr>').appendTo($tbody);
+    $tr.append('<td>' + getTimestampVal(r) + '</td>');
+    $tr.append('<td>' + r.result.mag_standard.toFixed(3) + '</td>');
+    $tr.append('<td>' + r.result.mag_std.toFixed(3) + '</td>');
+    $tr.append('<td>' + r.result.mag_instrumental.toFixed(3)  + '</td>');
+  });
+  $table.appendTo($('#table-container').empty());
 }
 
 $(function() {

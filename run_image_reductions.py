@@ -74,6 +74,9 @@ def run_reductions(analysis):
 
             # Get comparison star in THIS IMAGE.
             comparison_star = find_star_by_designation(analysis.annotated_point_sources, desig)
+            if not comparison_star:
+                logger.error('Could not find comparison star %s in reductions for analysis %d' % (desig, analysis.id))
+                continue
 
             term1 = star['mag_instrumental'] - comparison_star['mag_instrumental']
 

@@ -336,7 +336,7 @@ function cleanBuild() {
 }
 
 function copyBuild() {
-    return gulp.src(['**', '!~html-vs-design/', '!ssi/**', '!package.json', '!settings.json', '!peon.json', '!README.md', '!gulpfile.js', '!css/images/sprite/*', '!css/_*.css', '!css/style.css.map', '!build', '!node_modules/**', '!sass/**', '!*.html', '!~QA/**', '!drone.json'], {
+    return gulp.src(['**', '!~html-vs-design/', '!ssi/**', '!package.json', '!settings.json', '!peon.json', '!README.md', '!gulpfile.js', '!css/images/*', '!css/_*.css', '!css/style.css.map', '!build', '!node_modules/**', '!sass/**', '!*.html', '!~QA/**', '!drone.json'], {
             allowEmpty: true
         })
         .pipe(copy('build/'))
@@ -382,7 +382,7 @@ function watchTask(cb) {
 }
 
 function copyStatic() {
-    return gulp.src(['**', '!~html-vs-design/', '!ssi/**', '!package.json', '!settings.json', '!peon.json', '!README.md', '!gulpfile.js', '!css/images/sprite/*', '!css/_*.css', '!css/style.css.map', '!build', '!node_modules/**', '!sass/**', '!*.html', '!~QA/**', '!drone.json'], {
+    return gulp.src(['**', '!~html-vs-design/', '!ssi/**', '!package.json', '!settings.json', '!peon.json', '!README.md', '!gulpfile.js', '!css/images/*', '!css/_*.css', '!css/style.css.map', '!build', '!node_modules/**', '!sass/**', '!*.html', '!~QA/**', '!drone.json'], {
             allowEmpty: true
         })
         .pipe(copy('build/'))

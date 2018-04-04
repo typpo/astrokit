@@ -6,6 +6,7 @@ Usage: python point_source_extraction.py myimage.fits
 '''
 
 import logging
+import math
 import simplejson as json
 import tempfile
 import urllib
@@ -16,56 +17,61 @@ import matplotlib.pylab as plt
 import numpy as np
 
 from PIL import Image
+from astromatic.astromatic import PsfPhotometryRunner
 from astropy.io import fits
 from astropy.modeling.fitting import LevMarLSQFitter
 from astropy.stats import gaussian_sigma_to_fwhm, SigmaClip
+from astropy.wcs import WCS
 from photutils import CircularAperture
 from photutils.background import MMMBackground, MADStdBackgroundRMS
 from photutils.detection import IRAFStarFinder
 from photutils.psf import IntegratedGaussianPRF, DAOGroup, IterativelySubtractedPSFPhotometry, DAOPhotPSFPhotometry
 
-from photometry.lib import sewpy
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def compute_sextractor(settings, raw_data, image_data):
-    params = [
-        'X_IMAGE',
-        'Y_IMAGE',
-        'FLUX_PSF',
-        'FLUXERR_PSF',
-        'MAG_PSF',
-        'MAGERR_PSF',
-        'FWHM_IMAGE',
-        'FLAGS',
-        'FLUX_BEST',
-        'FLUXERR_BEST',
-        'MAG_BEST',
-        'MAGERR_BEST',
-        'FLUX_PSF',
-        'MAG_PSF',
-        'FLUX_PSF',
-        'FLUXERR_PSF',
-        'MAG_PSF',
-        'MAGERR_PSF',
-        'NITER_PSF',
-        'CHI2_PSF',
-        'FLUX_APER',
-        'FLUXERR_APER',
-        'MAG_APER',
-        'MAGERR_APER',
-    ]
-    config = {
+def get_pixscale(image_data):
+    '''Compute pixel scale for image with astrometry.
+    '''
 
-    }
+    im = fits.open(StringIO(image_data))
+    wcs = WCS(im[0].header)
+    cd11 = w.wcs.cd[0][0]
+    cd12 = w.wcs.cd[0][1]
+    cd21 = w.wcs.cd[1][0]
+    cd22 = w.wcs.cd[1][1]
+    det_cd = cd11 * cd22 - cd12 * cd21
+    return 3600.0 * math.sqrt(abs(det_cd))
+
+def compute_sextractor(settings, raw_data, image_data):
+    # Determine pixel scale
     with tempfile.NamedTemporaryFile(suffix='.fits') as fp:
         fp.write(raw_data)
         fp.flush()
-        sew = sewpy.SEW(params=params, config=config, sexpath='/usr/bin/sextractor')
-        out = sew(fp.name)
 
-    return out['table'], np.array([[1,2], [3,4]]), 0
+        config = {
+            'PHOT_APERTURES': settings.phot_apertures,
+            'GAIN': settings.gain,
+            #'PIXEL_SCALE': settings.pixel_scale,
+            'PIXEL_SCALE': get_pixscale(image_data),
+            'SATUR_LEVEL': settings.satur_level,
+        }
+
+        phot = PsfPhotometryRunner(fp.name)
+        phot.run(config)
+        tab = phot.get_result_catalog()
+
+    tab = tab[tab['MAG_PSF'] != 99.0]
+
+    tab['x_fit'] = tab['X_IMAGE']
+    tab['y_fit'] = tab['Y_IMAGE']
+    tab['flux_fit'] = tab['FLUX_PSF']
+    tab['flux_unc'] = tab['FLUXERR_PSF']
+    tab['mag'] = tab['MAG_PSF']
+    tab['mag_unc'] = tab['MAGERR_PSF']
+    tab['snr'] = 1.0 / (np.power(10, (tab['mag_unc']/2.5)) -1)
+
+    return tab, np.array([[1,2], [3,4]]), 0
 
 def compute_photutils(settings, image_data):
     # Taken from photuils example http://photutils.readthedocs.io/en/stable/psf.html

@@ -10,60 +10,79 @@ astrometry, photometry, and light curve results derived from their images.
 
 # Installation
 
+## System dependencies: Linux
+
+Some dependencies must be installed at the system level.  These packages are available on most Debian/Ubuntu distributions:
+
+```
+sudo apt-get install build-essential python-dev python-virtualenv libfreetype6-dev libxft-dev libblas-dev liblapack-dev libatlas-base-dev gfortran libspatialindex-dev sextractor psfex
+```
+
+PIL dependencies:
+
+```
+sudo apt-get install libtiff5-dev libjpeg-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk
+```
+
+Postgres is optional but may be used in production:
+
+```
+sudo apt-get install postgresql postgresql-server-dev-9.4
+```
+
+## Node dependencies
+
+Install a stable version of node.  See [NodeSource](https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions) for latest install steps.  Currently, Node 8.x is the stable LTS distribution:
+
+```
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+`yarn` installation is optional but recommended.  See [yarnpkg.org](https://yarnpkg.com/lang/en/docs/install/) for latest install steps.  Currently you may install like so:
+
+```
+curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt-get update && sudo apt-get install yarn
+```
+
+Next, `cd webassets/` and `yarn install` (or `npm install`)
+
+Compile sass files with `gulp build`, or use the `yarn run build` (`npm run build`) alias.  If you are actively developing the web assets, use `yarn run watch` to recompile on-the-fly.  **Changes to web assets will not be reflected by the web server unless you rebuild**.
+
 ## Python dependencies
 
-Install virtualenv (`sudo apt-get install python-virtualenv` on Debian/Ubuntu).
+You installed virtualenv (python-virtualenv) above.  Now, create a virtualenv in the astrokit directory:
 
-Create a virtualenv in the astrokit directory: `virtualenv venv`.
+```
+virtualenv venv
+```
 
-Enter the environment (you'll have to do this each time you want to run astrokit in a new terminal): `source venv/bin/activate`
+Enter the environment (you'll have to do this each time you want to run astrokit in a new terminal):
 
-Install python dependencies:  `pip install -r requirements.txt`
+```
+source venv/bin/activate
+```
 
-## Other system dependencies
+Install python dependencies:
 
-Install matplotlib: `sudo apt-get install libfreetype6-dev libxft-dev`
-
-Install scipy: `sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev gfortran libspatialindex-dev`
-
-Install node modules: `npm install webassets/`
-
-Compile sass files using gulp: `cd webassets && gulp build`
-
-Postgres is optional but used in production:
-
-    sudo apt-get install postgresql postgresql-server-dev-9.4
-
-## Optional: IRAF setup
-
-Download IRAF: http://iraf.noao.edu/ (README: ftp://iraf.noao.edu/iraf/v216/README)
-
-`sudo apt-get install csh`
-
-Put these statically linked binaries in your path:
-
-ftp://iraf.noao.edu/pub/fitz/xgterm.STATIC
-ftp://iraf.noao.edu/pub/fitz/ximtool.STATIC
+```
+pip install -r requirements.txt
+```
 
 # Before you run the server
 
 ```
+# Run migrations
+./manage.py migrate
+
 # Create an admin user
 ./manage.py createsuperuser
 
 # Create ImageFilter default objects
 ./manage.py loaddata image_filter
-
-# Run migrations
-./manage.py migrate
 ```
-
-Install frontend dependencies (only needed once, or when package.json changes):
-```
-cd webassets
-yarn install
-```
-
 Build frontend dependencies (necessary whenever you change something in webassets/): `yarn run build`
 
 # Run the server

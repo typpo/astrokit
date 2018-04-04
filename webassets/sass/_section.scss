@@ -59,7 +59,7 @@
 	.section__image {
 		position: relative;
 		margin-right: -15px;
-		padding-left: 15px; 
+		padding-left: 15px;
 
 		img {
 			position: relative;
@@ -179,7 +179,7 @@
 @include breakpoint-small-desktop {
 	.section--large {
 		padding-top: 80px;
-	}	
+	}
 }
 
 @include breakpoint-tablet-portrait {
@@ -273,11 +273,13 @@
 			top: 0;
 			bottom: 0;
 			right: 0;
+      /*
 			background: linear-gradient(
 				to bottom,
 				rgba(22, 21, 22, 1) 0%,
 				rgba(0, 0, 0, 0) 100%
 			);
+      */
 			width: 2000px;
 		}
 	}
@@ -418,7 +420,7 @@
 
 	.section-upload__head {
 		@include clearfix;
-		margin-bottom: 32px; 
+		margin-bottom: 32px;
 
 		.section-upload__title {
 			float: left;
@@ -453,27 +455,27 @@
 }
 
 /* ------------------------------------------------------------ *\
-	Section Secondary 
+	Section Secondary
 \* ------------------------------------------------------------ */
 
 .section-secondary {
 	margin-bottom: 142px;
-	
+
 	.section-secondary__title {
 		padding-bottom: 34px;
-		margin-bottom: 31px; 
-		border-bottom: 1px solid #2d2c2c; 
+		margin-bottom: 31px;
+		border-bottom: 1px solid #2d2c2c;
 		font-weight: 500;
 	}
 
 	.section-secondary__actions {
 		padding-top: 29px;
-		margin-top: -53px; 
-		border-top: 1px solid #313030; 
+		margin-top: -53px;
+		border-top: 1px solid #313030;
 		text-align: right;
 
 		.btn + .btn {
-			margin-left: 25px; 
+			margin-left: 25px;
 		}
 	}
 }

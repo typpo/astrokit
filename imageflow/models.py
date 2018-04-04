@@ -114,7 +114,7 @@ class ImageAnalysis(models.Model):
 
     def get_or_create_photometry_settings(self):
         if not self.photometry_settings:
-            self.photometry_settings = PhotometrySettings.objects.create()
+            self.photometry_settings = PhotometrySettings.objects.create(analysis=self)
             self.save()
         return self.photometry_settings
 

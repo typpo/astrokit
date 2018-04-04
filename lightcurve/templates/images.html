@@ -1,0 +1,129 @@
+{% extends 'layout-internal.html' %}
+{% load staticfiles %}
+{% load jsonify %}
+
+{% block title %}Light Curve {{lightcurve.name}} - Images{% endblock %}
+
+{% block styles %}
+<style>
+.lightcurve-name {
+  color:#286090;
+}
+
+.user-image {
+  max-width: 300px;
+  max-height: 300px;
+}
+
+.image-container {
+  margin: 2em 0;
+}
+</style>
+{% endblock %}
+
+{% block heading %}
+Uploaded images for lightcurve <span class="lightcurve-name">{{lightcurve.name}}</span>
+{% endblock %}
+
+{% block content-interior %}
+  <p>
+    Use this page to review each image and verify that its reduced standard magnitude data point is acceptable.
+  </p>
+  <p>
+    <a href="edit">&laquo; Back to lightcurve</a>
+  </p>
+  <p class="clearfix">
+    <select id="select-sort-images" class="form-control pull-right" style="display:inline-block; width: auto">
+      <option value="" selected>--- Sort ---</option>
+      <option value="filename">Filename</option>
+      <option value="timestamp">Timestamp</option>
+      <option value="status">Status</option>
+    </select>
+  </p>
+
+  <div id="image-list">
+    {% for image in images %}
+    <div id="image-{{forloop.counter0}}" class="well">
+      <strong><a href="/analysis/{{image.analysis.id}}">Analysis #{{image.analysis.id}}</a></strong><br>
+       Filename:
+       <a download href="{{image.image_url}}">
+         {{image.original_filename}}
+       </a><br>
+       Timestamp: {{image.analysis.image_datetime}}<br>
+
+       Status:
+       {% if image.analysis %}
+         {% if image.analysis.status == 'ASTROMETRY_PENDING'  %}
+           <span style="color:#ff1493"><strong>Stage 1 - Astrometry: performing analysis</strong></span>
+         {% elif image.analysis.status == 'PHOTOMETRY_PENDING'  %}
+           <span style="color:#ff1493"><strong>Stage 2 - Photometry: performing analysis</strong></span>
+         {% elif image.analysis.status == 'REVIEW_PENDING'  %}
+           <span style="color:#ff1493"><strong>Stage 3 - Review: analysis complete, review pending</strong></span>
+         {% elif image.analysis.status == 'REVIEW_COMPLETE'  %}
+           <span style="color:#215022"><strong>Stage 4 - Reduction: analysis reviewed, reduction pending</strong></span>
+         {% elif image.analysis.status == 'REDUCTION_COMPLETE'  %}
+           <span style="color:#215022"><strong>Stage 4 - Reduction: complete</strong></span>
+         {% elif image.analysis.status == 'ADDED_TO_LIGHT_CURVE'  %}
+           <span style="color:#215022"><strong>Stage 5 - Added to light curve</strong></span>
+         {% endif %}
+       {% elif image.submission %}
+         {% if image.submission.status == 'FAILED_TO_SUBMIT' %}
+           <span style="color:red"><strong>Stage 1 - Astrometry: service failed, try upload image again</strong></span>
+         {% elif image.submission.status == 'FAILED_TO_PROCESS' %}
+           <span style="color:red"><strong>Stage 1 - Astrometry: failed to solve image</strong></span>
+         {% elif image.submission.status == 'SUBMITTED' %}
+           <span style="color:#ff1493">Stage 1 - Astrometry: solving</span>
+         {% endif %}
+       {% else %}
+         <span style="color:purple">Stage 0: Uploaded, astrometry starting...</span>
+       {% endif %}
+
+       {% if image.analysis.notes %}
+           <br>Note: <em>{{image.analysis.notes}}</em>
+       {% endif %}
+
+       <div class="image-container">
+         {% if image.analysis.original_display_url %}
+           <a href="/analysis/{{image.analysis.id}}">
+             <img src="{{image.analysis.original_display_url}}" class="user-image" />
+           </a>
+         {% endif %}
+       </div>
+
+       <div class="button-row">
+         {% if image.submission and image.submission.status == 'COMPLETE' %}
+           <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary">Review Analysis</a>
+         {% elif image.submission %}
+           <a href="/analysis/{{image.analysis.id}}" class="btn btn-primary disabled">Analysis Pending</a>
+         {% endif %}
+
+         {% if image.analysis.target_id %}
+           <div class="btn btn-default js-select-target" data-analysis-id="{{image.analysis.id}}">Change Target</div>
+         {% else %}
+           <div class="btn btn-primary js-select-target" data-analysis-id="{{image.analysis.id}}">Select Target</div>
+         {% endif %}
+
+         {% if image.analysis and image.analysis.status == 'REDUCTION_COMPLETE' %}
+           <div class="btn btn-success js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Add to lightcurve</div>
+         {% elif image.analysis and image.analysis.status == 'ADDED_TO_LIGHT_CURVE' %}
+           <div class="btn btn-warning js-toggle-lightcurve" data-analysis-id="{{image.analysis.id}}">Remove from lightcurve</div>
+         {% endif %}
+         {% if image.submission %}
+           <a target="_blank" href="http://35.202.61.141:8081/status/{{image.analysis.astrometry_job.jobid}}" class="btn btn-default">View Astrometry job</a>
+         {% endif %}
+      </div>
+    </div>  <!-- image-X -->
+    {% endfor %}
+  </div> <!-- image-list -->
+{% endblock %}
+
+{% csrf_token %}
+
+{% block scripts %}
+  <script>
+    window.lightcurveId = {{lightcurve.id | jsonify}};
+  </script>
+  <script src="{% static "imageflow/js/csrf.js" %}" type="text/javascript"></script>
+  <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>
+  <script src="{% static "lightcurve/js/image_list.js" %}" type="text/javascript"></script>
+{% endblock %}

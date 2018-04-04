@@ -27,42 +27,7 @@ blockquote.smallquote {
 
 <h2>Flux and Magnitudes</h2>
 <p>
-Flux is estimated using the <a href="http://stsdas.stsci.edu/cgi-bin/gethelp.cgi?allstar.hlp">DAOPHOT</a> algorithm.  DAOPHOT is a general term for a suite of software writteny by Peter Stetson designed to do stellar photometry on digital images.
-</p>
-<p>
-Stetson's algorithm was developed in the 80s and 90s but is still something of an "industry standard" today.  DAOPHOT photometry routines are part of <a href="http://iraf.noao.edu/">IRAF</a>, a popular suite of tools for photometry and image reduction.  Astrokit uses the astropy photutils <a href="http://photutils.readthedocs.io/en/stable/api/photutils.psf.DAOPhotPSFPhotometry.html">adaptation</a> of the algorithm.
-</p>
-<p>
-  <strong>
-    The DAOPHOT fitting algorithm is run automatically with default parameters, but you can use the outputs on this page to tune your photometry.
-  </strong>
-</p>
-<hr>
-<p>
-The algorithm requires a handful of parameters.  First, we compute the background standard deviation of the image using the <a href="https://en.wikipedia.org/wiki/Median_absolute_deviation">median absolute deviation</a>.
-</p>
-<p>
-The standard deviation estimator is given by:
-</p>
-<p>
-  <blockquote class="smallquote">
-    σ ≈ {MAD} / (Φ<sup>−1</sup> * (3/4)) ≈ 1.4826 * {MAD}
-  </blockquote>
-</p>
-<p>
-where Φ<sup>−1</sup> * (P) is the normal inverse cumulative distribution function evaluated at probability P=3/4.
-</p>
-<p>
-  Sigma clipping is a common way to estimate the background of an image and eliminate background noise, and is used in this background calculation.  Outliers above and below 3 sigma are masked.
-</p>
-<p>
-  The result is:
-  <blockquote class="smallquote">
-    sigma-clipped std = {{analysis.data.sigma_clipped_std|floatformat:3}}
-  </blockquote>
-</p>
-<p>
-  After adjusting for background noise, flux and magnitude are estimated using the DAOPHOT algorithm with the following parameters:
+[[Some instructions about how flux is computed.]]
 </p>
 
 <h3>Parameters</h3>
@@ -77,73 +42,51 @@ where Φ<sup>−1</sup> * (P) is the normal inverse cumulative distribution func
   </div>
   <form class="form form-horizontal">
     <div class="form-group">
-      <label class="control-label col-sm-1" for="photometry-sigma">
-        PSF Sigma
+      <label class="control-label col-sm-2" for="photometry-aperture">
+        Aperture size (px)
       </label>
       <div class="col-sm-2">
-        <input id="photometry-sigma" class="form-control" type="number" value="{{phot_settings.sigma_psf}}" step="any" />
+        <input id="photometry-aperture" class="form-control" type="number" value="{{phot_settings.phot_apertures}}" step="any" />
       </div>
       <div class="col-sm-5">
-        The semi-major axis of the Gaussian convolution kernel used to computed the density enhancement and mean density images in Gaussian sigma.  The FWHM and sigma radius supplied to the algorithm is 2.3548 * sigma_psf.
+        The diameter of the circular aperture used as a reference for normalizing the amplitude of the PSF model. The value should be large enough so that variations due to seeing or aberrations are negligible. But excessively large apertures lead to noisy measurements. A value corresponding to an aperture diameter of 5 arcseconds is often a good compromise.<sup><a href="http://psfex.readthedocs.io/en/latest/GettingStarted.html">1</a></sup>
+      </div>
+    </div>
+<!--
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="photometry-pixscale">
+        Pixel scale (px)
+      </label>
+      <div class="col-sm-2">
+        <input id="photometry-pixscale" class="form-control" type="number" value="{{phot_settings.pixel_scale}}" step="any" />
+      </div>
+      <div class="col-sm-5">
+        Pixel size in arcsec.
+      </div>
+    </div>
+-->
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="photometry-gain">
+        Gain (e/ADU)
+      </label>
+      <div class="col-sm-2">
+        <input id="photometry-gain" class="form-control" type="number" value="{{phot_settings.gain}}" step="any" />
+      </div>
+      <div class="col-sm-5">
+        Effective "gain" in units of electrons/ADU is used to compute the uncertainty on pixel values, especially with bright star images. The default value of 0 means the gain should be considered infinite (bright pixels not noisier that faint pixels). This value is read from FITS file if present.
       </div>
     </div>
     <div class="form-group">
-      <label class="control-label col-sm-1" for="photometry-threshold">
-        Threshold
+      <label class="control-label col-sm-2" for="photometry-saturlevel">
+        Saturation level (ADU)
       </label>
       <div class="col-sm-2">
-        <input id="photometry-threshold" class="form-control" type="number" value="{{phot_settings.threshold}}" step="any" />
+        <input id="photometry-saturlevel" class="form-control" type="number" step="any" min="1" value="{{phot_settings.satur_level}}" />
       </div>
       <div class="col-sm-5">
-        The object detection threshold above local background in units of standard deviation (calculated above).
+        The threshold at which a source is flagged as saturated, if at least one source pixel exceeds this value.  This value is read from FITS file if present.
       </div>
     </div>
-    <div class="form-group">
-      <label class="control-label col-sm-1" for="photometry-separation">
-        Critical Separation
-      </label>
-      <div class="col-sm-2">
-        <input id="photometry-separation" class="form-control" type="number" value="{{phot_settings.crit_separation}}" step="any" />
-      </div>
-      <div class="col-sm-5">
-        If two stars in a group have centroids separated by a critical distance, their photocentric position and combined magnitude is assigned to the brighter of the two and the fainter is eliminated.
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="control-label col-sm-1" for="photometry-fitshape">
-        Fitshape
-      </label>
-      <div class="col-sm-2">
-        <input id="photometry-fitshape" class="form-control" type="number" step="1" min="1" value="{{phot_settings.box_size}}" />
-      </div>
-      <div class="col-sm-5">
-        Rectangular shape around the center of a star which will be used to collect the data to do the fitting. <strong>Must be an odd number.</strong>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="control-label col-sm-1" for="photometry-iters">
-        Iterations
-      </label>
-      <div class="col-sm-2">
-        <input id="photometry-iters" class="form-control" type="number" step="1" min="1" value="{{phot_settings.iters}}" step="any" />
-      </div>
-      <div class="col-sm-5">
-        Number of iterations to perform the DAOPHOT loop FIND, GROUP, SUBTRACT, NSTAR.
-      </div>
-    </div>
-{% comment %}
-    <div class="form-group">
-      <label class="control-label col-sm-1" for="photometry-iters">
-        Sigma radius
-      </label>
-      <div class="col-sm-2">
-        <input id="photometry-iters" class="form-control" type="number" step="1" min="1" value="{{phot_settings.iters}}" />
-      </div>
-      <div class="col-sm-5">
-        The truncation radius of the Gaussian kernel in units of sigma (standard deviation) [1 sigma = FWHM / (2.0*sqrt(2.0*log(2.0)))].
-      </div>
-    </div>
-{% endcomment %}
   </form>
 </div>
 
