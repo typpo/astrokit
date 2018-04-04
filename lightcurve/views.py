@@ -1,5 +1,7 @@
 import csv
 import json
+import time
+from datetime import datetime
 
 from django.contrib import messages
 from django.core.urlresolvers import reverse
@@ -13,8 +15,8 @@ from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
 from corrections import get_jd_for_analysis
 from imageflow.models import ImageAnalysis, ImageAnalysisPair, ImageFilter, Reduction
-from lightcurve.models import LightCurve
 from lightcurve.alcdef import AlcdefWriter
+from lightcurve.models import LightCurve
 from lightcurve.util import ordered_analysis_status
 from reduction.util import find_point_by_id, find_star_by_designation
 
@@ -378,20 +380,28 @@ def download(request, lightcurve_id):
         myalcdef = AlcdefWriter()
 
         myalcdef.set('CIBAND', lc.ciband)
-        myalcdef.set('CONTACTNAME', 'Ian')
+        myalcdef.set('CONTACTNAME', lc.user)
+        myalcdef.set('CONTACTINFO', lc.user.email)
         myalcdef.set('DELIMITER', 'PIPE')
         myalcdef.set('FILTER', 'C')
+        myalcdef.set('OBSERVERS', lc.user)
         myalcdef.set('OBJECTNAME', lc.target_name)
         myalcdef.set('OBJECTNUMBER', lc.target_name)
 
         myalcdef.add_comment(lc.notes)
 
+        total_time = 0
         for analysis in analyses:
+            total_time += time.mktime(analysis.image_datetime.timetuple())
             if analysis.annotated_point_sources != []:
                 result = find_point_by_id(analysis.annotated_point_sources, analysis.target_id)
                 if not result:
                     continue
                 myalcdef.add_data(get_jd_for_analysis(analysis), result.get('mag_instrumental', None), result.get('mag_instrumental_unc', None), result.get('airmass', None))
+
+        mid_time =  datetime.utcfromtimestamp(total_time / len(analyses))
+        myalcdef.set('SESSIONDATE', mid_time.strftime("%Y-%m-%d"))
+        myalcdef.set('SESSIONTIME', mid_time.strftime("%H:%M:%S"))
 
         content = myalcdef.tostring()
 
