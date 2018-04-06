@@ -22,6 +22,15 @@ function plotImage($container, canvas, imageUrl, opts) {
 									0, 0, img.width * ratio, img.height * ratio);
 
     // Then plot stars from the data source.
+    if (window.comparisonStarData) {
+      plotStars(canvas, window.comparisonStarData, {
+        color: '#4B008',
+        radius: 6,
+        text: function(star) {
+          return star.id;
+        }
+      });
+    }
     if (window.catalogData) {
       plotStars(canvas, window.catalogData, {
         color: 'red',

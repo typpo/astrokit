@@ -163,6 +163,7 @@
           Magnitudes shown are from the <a href="/analysis/reference_stars/{{images.0.analysis.id}}">first image</a>.
           To review comparison stars in more detail, review the 'Reference Stars' page for each image.
         </p>
+        {% include 'partials/comparison_stars_plot.html' %}
         {% include 'partials/comparison_stars.html' %}
       {% else %}
         <p class="alert alert-danger">Uh oh - there are no common stars.  Please tune your photometry to make sure some known stars are picked up, then try again.</p>
@@ -400,10 +401,13 @@
     window.lightcurveId = {{lightcurve.id | jsonify}};
     window.comparisonStars = {{lightcurve.comparison_stars | jsonify}};
     window.commonStars = {{lightcurve.common_stars | jsonify}};
+    window.originalImageUrl = {{images.0.analysis.original_display_url | jsonify}};
+    window.comparisonStarData = {{ lightcurve.common_stars | jsonify }};
   </script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   <script src="{% static "imageflow/js/lib/stupidtable.min.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/csrf.js" %}" type="text/javascript"></script>
+  <script src="{% static "imageflow/js/shared.js" %}" type="text/javascript"></script>
   <script src="{% static "imageflow/js/util.js" %}" type="text/javascript"></script>
   <script src="{% static "lightcurve/js/lightcurve.js" %}" type="text/javascript"></script>
   <script src="{% static "lightcurve/js/reduction.js" %}" type="text/javascript"></script>
