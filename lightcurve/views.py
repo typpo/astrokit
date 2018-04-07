@@ -1,8 +1,12 @@
 import csv
 import json
+import time
+from datetime import datetime
 
+from django.contrib import messages
+from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 
@@ -11,9 +15,11 @@ from astrometry.models import AstrometrySubmission
 from astrometry.process import process_astrometry_online
 from corrections import get_jd_for_analysis
 from imageflow.models import ImageAnalysis, ImageAnalysisPair, ImageFilter, Reduction
+from lightcurve.alcdef import AlcdefWriter
 from lightcurve.models import LightCurve
 from lightcurve.util import ordered_analysis_status
 from reduction.util import find_point_by_id, find_star_by_designation
+
 
 def edit_lightcurve(request, lightcurve_id):
     lc = LightCurve.objects.get(id=lightcurve_id)
@@ -368,14 +374,14 @@ def all_lightcurve(request):
 
 def download(request, lightcurve_id):
     file_type = request.GET.get('file_type')
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="LightCurve%s.%s"' % (lightcurve_id, file_type)
-
     lc = LightCurve.objects.get(id=lightcurve_id)
     analyses = ImageAnalysis.objects.filter(useruploadedimage__lightcurve=lc) \
                                     .exclude(status=ImageAnalysis.ASTROMETRY_PENDING)
 
     if file_type == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="LightCurve%s.csv"' % (lightcurve_id)
+
         writer = csv.writer(response)
         writer.writerow(['Datetime', 'JD', 'Mag instrumental', 'Mag standard', 'Mag std'])
         for analysis in analyses:
@@ -384,5 +390,41 @@ def download(request, lightcurve_id):
                 if not result:
                     continue
                 writer.writerow([analysis.image_datetime, get_jd_for_analysis(analysis), result.get('mag_instrumental', None), result.get('mag_standard', None), result.get('mag_std', None)])
+
+    elif file_type == 'alcdef':
+        myalcdef = AlcdefWriter()
+
+        myalcdef.set('CIBAND', lc.ciband)
+        myalcdef.set('CONTACTNAME', lc.user)
+        myalcdef.set('CONTACTINFO', lc.user.email)
+        myalcdef.set('DELIMITER', 'PIPE')
+        myalcdef.set('FILTER', 'C')
+        myalcdef.set('OBSERVERS', lc.user)
+        myalcdef.set('OBJECTNAME', lc.target_name)
+        myalcdef.set('OBJECTNUMBER', lc.target_name)
+
+        myalcdef.add_comment(lc.notes)
+
+        total_time = 0
+        for analysis in analyses:
+            total_time += time.mktime(analysis.image_datetime.timetuple())
+            if analysis.annotated_point_sources != []:
+                result = find_point_by_id(analysis.annotated_point_sources, analysis.target_id)
+                if not result:
+                    continue
+                myalcdef.add_data(get_jd_for_analysis(analysis), result.get('mag_instrumental', None), result.get('mag_instrumental_unc', None), result.get('airmass', None))
+
+        mid_time =  datetime.utcfromtimestamp(total_time / len(analyses))
+        myalcdef.set('SESSIONDATE', mid_time.strftime("%Y-%m-%d"))
+        myalcdef.set('SESSIONTIME', mid_time.strftime("%H:%M:%S"))
+
+        content = myalcdef.tostring()
+
+        if isinstance(content, set):
+            messages.error(request, ', '.join(content))
+            return HttpResponseRedirect(reverse('edit_lightcurve', args=lightcurve_id))
+
+        response = HttpResponse(content, content_type='text/plain; charset=us-ascii')
+        response['Content-Disposition'] = 'attachment; filename="LightCurve%s.alcdef"' % (lightcurve_id)
 
     return response
