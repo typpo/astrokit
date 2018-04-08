@@ -38,6 +38,7 @@ function getChartForStandard(results) {
         visible: true,
         array: results.map(function(r) { return r.result.mag_std }),
       },
+      text: results.map(function(r) { return 'Analysis #' + r.analysisId }),
       type: 'scatter',
       mode: 'markers',
     },
@@ -49,6 +50,7 @@ function getChartForInstrumental(results) {
     {
       x: results.map(getTimestampVal),
       y: results.map(function(r) { return r.result.mag_instrumental }),
+      text: results.map(function(r) { return 'Analysis #' + r.analysisId }),
       type: 'scatter',
       mode: 'markers',
     },
@@ -60,6 +62,7 @@ function getChartForStandardError(results) {
     {
       x: results.map(getTimestampVal),
       y: results.map(function(r) { return r.result.mag_std }),
+      text: results.map(function(r) { return 'Analysis #' + r.analysisId }),
       type: 'scatter',
       mode: 'markers',
     },
@@ -117,10 +120,12 @@ function plot() {
 
   // Add table
   var $table = $('<table class="table">');
-  $table.append('<thead><tr><th>Time</th><th>Standard Mag</th><th>Standard Mag err</th><th>Instrumental mag</th></tr></thead>');
+  $table.append('<thead><tr><th>Analysis ID</th><th>Time</th><th>Standard Mag</th><th>Standard Mag err</th><th>Instrumental mag</th></tr></thead>');
   var $tbody = $('<tbody>').appendTo($table);
   plotConfig.lastResults.forEach(function(r) {
     var $tr = $('<tr>').appendTo($tbody);
+    var analysisLink = '<a href="/analysis/' + r.analysisId + '">' + r.analysisId + '</a>';
+    $tr.append('<td>' + analysisLink  + '</td>');
     $tr.append('<td>' + getTimestampVal(r) + '</td>');
     $tr.append('<td>' + r.result.mag_standard.toFixed(3) + '</td>');
     $tr.append('<td>' + r.result.mag_std.toFixed(3) + '</td>');
