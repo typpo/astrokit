@@ -55,9 +55,26 @@ function getChartForInstrumental(results) {
   ];
 }
 
+function getChartForStandardError(results) {
+  return [
+    {
+      x: results.map(getTimestampVal),
+      y: results.map(function(r) { return r.result.mag_std }),
+      type: 'scatter',
+      mode: 'markers',
+    },
+  ];
+}
+
 function getChart(results) {
-  return getChartType() === 'instrumental' ?
-          getChartForInstrumental(results) : getChartForStandard(results);
+  switch (getChartType()) {
+    case 'instrumental':
+      return getChartForInstrumental(results);
+    case 'error':
+      return getChartForStandardError(results);
+    default:
+      return getChartForStandard(results);
+  }
 }
 
 function getChartXAxisLabel() {

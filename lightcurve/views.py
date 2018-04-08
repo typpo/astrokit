@@ -87,7 +87,7 @@ def plot_lightcurve_json(request, lightcurve_id):
                 'result': result,
             })
     else:
-        # type == 'standard'
+        # type == 'standard' or type == 'error'
         reductions = Reduction.objects.filter(analysis__useruploadedimage__lightcurve=lc,
                                               analysis__status=ImageAnalysis.ADDED_TO_LIGHT_CURVE,
                                               status=Reduction.COMPLETE)
