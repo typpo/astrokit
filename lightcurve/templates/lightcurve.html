@@ -212,39 +212,41 @@
   </blockquote>
   </p>
 
-  <div class="ci-skipped-equation">
-    <p>
-    If CI is skipped, the equation becomes:
-    </p>
-    <p>
-    <blockquote>
-    M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) + M<sub>c</sub>
-    </blockquote>
-    </p>
-  </div>
-
-  <div class="reduction-calculation-step">
-    {% include 'partials/extinction.html' %}
-
-    <div>
+  {% if (not lightcurve.ciband or lightcurve.ciband == "NONE") and not lightcurve.color_index_manual %}
+    <div class="ci-skipped-equation">
       <p>
-        Now we will compute the transformation coefficient T<sub>f</sub> and the hidden transforms for your image.
+      Because CI is omitted, the equation simplifies to:
       </p>
-      <div class="button-row">
-        <div class="btn btn-primary js-run-lightcurve-reductions">Run lightcurve reductions</div>
-        <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
-      </div>
+      <p>
+        <blockquote>
+        M<sub>t</sub> = (m<sub>t</sub> - m<sub>c</sub>) + M<sub>c</sub>
+        </blockquote>
+      </p>
     </div>
 
-    {% if lightcurve.is_reduction_complete %}
-      {% include 'partials/transformation_coefficient.html' with reduction=lightcurve.lightcurvereduction %}
-      {% include 'partials/hidden_transform.html' with reduction=lightcurve.lightcurvereduction %}
-    {% else %}
-      <div class="well">
-        Your results will display here when lightcurve reductions are complete.
+    <div class="reduction-calculation-step">
+      {% include 'partials/extinction.html' %}
+
+      <div>
+        <p>
+          Now we will compute the transformation coefficient T<sub>f</sub> and the hidden transforms for your image.
+        </p>
+        <div class="button-row">
+          <div class="btn btn-primary js-run-lightcurve-reductions">Run lightcurve reductions</div>
+          <img style="display:none" class="page-loader" src="{% static "imageflow/images/loader-eclipse.svg" %}" />
+        </div>
       </div>
-    {% endif %}
-  </div>
+
+      {% if lightcurve.is_reduction_complete %}
+        {% include 'partials/transformation_coefficient.html' with reduction=lightcurve.lightcurvereduction %}
+        {% include 'partials/hidden_transform.html' with reduction=lightcurve.lightcurvereduction %}
+      {% else %}
+        <div class="well">
+          Your results will display here when lightcurve reductions are complete.
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
 
   <hr/>
 
