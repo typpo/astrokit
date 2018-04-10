@@ -3,6 +3,9 @@
     <div class="form-group">
       <label for="set-manual-ci">Manual color index</label>
       - this value overrides the computed color index from image pairs.
+      <p>
+        If the images are in one filter, use an assumed value for the color index of the target. For asteroids, that would be B-V = 0.8 or V-R = 0.45 (slightly redder than solar color).
+      </p>
       <input id="set-manual-ci" class="form-control" style="width: 20em" type="number" step="any" value="{{reduction.color_index_manual}}">
     </div>
     <div class="form-group">
