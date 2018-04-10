@@ -138,6 +138,17 @@
 
   <hr/>
 
+  <h2 id="select-targets">Select Targets</h2>
+  Image Analysis (ordered by time) #
+  {% for image in images %}
+  <span class="select-target-link" data-analysis-id="{{image.analysis.id}}">{{image.analysis.id}}</span>
+  {% endfor %}
+  <div>
+    <iframe class="iframe-target" src="/analysis/select_target_modal/{{images.0.analysis.id}}"></iframe>
+  </div>
+
+  <hr/>
+
   <h2 id="select-comp-stars">Comparison Stars</h2>
   <div>
     <p>
@@ -169,17 +180,6 @@
         <p class="alert alert-danger">Uh oh - there are no common stars.  Please tune your photometry to make sure some known stars are picked up, then try again.</p>
       {% endif %}
     {% endif %}
-  </div>
-
-  <hr/>
-
-  <h2 id="select-targets">Select Targets</h2>
-  Image Analysis (ordered by time) #
-  {% for image in images %}
-  <span class="select-target-link" data-analysis-id="{{image.analysis.id}}">{{image.analysis.id}}</span>
-  {% endfor %}
-  <div>
-    <iframe class="iframe-target" src="/analysis/select_target_modal/{{images.0.analysis.id}}"></iframe>
   </div>
 
   <hr/>
