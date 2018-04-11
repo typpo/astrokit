@@ -1,6 +1,24 @@
 {% extends 'layout.html' %}
 {% load staticfiles %}
 
+{% block styles %}
+<style>
+.tab p {
+  font-size: 18px;
+}
+
+.tab .tab__title {
+  margin-bottom: 1em;
+}
+
+.circle a span {
+  color: #e4e4e4;
+  opacity: 1;
+}
+
+</style>
+{% endblock %}
+
 {% block content %}
   <main class="main">
     <div class="intro" style="background-image: url({% static "imageflow/build/css/images/temp/intro-bg.png" %});">
@@ -200,12 +218,16 @@
                   <div class="circle__content">
                     <div class="tabs__nav">
                       <ul>
+<!--
                         <li>
                           <a href="#applications">
                             <i class="ico-applications"></i>
 
                             <span>applications</span>
                           </a>
+                        </li>
+-->
+                        <li>
                         </li>
 
                         <li>
@@ -218,6 +240,7 @@
                           </a>
                         </li>
 
+<!--
                         <li>
                           <a href="#images">
                             <i class="ico-book"></i>
@@ -229,6 +252,7 @@
                             </span>
                           </a>
                         </li>
+-->
 
                         <li>
                           <a href="#contact">
@@ -242,10 +266,19 @@
                           <a href="#catalogues">
                             <i class="ico-write"></i>
 
-                            <span>Catalogs</span>
+                            <span>Astrometry</span>
                           </a>
                         </li>
 
+                        <li>
+                          <a href="#science">
+                            <i class="ico-plugin"></i>
+
+                            <span>For scientists</span>
+                          </a>
+                        </li>
+
+<!--
                         <li>
                           <a href="#press">
                             <i class="ico-plugin"></i>
@@ -260,6 +293,10 @@
 
                             <span>Terminology</span>
                           </a>
+                        </li>
+-->
+
+                        <li>
                         </li>
 
                         <li>
@@ -283,33 +320,30 @@
             <aside class="section__aside">
               <div class="tabs__body">
                 <div class="tab current" id="terminology">
-                  <h3 class="tab__title">Terminology</h3><!-- /.tab__title -->
-
+                  <h3 class="tab__title">Astrokit in a Nutshell</h3><!-- /.tab__title -->
                   <ul class="list-features">
-                    <li>
-                      <a href="#">Information for Scientists and Citizen Scientists</a>
-                    </li>
-
-                    <li>
-                      <a href="#">Information for Parents, Educators, and Students</a>
-                    </li>
-
-                    <li>
-                      <a href="#">Information for Artists</a>
-                    </li>
-
-                    <li>
-                      <a href="#">Information for the Press</a>
-                    </li>
-
-                    <li>
-                      <a href="#">Curious but not sure how you can contribute? Start here.</a>
-                    </li>
+                    <li>Free, open-source web application accessible from any browser</li>
+                    <li>Guided checklists</li>
+                    <li>Automated parameter tuning</li>
+                    <li>Automated checks of inputs and results</li>
+                    <li>Integration with other web databases, eg. MPC, VizieR</li>
+                    <li>Easily disseminate results using open formats like ALCDEF</li>
                   </ul>
                 </div><!-- /.tab -->
 
+                <div class="tab" id="science">
+                  <h3 class="tab__title">Science</h3><!-- /.tab__title -->
+                  <p><strong>Astrokit is an open-source web-based application for asteroid lightcurve photometry</strong>.
+  It supports the discovery and analysis of asteroids in astrophotography by providing services that determine astrometry, photometry, and lightcurves of asteroids.
+                  </p>
+                  <p>Astrokit is supported by a NASA ROSES research grant (C.21 Citizen science Asteroid Data, Education, and Tools - CADET).</p>
+                  <p><a href="/science">Read more here</a></p>
+                </div><!-- /.tab -->
+
                 <div class="tab" id="analysis">
-                  <h3 class="tab__title">Image Analysis</h3><!-- /.tab__title -->
+                  <h3 class="tab__title">Photometry</h3><!-- /.tab__title -->
+<p>Astrokit computes photometry by extracting a point-spread function (PSF) model from stars in observations.</p>
+<p>We chose this technique because parameter tuning can be mostly automated, reducing the learning curve for beginners. The tedium of drawing apertures over an image is removed entirely, which saves time and opportunity for error.</p>
                 </div><!-- /.tab -->
 
                 <div class="tab" id="images">
@@ -318,11 +352,15 @@
 
                 <div class="tab" id="contact">
                   <h3 class="tab__title">About Us</h3><!-- /.tab__title -->
+                  <p>Astrokit is supported by a NASA ROSES research grant (C.21 Citizen science Asteroid Data, Education, and Tools - CADET).</p>
+                  <p>Contact the team directly at <a href="mailto:contact@astrokit.org">contact@astrokit.org</a></p>
                 </div><!-- /.tab -->
 
                 <div class="tab" id="catalogues">
-                  <h3 class="tab__title">Catalogues</h3><!-- /.tab__title -->
-                </div><!-- /.tab -->
+                  <h3 class="tab__title">Astrometry</h3><!-- /.tab__title -->
+                  <p>Images are automatically analyzed for their astrometry immediately upon upload. If applicable, the software reads FITS headers and corresponding metadata is filled in the lightcurve or image models within Astrokit. </p>
+                  <p>Astrometric solutions are later used to identify targets, select reference and comparison stars, and retrieve known magnitudes from catalogs.</p>
+                                  </div><!-- /.tab -->
 
                 <div class="tab" id="press">
                   <h3 class="tab__title">Press</h3><!-- /.tab__title -->
@@ -334,6 +372,9 @@
 
                 <div class="tab" id="curious">
                   <h3 class="tab__title">Just Curious?</h3><!-- /.tab__title -->
+                  <p>
+                    Check out an example lightcurve <a href="/science#lightcurves">here</a>!
+                  </p>
                 </div><!-- /.tab -->
               </div><!-- /.tabs__body -->
             </aside><!-- /.section__aside -->
