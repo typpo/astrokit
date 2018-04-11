@@ -1,0 +1,74 @@
+{% extends 'layout.html' %}
+{% load staticfiles %}
+
+{% block title %}About{% endblock %}
+
+{% block heading %}About{% endblock %}
+
+{% block styles %}
+<style>
+.caption {
+  text-align: center;
+}
+
+p.code {
+  margin-left: 1em;
+  font-family: monospace;
+}
+
+.content-container {
+  margin-top: 70px;
+}
+
+.section p, .section .section__body h5 {
+  color: #e4e4e4;
+  opacity: 1;
+}
+
+.section .section__content p {
+  margin-bottom: 1em;
+}
+
+ul {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+li {
+  margin-left: 2em;
+}
+
+.section .section__body h2 {
+  font-weight: bold;
+  margin-top: 1em;
+}
+.section .section__body h3 {
+  font-weight: normal;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+  <div class="container content-container">
+    <section class="section">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section__content">
+              <header class="section__head">
+                <h1 class="section__title">
+                  Astrokit for Scientists
+                </h1><!-- /.section__title -->
+              </header><!-- /.section__head -->
+              <div class="section__body">
+                <p>Placeholder</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}

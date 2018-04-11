@@ -18,8 +18,9 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^s3upload/', include('s3direct.urls')),
     url(r'^', include('imageflow.urls')),
+    url(r'^', include('content.urls')),
+    url(r'^s3upload/', include('s3direct.urls')),
     url(r'^lightcurve/', include('lightcurve.urls')),
     url(r'^accounts/', include('accounts.urls')),
 ]

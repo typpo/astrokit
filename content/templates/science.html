@@ -1,0 +1,201 @@
+{% extends 'layout.html' %}
+{% load staticfiles %}
+
+{% block title %}Astrokit for Scientists{% endblock %}
+
+{% block heading %}Astrokit for Scientists{% endblock %}
+
+{% block styles %}
+<style>
+.caption {
+  text-align: center;
+}
+
+p.code {
+  margin-left: 1em;
+  font-family: monospace;
+}
+
+.content-container {
+  margin-top: 70px;
+}
+
+.section p, .section .section__body h5 {
+  color: #e4e4e4;
+  opacity: 1;
+}
+
+.section .section__content p {
+  margin-bottom: 1em;
+}
+
+ul {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+li {
+  margin-left: 2em;
+}
+
+.section .section__body h2 {
+  font-weight: bold;
+  margin-top: 1em;
+}
+.section .section__body h3 {
+  font-weight: normal;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+  <div class="container content-container">
+    <section class="section">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="section__content">
+              <header class="section__head">
+                <h1 class="section__title">
+                  Astrokit for Scientists
+                </h1><!-- /.section__title -->
+              </header><!-- /.section__head -->
+              <div class="section__body">
+                <p><strong>Astrokit is an open-source web-based application for asteroid lightcurve photometry</strong>.
+It supports the discovery and analysis of asteroids in astrophotography by providing services that determine astrometry, photometry, and lightcurves of asteroids.
+                </p>
+                <p>Astrokit is supported by a NASA ROSES research grant (C.21 Citizen science Asteroid Data, Education, and Tools - CADET).</p>
+<p>The software is built to address the most pressing challenges facing research scientists and amateur astronomers seeking to create lightcurves:</p>
+<p><strong>User challenges</strong></p>
+<ul>
+    <li>Proprietary software requires purchase and installation</li>
+    <li>Existing solutions require extensive prior understanding of photometry and reduction processes</li>
+    <li>Most solutions require spreadsheets and manual checks</li>
+    <li>Software becomes outdated as technology and techniques improve</li>
+    <li>Barriers to collaboration and sharing</li>
+</ul>
+<p><strong>Astrokit solutions</strong></p>
+<ul>
+    <li>Free web application accessible from any browser</li>
+    <li>Open-source development approach</li>
+    <li>Guided checklists for non-professionals</li>
+    <li>Automate parameter tuning for photometry, comparison stars, and reductions</li>
+    <li>Automate checks of inputs and results</li>
+    <li>Integrate with other web databases, eg. MPC, VizieR</li>
+    <li>Disseminate results using open formats such as ALCDEF</li>
+</ul>
+<h2>Capabilities and Methodology</h2>
+<p>Astrokit supports the discovery and analysis of asteroids in astrophotography by providing services that determine astrometry, photometry, and lightcurves of asteroids. This section walks the reader through specific capabilities of the platform.</p>
+<p>Refer to the Astrokit user flow diagram below for a summary of the guided process through which users conduct astrometry, photometry, and create corrected standard lightcurves.</p>
+<div style="background-color:#fff">
+<img src="https://i.imgur.com/eCzC9CY.png?1">
+</div>
+<h2>Astrometry</h2>
+<p>Images are automatically analyzed for their astrometry immediately upon upload. If applicable, the software reads FITS headers and corresponding metadata is filled in the lightcurve or image models within Astrokit. </p>
+<p>Astrometric solutions are later used to identify targets, select reference and comparison stars, and retrieve known magnitudes from catalogs.</p>
+<p>After a group of images has been uploaded, the web server stores these images security on Amazon Web Services S3 cloud. A background astrometry job dispatches the images for analysis by the <a href="http://astrometry.net" target="_blank">astrometry.net</a> solver. The analyses are monitored and the results are retrieved by Astrkoit when complete.</p>
+<h2>Photometry</h2>
+<p>Astrokit computes photometry by extracting a point-spread function (PSF) model from stars in observations.</p>
+<p>We chose this technique because parameter tuning can be mostly automated, reducing the learning curve for beginners. The tedium of drawing apertures over an image is removed entirely, which saves time and opportunity for error.</p>
+<p>The alternate approach, aperture photometry, assumes a linearly-varying background in the aperture’s vicinity and is sometimes preferred for its mathematical simplicity. PSF photometry excels in crowded star fields but is not strictly necessary for asteroid photometry. However, because the process is fully automated by Astrokit, we having the liberty of selecting the more advanced method. This is an example of how improved automation can enable more advanced models and reduce error.</p>
+<h3>Implementation</h3>
+<p>The photometry process is implemented using the SExtractor and PSFex software packages. Both are popular open-source packages developed by <u>Astromatic</u>. When evaluating photometry packages, we first determined that SExtractor and PSFEx exhibit performance similar to that of the popular IRAF photometry package and the DAOPHOT algorithm. We then selected the package with the least tuning required without trading off accuracy.</p>
+<p>Although Astrokit selects intelligent defaults, we stress the importance of performing checks and invite the user to review the work in progress. Ultimately, the entire process is transparent to a user interested in detail. It is interactive, allowing the user to tune parameters until they are satisfied with outputs.</p>
+<p>As a result, the Astrokit photometry page includes the ability to tune photometry and review extracted point sources, instrumental magnitudes, flux, and SNR. A residual image is displayed to the user to allow visual verification of the accuracy of the PSF model. This section is accompanied by guidance on how to recognize successful photometry and residuals.</p>
+<p>Astrokit uses the latest free sextractor and psfex binaries available via Debian and Ubuntu Linux package managers. SExtractor is a program that builds catalogs of objects from an astronomical image. PSFEx extracts models of the point-spread functions from images processed by SExtractor. In order to compute a catalog with accurate PSF photometry, the process via the Astromatic toolchain requires the creation of an initial catalog with SExtractor, transfer of this catalog to PSFEx in order to fit a PSF model, and a repeat use of SExtractor with the new model.</p>
+<p>This processing is started by a photometry job and completed on the backend machine. Results are stored on S3 and can be downloaded by the user.</p>
+<p><img src="https://i.imgur.com/JsWLTkC.png"></p>
+<p class="caption"><i>Tuning photometry parameters for an image.</i></p>
+<h2>Reference and Comparison Stars</h2>
+<p>Now that the astrometry and photometry steps have completed, we must reconcile their outputs and merge their data together. This allows us to match instrumental magnitudes from PSF photometry with known standard catalog magnitudes of reference stars.</p>
+<p>In order to perform this join, we use an r-tree data structure to match results from astrometry to our own photometric results.</p>
+<p>The <u>VizieR</u> service API (University of Strasbourg) is used to query these results using the URAT1 catalog, which is maintained by the U.S. Naval Observatory.</p>
+<p>The user can then review a table of reference stars and associated data, including instrumental magnitudes, SNR, and standard magnitudes in a variety of bands. At this point, Astrokit also performs some checks at this point to ensure the basic sanity of the data, eg. by ensuring a roughly linear relationship between instrumental magnitudes and catalog magnitudes, and by highlighting stars within an acceptable SNR range. The user is shown guidance on choosing specific comparison stars (for example, by selecting stars that match the color of the asteroid).</p>
+<p>At the lightcurve level, Astrokit looks at reference stars across all observations and selects common stars. From these stars, the software selects comparison stars for use in photometric reduction. Afterwards, the user can review and modify the list of comparison stars.</p>
+<img src="https://i.imgur.com/D0Rkjkm.png">
+<p class="caption">
+    <i>Reviewing reference stars.</i>
+</p>
+<h2>Reductions</h2>
+<p>At a high level, photometric reduction on Astrokit is split into two steps.</p>
+<p>First, depending on the reduction, there are coefficients that must be derived across all observations. We refer to these generally as “lightcurve-level” reductions because the results are stored with the lightcurve and are shared among all image observations. Sometimes these specific coefficients are referred to as transforms or extinctions.</p>
+<p>After lightcurve-level coefficients are determined, they are used to perform image-level reductions and obtain standard magnitudes for target objects.</p>
+<p>The reduction methodology employed by Astrokit is outlined in astronomer Brian Warner’s book, <i>A Practical Guide to Lightcurve Photometry and Analysis</i>.</p>
+<p>The full reduction equation is:</p>
+<p class="code"> M_t = (m_t - comp_t) + T(CI_t - CI_c) + k&quot;X(CI_t - CI_c) + M_c</p>
+<p>where</p>
+<p class="code">
+M_t = sky (catalog) magnitude of target<br>
+m_t = instrumental mag of target<br>
+m_c = instrumental mag of comp<br>
+T = transform for given color index (e.g., B-V)<br>
+CI_t = color index of target<br>
+CI_c = color index of comp <br>
+k" = second order extinction (mag/air mass)<br>
+X = air mass<br>
+M_c = catalog magnitude of comp<br>
+</p>
+<p>Some reduction outputs, such as graphs of transforms, are produced on the backend using matplotlib. Others outputs, such as linearity check graphs, are interactive on the page. The results of image reductions are stored made available to the user.</p>
+<h3>Reduction details: Lightcurve level</h3>
+<p>Lightcurve level reductions are needed only if the user wants to perform a more accurate reduction that uses second-order extinction, a filter transformation coefficient, and the hidden transform. The ability to compute transforms and correct for extinction is dictated in part by the type of data the user has uploaded. If applicable, we determine these values by running calculations across all observations and combining them into a final result that is used in the reduction formula above.</p>
+<p>Before reductions can be performed, the user is asked to specify the color index bands of their observation (for example, V-R or B-V). The user is also asked to pair images in these respective bands. A handful of image pairs is sufficient for the software to determine the coefficients necessary to perform a reduction.</p>
+<p>Note that the use of transforms and multi-filter observations is optional. The user may also opt for simple differential photometry per the following equation:</p>
+<p class="code"> M_target = (m_target - m_comp) + M_comp</p>
+<p>This makes Astrokit suitable for a wide variety of differential photometry use cases beyond asteroid observations.</p>
+<h4>Transformation Coefficient</h4>
+<p>The transformation coefficient Tf converts raw instrumental magnitudes to standard magnitudes. The software uses the following equation:</p>
+<p class="code"> M_f - m_f = T_f * CI + ZP_f</p>
+<p>where:</p>
+<p class="code">
+ M_f = standard magnitude in color band of filter f<br>
+ m_f = raw instrumental magnitude in band of f<br>
+ T_f = converts instrumental mag to standard mag in band of f<br>
+ CI = standard color index<br>
+ Z_f = nightly zero oint in band of f<br>
+</p>
+<p>Using the comparison stars chosen by the software and confirmed by the user, the software determines Tf by running a linear regression on a plot of apparent magnitudes versus standard magnitudes in two color bands in order to determine slope of the equation above.</p>
+<h4>Hidden Transform</h4>
+<p>The &quot;hidden transform&quot; is the equation that allows us to compute the color index the target object in an observation. The derivation is similar to that of the transformation coefficient, although it is not used directly in the final photometry reduction (hence its name).</p>
+<p>The coefficient for the hidden transform is calculated by a linear regression between standard color indexes and instrumental color indexes. Once determined, the transform is used to convert instrumental color indexes to standard color indexes for all observations.</p>
+<h4>Other values</h4>
+<p>Second-order extinction can be calculated by the backend, but because it does not change very often we give users the option of inputting a constant so that full derivation of second-order extinction is not required for each set of observations. Astokit provides guidance for when to use second-order extinction, including default values for certain CI bands.</p>
+<p><img src="https://i.imgur.com/eH1S9UN.png"></p>
+<p class="caption">
+    <i>Selecting image pairs at the lightcurve level.</i>
+</p>
+<h3>Reduction details: Image level</h3>
+<p>Once the user is satisfied with computed transforms, they can perform a reduction for each image.</p>
+<p>The software solves for the full photometry formula (from above):</p>
+<p class="code"> M_t = (m_t - comp_t) + T(CI_t - CI_c) + k&quot;X(CI_t - CI_c) + M_c</p>
+<p>This reduction applies the transforms computed in the previous step and computes magnitudes for each (target + comparison) pair. The software calculates airmass on the observation&#39;s astrometry and metadata.</p>
+<p>By repeating this calculation for each comparison star, we obtain multiple estimates for standard magnitude. The final standard magnitude is the mean of these estimates and the standard deviation is the error.</p>
+<p>This entire process is then repeated for each comparison star by treating that star as an unknown target. As a result, every comparison star behaves as a “check star” that allows the user to compare the Astrokit reduction with an expected catalog magnitude. The software also displays a check graph that measures correlation between computed standard magnitudes and known standard magnitudes.</p>
+<p>Image reductions are typically triggered en masse at the lightcurve level, with the entire process happening automatically for every uploaded image. Afterwards, the user is invited to review each observation, where they can review final results, intermediate steps, and the checks performed. Users may also run reductions on individual images if desired.</p>
+<h2>Corrections</h2>
+<p>Astrokit is able to apply a variety of corrections, such as light-time and unity distance.</p>
+<p><img src="https://i.imgur.com/462omMh.png"></p>
+<p class="caption">
+    <i>Image-level reduction, checks, and corrections.</i>
+</p>
+<h2>Light Curves</h2>
+<h3>Summary</h3>
+<p>Once reductions have been performed, the user can view a lightcurve of standard magnitudes plotted over time. The lightcurve includes JD, standard magnitudes, error, and is suitable for scientific publication. A full table of values is also shown below the lightcurve plot. The lightcurves can be phase-folded interactively, with the plot updating according to user input. The user can tweak the style and other settings of the chart. The final image can be downloaded for external sharing.</p>
+<p>There are additional options to plot a lightcurve of instrumental magnitudes over time, plot a graph of magnitude error over time, export the lightcurve data to CSV/Excel format, and export the lightcurve data to ALCDEF Standard format.</p>
+<p><img src="https://i.imgur.com/5JyIKgF.png"></p>
+<p class="caption">
+    <i>A lightcurve in the making.</i>
+</p>
+<h2>Conclusion</h2>
+<p>
+That's all for now!  We hope this shows you why Astrokit may be a good tool to add to your workflow.  Don't hesitate to <a href="/about">Contact Us</a> directly if you have any questions.
+</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}

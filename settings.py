@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'imageflow',
     'lightcurve',
     'accounts',
+
+    'content',
 ]
 
 MIDDLEWARE_CLASSES = [
