@@ -14,7 +14,6 @@ django-jsonify==0.3.0
 django-s3direct==0.3.12
 ecdsa==0.13
 enum34==1.1.6
-Fabric==1.10.2
 funcsigs==1.0.2
 future==0.16.0
 html5lib==0.999999999
