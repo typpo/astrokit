@@ -23,7 +23,7 @@ from astrometry import astrometry_original_image_client
 from astrometry.astrometry_client import Client
 from astrometry.models import AstrometrySubmission, AstrometrySubmissionJob
 from astrometry.process import process_astrometry_online
-from astrophot_util import get_fits_from_raw
+from astropy_util import get_fits_from_raw
 from imageflow.models import ImageAnalysis
 from photometry.models import ImageFilter
 
@@ -135,7 +135,7 @@ class AstrometryRunner(object):
 
         logger.info('-> Uploading analysis for submission %d' % (submission.subid))
 
-        # TODO(ian): Move this to astrophot_util.py
+        # TODO(ian): Move this to astropy_util.py
         original_display_url = astrometry_original_image_client.get_url(submission.subid)
         annotated_display_url = 'http://35.202.61.141:8081/annotated_display/%d' \
                 % (job.jobid)

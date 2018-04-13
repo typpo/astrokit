@@ -17,7 +17,7 @@ django.setup()
 import catalog
 import imageflow.s3_util as s3_util
 import point_source_extraction
-from astrophot_util import get_fits_from_raw
+from astropy_util import get_fits_from_raw
 from imageflow.models import ImageAnalysis
 
 logging.basicConfig(level=logging.INFO)
