@@ -17,7 +17,7 @@ enum34==1.1.6
 funcsigs==1.0.2
 future==0.16.0
 html5lib==1.0.1
-idna==2.5
+idna==2.6
 ipaddress==1.0.18
 jsonfield==1.0.3
 keyring==10.3.2
