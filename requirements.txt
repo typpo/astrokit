@@ -4,7 +4,7 @@ astroquery==0.3.8
 attrs==18.1.0
 beautifulsoup4==4.6.0
 boto==2.48.0
-google-compute-engine==2.7.6
+google-compute-engine==2.8.2
 cffi==1.10.0
 cryptography==2.1.4
 cycler==0.10.0
