@@ -43,7 +43,7 @@ Rtree==0.8.3
 scikit-image==0.14.0
 scipy==1.1.0
 SecretStorage==3.0.1
-simplejson==3.11.1
+simplejson==3.15.0
 six==1.10.0
 South==1.0.2
 webencodings==0.5.1
