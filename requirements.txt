@@ -31,7 +31,7 @@ photutils==0.4
 Pillow==5.1.0
 pluggy==0.6.0
 py==1.5.3
-pycparser==2.17
+pycparser==2.18
 pycrypto==2.6.1
 pyparsing==2.1.0
 pytest==3.4.0
