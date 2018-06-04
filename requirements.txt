@@ -33,7 +33,7 @@ pluggy==0.6.0
 py==1.5.3
 pycparser==2.18
 pycrypto==2.6.1
-pyparsing==2.1.0
+pyparsing==2.2.0
 pytest==3.4.0
 python-dateutil==2.5.0
 pytz==2015.7
