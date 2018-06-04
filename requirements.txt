@@ -2,7 +2,7 @@ asn1crypto==0.24.0
 astropy==3.0.3
 astroquery==0.3.8
 attrs==18.1.0
-beautifulsoup4==4.5.3
+beautifulsoup4==4.6.0
 boto==2.4.0
 google-compute-engine==2.7.6
 cffi==1.10.0
