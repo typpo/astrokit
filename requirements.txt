@@ -41,7 +41,7 @@ redis==2.10.6
 requests==2.18.4
 Rtree==0.8.3
 scikit-image==0.14.0
-scipy==0.17.0
+scipy==1.1.0
 SecretStorage==2.3.1
 simplejson==3.11.1
 six==1.10.0
