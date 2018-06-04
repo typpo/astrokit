@@ -37,7 +37,7 @@ pyparsing==2.2.0
 pytest==3.6.0
 python-dateutil==2.7.3
 pytz==2018.4
-redis==2.10.5
+redis==2.10.6
 requests==2.13.0
 Rtree==0.8.3
 scikit-image==0.11.3
