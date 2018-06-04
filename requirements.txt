@@ -19,7 +19,7 @@ future==0.16.0
 html5lib==1.0.1
 idna==2.6
 ipaddress==1.0.21
-jsonfield==1.0.3
+jsonfield==2.0.2
 keyring==10.3.2
 matplotlib==1.5.1
 networkx==1.11
