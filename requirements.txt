@@ -28,7 +28,7 @@ xgboost==0.7.post4
 packaging==17.1
 paramiko==2.4.1
 photutils==0.4
-Pillow==3.1.0
+Pillow==5.1.0
 pluggy==0.6.0
 py==1.5.2
 pycparser==2.17
