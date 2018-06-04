@@ -26,7 +26,7 @@ networkx==2.1
 numpy==1.14.3
 xgboost==0.7.post4
 packaging==17.1
-paramiko==1.16.0
+paramiko==2.4.1
 photutils==0.4
 Pillow==3.1.0
 pluggy==0.6.0
