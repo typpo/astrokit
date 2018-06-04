@@ -1,4 +1,4 @@
-asn1crypto==0.22.0
+asn1crypto==0.24.0
 astropy==2.0.4
 astroquery==0.3.5
 attrs==17.4.0
