@@ -11,7 +11,7 @@ cycler==0.10.0
 decorator==4.2.1
 Django==2.0.6
 django-jsonify==0.3.0
-django-s3direct==0.3.12
+django-s3direct==1.0.4
 ecdsa==0.13
 enum34==1.1.6
 funcsigs==1.0.2
