@@ -20,7 +20,7 @@ html5lib==1.0.1
 idna==2.6
 ipaddress==1.0.21
 jsonfield==2.0.2
-keyring==10.3.2
+keyring==12.2.1
 matplotlib==1.5.1
 networkx==1.11
 numpy==1.14.0
