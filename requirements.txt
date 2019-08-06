@@ -9,7 +9,7 @@ cffi==1.10.0
 cryptography==2.7
 cycler==0.10.0
 decorator==4.0.9
-Django==1.11.22
+Django==1.11.23
 django-jsonify==0.3.0
 django-s3direct==0.3.12
 ecdsa==0.13
