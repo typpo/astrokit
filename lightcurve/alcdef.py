@@ -62,11 +62,11 @@ class AlcdefWriter(object):
         self.comments.append(comment)
 
     def add_comparisonstar(self, pci='', dec='', name='', mag='', pra=''):
-        self.metadata['COMPCI' + starid] = pci
-        self.metadata['COMDEC' + starid] = dec
-        self.metadata['COMNAME' + starid] = name
-        self.metadata['COMMAG' + starid] = mag
-        self.metadata['COMPRA' + starid] = pra
+        self.metadata['COMPCI' + self.starid] = pci
+        self.metadata['COMPDEC' + self.starid] = dec
+        self.metadata['COMPNAME' + self.starid] = name
+        self.metadata['COMPMAG' + self.starid] = mag
+        self.metadata['COMPRA' + self.starid] = pra
         self.starid += 1
 
     def add_data(self, jd, mag, magerr=None, airmass=None):
