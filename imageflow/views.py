@@ -336,7 +336,6 @@ def reduction(request, pk):
         'analysis': analysis.get_summary_obj(),
         'lightcurve': analysis.lightcurve,
         'image_filters': ImageFilter.objects.all(),
-
         'next_image': next_image,
     }
     if hasattr(analysis, 'reduction') and analysis.reduction:
