@@ -20,7 +20,7 @@
     "gulp-sourcemaps": "~2.2.0",
     "gulp-watch": "^4.3.10",
     "node-ssi": "^0.3.2",
-    "postcss": "^5.2.5",
+    "postcss": "^7.0.36",
     "postcss-sprites": "^4.0.0"
   },
   "scripts": {
