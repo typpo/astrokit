@@ -43,8 +43,10 @@ def run(lightcurve, reduction):
                                                          comparison_desigs)
     desig_map_band2 = average_instrumental_mags_by_desig(analyses_band2,
                                                          comparison_desigs)
-    stars_band1 = desig_map_band1.values()
-    stars_band2 = desig_map_band2.values()
+    # Use sorted keys to ensure consistent ordering between the two dicts
+    common_desigs = sorted(set(desig_map_band1.keys()) & set(desig_map_band2.keys()))
+    stars_band1 = [desig_map_band1[d] for d in common_desigs]
+    stars_band2 = [desig_map_band2[d] for d in common_desigs]
     star_pairs = zip(stars_band1, stars_band2)
 
     ht, ht_intercept, ht_std, ht_r, ht_url = \

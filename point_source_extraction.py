@@ -127,8 +127,8 @@ def compute_photutils(settings, image_data):
 
     logger.info('Fit info: %s' % fitter.fit_info['message'])
 
-    # Filter out negative flux
-    #result_tab = result_tab[result_tab['flux_fit'] >= 0]
+    # Filter out negative flux (log10 of negative values produces NaN)
+    result_tab = result_tab[result_tab['flux_fit'] > 0]
 
     # Formula: https://en.wikipedia.org/wiki/Instrumental_magnitude
     result_tab['mag'] = -2.5 * np.log10(result_tab['flux_fit'])

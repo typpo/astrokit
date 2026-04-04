@@ -203,8 +203,8 @@ def get_standard_magnitudes(reference_objects, desig_field, fields, lookup_fn, p
             obj['mag_instrumental'] = mag_i
             obj['mag_instrumental_unc'] = comparison_star.get('mag_instrumental_unc')
             obj['snr'] = comparison_star.get('snr')
-            obj['field_x'] = comparison_star['field_x'],
-            obj['field_y'] = comparison_star['field_y'],
+            obj['field_x'] = comparison_star['field_x']
+            obj['field_y'] = comparison_star['field_y']
         if postprocess_fn:
             obj = postprocess_fn(obj)
         ret.append(obj)
@@ -224,7 +224,7 @@ def compute_apparent_magnitudes(reference_objects):
         target = comparisons[i]
         del comparisons[i]
 
-        comparison_diffs = 0
+        comparison_diffs = []
         target_mags = []
         for comparison in comparisons:
             #instrumental_target_mag = -2.5 * math.log10(target['observed_flux'])
@@ -237,7 +237,7 @@ def compute_apparent_magnitudes(reference_objects):
             target_mags.append(target_mag)
             # logger.info('computed', target_mag, 'vs actual', target['rmag'])
 
-            comparison_diffs += instrumental_target_mag - instrumental_comparison_mag
+            comparison_diffs.append(instrumental_target_mag - instrumental_comparison_mag)
 
         # Compute differential magnitude.
         comparison_mean = np.mean(comparison_diffs)
